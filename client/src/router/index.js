@@ -104,6 +104,7 @@ const router = createRouter({
             name: 'login',
             component: () => import('@/views/pages/auth/Login.vue')
         },
+
         ...sign_index,
         ...counsel_index,
         ...institution_index,

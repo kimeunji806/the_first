@@ -3,15 +3,9 @@ const router = express.Router();
 
 const institutionService = require("../services/institution_service");
 
-router.get("/institutions/:id", async (req, res) => {
-  const id = req.params.id;
-  try {
-    const result = await institutionService.findById(id);
-    res.json(result);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "서버 오류" });
-  }
+router.get("/institutions", async (req, res) => {
+  let result = await institutionService.findAll();
+  res.send(result);
 });
 
 module.exports = router;

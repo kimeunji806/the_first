@@ -1,8 +1,16 @@
 const { pool } = require("../DAO");
 
-const selectInstitutionById = `
-SELECT * FROM institution
-WHERE institution_no = ?;
+const selectAllInstitution = `
+SELECT institution_no,
+       name,
+       institution_tel,
+       institution_address,
+       institution_email,
+       tel,
+       operation,
+       created_at
+FROM institution
+ORDER BY institution_no
 `;
 
-module.exports = { selectInstitutionById };
+module.exports = { selectAllInstitution };

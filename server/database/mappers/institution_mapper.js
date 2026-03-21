@@ -1,18 +1,17 @@
 const { pool } = require("../DAO");
 const institutionSql = require("../sql/institutions.js");
 
-const selectInstitutionById = async (id) => {
+const selectAllInstitution = async () => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let [result] = await conn.query(institutionSql.selectInstitutionById, [id]);
-    return result[0];
+    let [rows] = await conn.execute(institutionSql.selectAllInstitution);
+    return rows;
   } catch (err) {
     console.log(err);
-    throw err; // <- 중요: 에러를 상위로 전달
   } finally {
     if (conn) conn.release();
   }
 };
 
-module.exports = { selectInstitutionById };
+module.exports = { selectAllInstitution };

@@ -1,7 +1,8 @@
 const institutionMapper = require("../database/mappers/institution_mapper.js");
 
-const findById = async (id) => {
-  return await institutionMapper.selectInstitutionById(id);
+const findAll = async () => {
+  let info = await institutionMapper.selectAllInstitution();
+  return info;
 };
 
-module.exports = { findById };
+module.exports = { findAll };
