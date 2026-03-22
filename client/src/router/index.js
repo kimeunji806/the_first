@@ -138,7 +138,7 @@ router.beforeEach((to,from, next) => {
     }
 
     // 승인 안됨
-    if (userStore.approval === 0) {
+    if (Number(userStore.approval) === 0) {
         if (to.path !== '/sign/access') {
             return next('/sign/access')
         }
