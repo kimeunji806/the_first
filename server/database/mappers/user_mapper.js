@@ -27,6 +27,16 @@ const insertUser = async (userInfo) => {
   } catch (err) {
     if (conn) await conn.rollback();
   }
+
+   try {
+    conn = await pool.getConnection();
+
+    let result2 = await conn.query(userSql.signApproval, userInfo[2]);
+
+    return result2;
+  } catch (err) {
+    if (conn) await conn.rollback();
+  }
 }
 
 const loginUser = async (userId,userPw) => {
@@ -39,16 +49,6 @@ const loginUser = async (userId,userPw) => {
     console.log(err);
   } finally {
     if (conn) conn.release();
-  }
-
-  try {
-    conn = await pool.getConnection();
-
-    let result2 = await conn.query(userSql.signApproval, userInfo[2]);
-
-    return result2;
-  } catch (err) {
-    if (conn) await conn.rollback();
   }
 };
 
