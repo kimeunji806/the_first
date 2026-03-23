@@ -1,7 +1,7 @@
 export default [
     {
         path: '/',
-        component: AppLayout,
+        // component: AppLayout,
         children: [
             {
                 path: 'pages/mypage',
