@@ -1,7 +1,7 @@
 export default [
     {
-        path: '',
-        name: '',
-        component: () => import('@/views/pages/sign/register.vue')
-    }
-];
+    path: '/auth/approval',
+    name: 'approval',
+        component: () => import('@/views/pages/approval/approval.vue')
+    },
+]

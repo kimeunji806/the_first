@@ -27,19 +27,16 @@ const userLogin = async () => {
         const userStore = useUserStore()
         userStore.setUser(user)
 
-        if (Number(user.approval) === 0) {
+        if (user.approval === 0) {
             router.push('/sign/access') // 승인 대기
         } else {
-            router.push('/auth/access') // 나중에 승인시 갈 페이지
+            router.push('/') // 나중에 승인시 갈 페이지
         }
     } else {
         alert("아이디 또는 비밀번호 틀림")
     }
 }
 
-const userSign = () => {
-    router.push('/sign/register')
-}
 </script>
 
 <template>
@@ -77,11 +74,11 @@ const userSign = () => {
                         <Password id="password1" v-model="userPassword"  :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">아이디 찾기</span>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">비밀번호 찾기</span>
+                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary ">아이디 찾기</span>
+                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary ">비밀번호 찾기</span>
                         </div>
-                        <Button id="login" label="login" class="w-full" @click="userLogin"></Button>
-                        <Button   id="register" label="Sign In" class="w-full" @click="userSign"></Button>
+                        <Button label="로그인" class="w-full" @click="userLogin"></Button>
+                        <Button  label="회원가입" class="w-full mt-2" as="router-link" to="/sign/register"></Button>
                     </div>
                 </div>
             </div>
@@ -99,7 +96,5 @@ const userSign = () => {
     transform: scale(1.6);
     margin-right: 1rem;
 }
-#register {
-    margin-top: 10px;
-}
+
 </style>
