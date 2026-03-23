@@ -49,3 +49,13 @@ const selectedTarget = computed(() => targets.value.find((item) => item.id === s
         <TargetDetail :target="selectedTarget" @updated="updateTarget" />
     </div>
 </template>
+
+<template>
+    <div class="mypage-menu">
+        <ul class="flex gap-4 mb-4">
+            <li><router-link to="/mypage/profile">내 정보</router-link></li>
+            <li><router-link to="/mypage/institutions">기관정보</router-link></li>
+        </ul>
+        <router-view />
+    </div>
+</template>

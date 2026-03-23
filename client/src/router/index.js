@@ -1,7 +1,6 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
-
 import counsel_index from '@/router/counsel_index';
 import institution_index from '@/router/institution_index';
 import mypage_index from '@/router/mypage_index';

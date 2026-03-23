@@ -1,8 +1,25 @@
+// export default [
+//     {
+//         path: '/mypage',
+//         component: () => import('@/views/pages/mypage/MyPage.vue'),
+//         children: [
+//             {
+//                 path: 'institutioninfo',
+//                 name: 'institutioninfo',
+//                 component: () => import('@/views/pages/InstitutionInfo.vue')
+//             }
+//         ]
+//     }
+// ];
 export default [
     {
-        // 기관정보조회-은지
-        path: '/admin/institutions/:id',
+        path: '/institutioninfo',
         name: 'institutioninfo',
         component: () => import('@/views/pages/InstitutionInfo.vue')
+    },
+    {
+        path: '/institution/edit',
+        name: 'institutioninfoEdit',
+        component: () => import('@/views/pages/InstitutionEdit.vue')
     }
 ];

@@ -6,9 +6,19 @@ const model = ref([
     {
         items: [
             {
-                label: 'Dashboard',
+                label: '지원신청내역',
                 icon: 'pi pi-fw pi-home',
                 to: '/'
+            },
+            {
+                label: '마이페이지',
+                icon: 'pi pi-fw pi-user',
+                to: ['/institutioninfo', '/institutioninfo/edit']
+            },
+            {
+                label: '공지사항',
+                icon: 'pi pi-fw pi-bell',
+                to: '/notice'
             }
         ]
     }
