@@ -1,6 +1,8 @@
 require("dotenv").config({ path: "./database/dbConfig.env" });
 const express = require("express");
+const cors = require("cors");
 const app = express();
+app.use(cors());
 const port = 3000;
 
 // 미들웨어 등록 영역
@@ -26,3 +28,5 @@ app.get("/", (req, res) => {
 // 기능별 라우터 모듈 등록
 const userRouter = require("./routers/user_router.js");
 app.use("/", userRouter);
+const institutionRouter = require("./routers/institution_router.js");
+app.use("/", institutionRouter);

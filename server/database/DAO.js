@@ -20,7 +20,6 @@ const connectionPool = mariadb.createPool({
   // logger 등록
   logger: {
     // 실제 실행되는 SQL문이 console.log로 출력되도록 설정
-    query: console.log,
     // error 발생 시 처리함수
     error: console.log,
   },

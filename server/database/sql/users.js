@@ -16,3 +16,29 @@ VALUES(?)
 `;
 
 module.exports = { selectAllUser, insertUser, signApproval };
+
+const loginUser = `
+SELECT user_no,
+        role,
+        user_id,
+        user_name,
+        approval
+FROM user
+WHERE user_id = ? AND user_pw = ?
+`
+
+const approval = `
+SELECT 
+        sa.approval_no as no,
+        u.user_name as name,
+        u.user_id as id,
+        i.name as ins,
+        u.tel,
+        u.email,
+        DATE_FORMAT(u.created_at, '%Y-%m-%d') as created_at
+FROM user u
+JOIN sign_approval sa ON u.user_id = sa.user_id
+JOIN institution i ON u.institution_no = i.institution_no
+`
+
+module.exports = { selectAllUser ,loginUser ,approval};

@@ -26,6 +26,14 @@ const insertUser = async (userInfo) => {
     return result;
   } catch (err) {
     if (conn) await conn.rollback();
+
+const loginUser = async (userId,userPw) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let [result] = await conn.query(userSql.loginUser, [userId, userPw]);
+    return result;
+  } catch (err) {
     console.log(err);
   } finally {
     if (conn) conn.release();
@@ -39,10 +47,20 @@ const insertUser = async (userInfo) => {
     return result2;
   } catch (err) {
     if (conn) await conn.rollback();
+};
+
+const approval = async () => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let rows = await conn.query(userSql.approval);
+    return rows;
+  } catch (err) {
     console.log(err);
   } finally {
     if (conn) conn.release();
   }
 };
 
-module.exports = { selectAllUser, insertUser };
+
+module.exports = { selectAllUser , insertUser,loginUser ,approval};

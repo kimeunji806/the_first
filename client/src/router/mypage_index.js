@@ -14,8 +14,8 @@
 
 export default [
     {
-        path: '',
-        name: '',
-        component: () => import('@/views/pages/sign/register.vue')
+        path: '/pages/mypage',
+        name: 'userMyPage',
+        component: () => import('@/views/pages/mypage/MyPage.vue')
     }
 ];

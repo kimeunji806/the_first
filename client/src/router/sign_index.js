@@ -15,4 +15,8 @@ export default [
         name: 'registerSearch',
         component: () => import('@/views/pages/sign/search.vue')
     }
+        path: '/sign/access',
+        name: 'accessWait',
+        component: () => import('@/views/pages/sign/Access.vue')
+        },
 ];
