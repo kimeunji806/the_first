@@ -1,22 +1,111 @@
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+
+import { generateRandomNumber, sendEmail } from '@/components/register/NodeMailer';
+
 import router from '@/router';
-import { ref } from 'vue';
+// import { send } from 'vite';
 
-const user_name = ref('');
-const user_id = ref('');
-const user_pw = ref('');
-const user_pwd = ref('');
-const user_email = ref('');
-const user_account = ref('');
-const tel = ref('');
-const address = ref('');
-const institution = ref('');
+import { reactive, ref } from 'vue';
+const clickRole = async (role_name) => {
+    console.log(role_name);
+    info.role = role_name;
+};
 
-const goToSearch  = () =>{
-    const link= router.resolve('/sign/register/search')
-    window.open(link.href, '_blank')
-}
+const userCode = ref('');
+const info = reactive({
+    role: '',
+    user_name: '',
+    user_id: '',
+    user_pwd: '',
+    user_email: '',
+    tel: '',
+    address: '',
+    institution: ''
+});
+
+const sendCode = async (email) => {
+    const code = generateRandomNumber(6);
+
+    codeStore.set(email, {
+        code,
+        expiresAt: Date.now() + 3 * 60 * 1000
+    });
+    await sendEmail(email, code);
+};
+
+const verifyCode = (email, inputCode) => {
+    const data = codeStore.get(email);
+
+    if (!data) throw new Error('요청없음');
+
+    if (Date.now() > data.expiresAt) {
+        codeStore.delete(email);
+        throw new Error('만료됨');
+    }
+    if (data.code !== inputCode) {
+        throw new Error('틀림');
+    }
+    codeStore.delete(email);
+    return '인증성공';
+};
+
+// 데이터 파싱, 전송
+
+const addUserInfo = async () => {
+    let data = {
+        role: info.role,
+        user_name: info.user_name,
+        user_id: info.user_id,
+        user_pwd: info.user_pwd,
+        user_email: info.user_email,
+        tel: info.tel,
+        address: info.address,
+        institution: 1
+    };
+
+    console.log(data);
+
+    let result = await fetch(`/api/users`, {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        .then((res) => res.json())
+        .catch((err) => console.log(err));
+    // if (result.status == 'success') {
+    //     router.resolve('/sign/login');
+    // } else {
+    //     console.log('등록되지않았습니다.');
+    //     inPrinted.value = true;
+    // }
+};
+
+// // 데이터 유효성 검사
+// import { useForm } from 'vee-validate';
+// import { required, min, comfirmed } from '@vee-validate/rules';
+
+// const { handleSubmit, values, errors } = useForm({
+//     validationSchema: {
+//         role: [],
+//         user_name: [],
+//         user_id: [],
+//         user_pw: [required, min(8)],
+//         user_pwd: [],
+//         user_email: [],
+//         tel: [],
+//         address: [],
+//         institution: []
+//     }
+// });
+
+// 기관검색 이동
+const goToSearch = () => {
+    const link = router.resolve('/sign/register/search');
+    window.open(link.href, '_blank');
+};
 
 const checked = ref(false);
 </script>
@@ -49,41 +138,40 @@ const checked = ref(false);
                     </div>
 
                     <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                        <Button label="일반사용자" class="w-full md:w-[8.5rem] mb-8"></Button>
-                        <Button label="기관담당자" class="w-full md:w-[8.5rem] mb-8"></Button>
-                        <Button label="기관관리자" class="w-full md:w-[8.5rem] mb-8"></Button>
+                        <Button label="일반사용자" class="w-full md:w-[8.5rem] mb-8" v-on:click="clickRole('e1')"></Button>
+                        <Button label="기관담당자" class="w-full md:w-[8.5rem] mb-8" v-on:click="clickRole('e2')"></Button>
+                        <Button label="기관관리자" class="w-full md:w-[8.5rem] mb-8" v-on:click="clickRole('e3')"></Button>
                     </div>
                     <div>
                         <label for="user_name" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">이름</label>
-                        <InputText id="user_name" type="text" placeholder="성함을 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="user_name" />
+                        <InputText id="user_name" type="text" placeholder="성함을 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.user_name" />
 
                         <label for="user_id" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">아이디</label>
-                        <InputText id="user_id" type="text" placeholder="아이디를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="user_id" />
+                        <InputText id="user_id" type="text" placeholder="아이디를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.user_id" />
 
                         <label for="user_pw" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">비밀번호</label>
-                        <Password id="user_pw" v-model="user_pw" placeholder="비밀번호를 입력해주세요" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
+                        <Password id="user_pw" v-model="info.user_pw" placeholder="비밀번호를 입력해주세요" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
 
                         <label for="user_pwd" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">비밀번호 확인</label>
-                        <Password id="user_pwd" v-model="user_pwd" placeholder="비밀번호를 입력해주세요" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
-                        
+                        <Password id="user_pwd" v-model="info.user_pwd" placeholder="비밀번호를 입력해주세요" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
+
                         <label for="user_email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">이메일</label>
-                        <InputText id="user_email" type="text" placeholder="이메일을 입력해주세요" class="w-full md:w-[22.8rem] mb-2" v-model="user_email"/>
-                        <Button label="인증번호전송" :fluid="false"></Button>
+                        <InputText id="user_email" type="text" placeholder="이메일을 입력해주세요" class="w-full md:w-[22.8rem] mb-2" v-model="info.user_email" />
+                        <Button label="인증번호전송" :fluid="false" v-on:click="sendCode(info.user_email)"></Button>
 
-                        <label for="user_account"><br></label>
-                        <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" class="w-full md:w-[26.5em] mb-8" v-model="user_account"/>
-                        <Button label="확인" :fluid="false"></Button>
-
+                        <label for="user_account"><br /></label>
+                        <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" class="w-full md:w-[26.5em] mb-8" v-model="userCode" />
+                        <Button label="확인" :fluid="false" v-on:click="verifyCode(userCode)"></Button>
 
                         <label for="tel" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">연락처</label>
-                        <InputText id="tel" type="text" placeholder="전화번호를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="tel" />
+                        <InputText id="tel" type="text" placeholder="전화번호를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.tel" />
 
                         <label for="address" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">주소</label>
-                        <InputText id="address" type="text" placeholder="주소를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="address" />
+                        <InputText id="address" type="text" placeholder="주소를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.address" />
 
                         <label for="institution" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">기관</label>
-                    <InputText id="institution" type="selected" placeholder="기관을 선택해주세요" class="w-full md:w-[30rem] mb-8" v-model="institution" @click="goToSearch" />
-                         <!-- <Select id="institution" v-model="institution" :options="dropdownItems" optionLabel="name" placeholder="기관을 입력해주세요" class="w-full"></Select> -->
+                        <InputText id="institution" type="selected" placeholder="기관을 선택해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.institution" @click="goToSearch" />
+                        <!-- <Select id="institution" v-model="institution" :options="dropdownItems" optionLabel="name" placeholder="기관을 입력해주세요" class="w-full"></Select> -->
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <div class="flex items-center">
@@ -92,7 +180,7 @@ const checked = ref(false);
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">비밀번호 찾기</span>
                         </div>
-                        <Button label="회원가입" class="w-full" as="router-link" to="/"></Button>
+                        <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
                     </div>
                 </div>
             </div>

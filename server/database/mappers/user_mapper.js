@@ -14,4 +14,35 @@ const selectAllUser = async () => {
   }
 };
 
-module.exports = { selectAllUser };
+const insertUser = async (userInfo) => {
+  let conn = null;
+  console.log(`값 ${userInfo[2]}`);
+  try {
+    conn = await pool.getConnection();
+    let [result] = await conn.query(userSql.insertUser, userInfo);
+
+    console.log(`쿼리 ${result2}`);
+
+    return result;
+  } catch (err) {
+    if (conn) await conn.rollback();
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+
+  try {
+    conn = await pool.getConnection();
+
+    let result2 = await conn.query(userSql.signApproval, userInfo[2]);
+
+    return result2;
+  } catch (err) {
+    if (conn) await conn.rollback();
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+module.exports = { selectAllUser, insertUser };
