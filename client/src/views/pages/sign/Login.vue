@@ -96,5 +96,4 @@ const userLogin = async () => {
     transform: scale(1.6);
     margin-right: 1rem;
 }
-
 </style>
