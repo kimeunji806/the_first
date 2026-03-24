@@ -2,92 +2,374 @@
 import { reactive, ref, watch } from 'vue';
 
 const props = defineProps({
-    target: { type: Object, default: null }
+    // 현재 선택된 대상자
+    target: { type: Object, default: null },
+
+    // 신규 등록 모드 여부
+    isCreateMode: { type: Boolean, default: false }
 });
-const emit = defineEmits(['updated']);
 
+const emit = defineEmits(['updated', 'created']);
+
+// 현재 화면 모드
+// view = 보기
+// edit = 수정
+// create = 신규 등록
 const mode = ref('view');
-const form = reactive({ id: null, name: '', email: '', phone: '', status: '' });
 
+// 입력/표시용 폼 데이터
+const form = reactive({
+    id: null,
+    name: '',
+    birth: '',
+    phone: '',
+    gender: '',
+    address: '',
+    zonecode: '',
+    roadAddress: '',
+    detailAddress: '',
+    disability_type: '',
+    relation: '',
+    created_at: ''
+});
+
+// 날짜 문자열 자르기
+function formatDate(value) {
+    if (!value) return '';
+    return String(value).slice(0, 10);
+}
+
+// 성별 코드 표시용
+function getGenderLabel(code) {
+    if (code === 'c1') return '남자';
+    if (code === 'c2') return '여자';
+    return code || '';
+}
+
+// 폼 초기화
+function resetForm() {
+    form.id = null;
+    form.name = '';
+    form.birth = '';
+    form.phone = '';
+    form.gender = '';
+    form.address = '';
+    form.zonecode = '';
+    form.roadAddress = '';
+    form.detailAddress = '';
+    form.disability_type = '';
+    form.relation = '';
+    form.created_at = '';
+}
+
+// 저장된 전체 주소를 우편번호 / 기본주소 / 상세주소용으로 나누기
+function splitAddress(fullAddress) {
+    if (!fullAddress) {
+        form.zonecode = '';
+        form.roadAddress = '';
+        form.detailAddress = '';
+        return;
+    }
+
+    const text = String(fullAddress).trim();
+    const zoneMatch = text.match(/^\((\d{5})\)\s*/);
+
+    if (zoneMatch) {
+        form.zonecode = zoneMatch[1];
+        form.roadAddress = text.replace(/^\(\d{5}\)\s*/, '');
+        form.detailAddress = '';
+    } else {
+        form.zonecode = '';
+        form.roadAddress = text;
+        form.detailAddress = '';
+    }
+}
+
+// 신규 등록 모드가 되면 create 모드 + 초기화
 watch(
-    () => props.target,
-    (value) => {
-        if (value) {
-            mode.value = 'view';
-            form.id = value.id;
-            form.name = value.name;
-            form.email = value.email;
-            form.phone = value.phone;
-            form.status = value.status;
-        } else {
-            mode.value = 'view';
-            form.id = null;
-            form.name = '';
-            form.email = '';
-            form.phone = '';
-            form.status = '';
+    () => props.isCreateMode,
+    (isCreateMode) => {
+        if (isCreateMode) {
+            mode.value = 'create';
+            resetForm();
         }
     },
     { immediate: true }
 );
 
+// 부모에서 target이 바뀌면 상세값 다시 세팅
+watch(
+    () => props.target,
+    (target) => {
+        if (!props.isCreateMode && target) {
+            mode.value = 'view';
+            form.id = target.id;
+            form.name = target.name || '';
+            form.birth = formatDate(target.birth);
+            form.phone = target.phone || '';
+            form.gender = target.gender || '';
+            form.address = target.address || '';
+            splitAddress(target.address || '');
+            form.disability_type = target.disability_type || '';
+            form.relation = target.relation || '';
+            form.created_at = formatDate(target.created_at);
+        }
+    },
+    { immediate: true }
+);
+
+// 수정 모드 진입
 function editMode() {
     mode.value = 'edit';
 }
 
+// 수정 취소
 function cancelEdit() {
-    if (props.target) {
-        form.name = props.target.name;
-        form.email = props.target.email;
-        form.phone = props.target.phone;
-        form.status = props.target.status;
-    }
-    mode.value = 'view';
-}
-
-function save() {
-    if (!form.name.trim()) {
-        alert('이름은 필수입니다.');
+    if (props.isCreateMode) {
+        resetForm();
         return;
     }
-    emit('updated', { ...form });
+
+    if (props.target) {
+        mode.value = 'view';
+        form.id = props.target.id;
+        form.name = props.target.name || '';
+        form.birth = formatDate(props.target.birth);
+        form.phone = props.target.phone || '';
+        form.gender = props.target.gender || '';
+        form.address = props.target.address || '';
+        splitAddress(props.target.address || '');
+        form.disability_type = props.target.disability_type || '';
+        form.relation = props.target.relation || '';
+        form.created_at = formatDate(props.target.created_at);
+    }
+}
+
+// 주소 검색
+// 현재는 네 기존 구조 유지
+// 주소검색이 안 되면 여기만 window.daum.Postcode 로 바꾸면 됨
+function searchAddress() {
+    if (!window.kakao || !window.kakao.Postcode) {
+        alert('주소 검색 서비스를 불러오지 못했습니다.');
+        return;
+    }
+
+    new window.kakao.Postcode({
+        oncomplete(data) {
+            form.zonecode = data.zonecode || '';
+            form.roadAddress = data.roadAddress || data.address || '';
+
+            const detailInput = document.getElementById('detailAddress');
+            if (detailInput) detailInput.focus();
+        }
+    }).open();
+}
+
+// 저장용 최종 주소 만들기
+function makeFinalAddress() {
+    return [form.zonecode ? `(${form.zonecode})` : '', form.roadAddress, form.detailAddress].filter(Boolean).join(' ').trim();
+}
+
+// 필수값 검사
+function validateForm() {
+    if (!form.name.trim()) {
+        alert('이름을 입력하세요.');
+        return false;
+    }
+
+    if (!form.birth) {
+        alert('생년월일을 입력하세요.');
+        return false;
+    }
+
+    if (!form.phone.trim()) {
+        alert('전화번호를 입력하세요.');
+        return false;
+    }
+
+    if (!form.gender) {
+        alert('성별을 선택하세요.');
+        return false;
+    }
+
+    if (!form.roadAddress.trim()) {
+        alert('주소 검색을 해주세요.');
+        return false;
+    }
+
+    return true;
+}
+
+// 신규 등록 저장
+function saveCreate() {
+    if (!validateForm()) return;
+
+    emit('created', {
+        name: form.name,
+        birth: form.birth,
+        phone: form.phone,
+        gender: form.gender,
+        address: makeFinalAddress(),
+        disability_type: form.disability_type,
+        relation: form.relation
+    });
+}
+
+// 수정 저장
+function saveUpdate() {
+    if (!validateForm()) return;
+
+    emit('updated', {
+        id: form.id,
+        name: form.name,
+        birth: form.birth,
+        phone: form.phone,
+        gender: form.gender,
+        address: makeFinalAddress(),
+        disability_type: form.disability_type,
+        relation: form.relation
+    });
+
     mode.value = 'view';
 }
 </script>
 
 <template>
-    <div class="mypage-right" style="padding: 1rem; border: 1px solid #d9d9d9; border-radius: 8px">
-        <h3>지원대상자 정보</h3>
+    <div class="w-full bg-surface-0 dark:bg-surface-900">
+        <!-- 제목 -->
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <div class="text-surface-900 dark:text-surface-0 text-xl font-medium mb-1">지원대상자 정보</div>
+                <span class="text-muted-color">
+                    {{ mode === 'view' ? '선택한 지원대상자 정보를 확인할 수 있습니다.' : '지원대상자 정보를 입력해주세요.' }}
+                </span>
+            </div>
 
-        <div v-if="!props.target" style="color: #777; margin-top: 0.8rem">왼쪽에서 대상자를 선택하세요.</div>
+            <!-- 보기 모드일 때만 수정 버튼 -->
+            <Button v-if="mode === 'view' && target" label="수정" severity="secondary" outlined @click="editMode" />
+        </div>
 
-        <div v-else>
-            <template v-if="mode === 'view'">
-                <dl style="margin-top: 0.8rem; line-height: 1.8">
-                    <dt><strong>이름</strong></dt>
-                    <dd>{{ props.target.name }}</dd>
-                    <dt><strong>이메일</strong></dt>
-                    <dd>{{ props.target.email }}</dd>
-                    <dt><strong>전화번호</strong></dt>
-                    <dd>{{ props.target.phone }}</dd>
-                    <dt><strong>상태</strong></dt>
-                    <dd>{{ props.target.status }}</dd>
-                </dl>
-                <button @click="editMode" style="margin-top: 1rem; padding: 0.55rem 0.9rem; background-color: #10b981; color: white; border: 0; border-radius: 5px; cursor: pointer">수정</button>
-            </template>
+        <!-- 선택된 대상자가 없을 때 -->
+        <div v-if="!props.target && !props.isCreateMode" class="text-muted-color py-4">왼쪽에서 대상자를 선택하세요.</div>
 
-            <template v-else>
-                <div style="margin-top: 0.8rem; display: grid; gap: 0.75rem">
-                    <label>이름 <input v-model="form.name" type="text" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 0.45rem" /></label>
-                    <label>이메일 <input v-model="form.email" type="email" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 0.45rem" /></label>
-                    <label>전화번호 <input v-model="form.phone" type="text" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 0.45rem" /></label>
-                    <label>상태 <input v-model="form.status" type="text" style="width: 100%; border: 1px solid #ccc; border-radius: 4px; padding: 0.45rem" /></label>
-                    <div style="display: flex; gap: 0.7rem">
-                        <button @click="save" style="padding: 0.55rem 0.9rem; background: #2563eb; color: white; border: 0; border-radius: 5px; cursor: pointer">저장</button>
-                        <button @click="cancelEdit" style="padding: 0.55rem 0.9rem; background: #9ca3af; color: white; border: 0; border-radius: 5px; cursor: pointer">취소</button>
-                    </div>
+        <!-- 보기 모드 -->
+        <div v-else-if="mode === 'view'">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <div class="text-muted-color text-sm mb-2">이름</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.name || '-' }}</div>
                 </div>
-            </template>
+
+                <div>
+                    <div class="text-muted-color text-sm mb-2">생년월일</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.birth || '-' }}</div>
+                </div>
+
+                <div>
+                    <div class="text-muted-color text-sm mb-2">전화번호</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.phone || '-' }}</div>
+                </div>
+
+                <div>
+                    <div class="text-muted-color text-sm mb-2">성별</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ getGenderLabel(form.gender) || '-' }}</div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <div class="text-muted-color text-sm mb-2">주소</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.address || '-' }}</div>
+                </div>
+
+                <div>
+                    <div class="text-muted-color text-sm mb-2">장애유형</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.disability_type || '-' }}</div>
+                </div>
+
+                <div>
+                    <div class="text-muted-color text-sm mb-2">관계</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.relation || '-' }}</div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <div class="text-muted-color text-sm mb-2">등록일</div>
+                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.created_at || '-' }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 수정 / 등록 모드 -->
+        <div v-else>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- 이름 -->
+                <div>
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">이름</label>
+                    <InputText v-model="form.name" class="w-full mb-4" placeholder="이름 입력" />
+                </div>
+
+                <!-- 생년월일 -->
+                <div>
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">생년월일</label>
+                    <InputText v-model="form.birth" type="date" class="w-full mb-4" />
+                </div>
+
+                <!-- 전화번호 -->
+                <div>
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">전화번호</label>
+                    <InputText v-model="form.phone" class="w-full mb-4" placeholder="010-0000-0000" />
+                </div>
+
+                <!-- 성별 -->
+                <div>
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">성별</label>
+                    <select v-model="form.gender" class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-surface-0 dark:bg-surface-900 text-surface-900 dark:text-surface-0 mb-4">
+                        <option value="">선택하세요</option>
+                        <option value="c1">남자</option>
+                        <option value="c2">여자</option>
+                    </select>
+                </div>
+
+                <!-- 주소 -->
+                <div class="md:col-span-2">
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">주소</label>
+
+                    <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                        <InputText v-model="form.zonecode" placeholder="우편번호" readonly class="w-full sm:w-40" />
+                        <Button type="button" label="우편번호 검색" @click="searchAddress" />
+                    </div>
+
+                    <InputText v-model="form.roadAddress" placeholder="기본주소" readonly class="w-full mb-2" />
+
+                    <InputText id="detailAddress" v-model="form.detailAddress" placeholder="상세주소" class="w-full mb-4" />
+                </div>
+
+                <!-- 장애유형 -->
+                <div>
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">장애유형</label>
+                    <InputText v-model="form.disability_type" class="w-full mb-4" placeholder="장애유형 입력" />
+                </div>
+
+                <!-- 관계 -->
+                <div>
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">관계</label>
+                    <InputText v-model="form.relation" class="w-full mb-4" placeholder="관계 입력" />
+                </div>
+
+                <!-- 등록일: 수정 모드에서만 표시 -->
+                <div v-if="mode !== 'create'" class="md:col-span-2">
+                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">등록일</label>
+                    <InputText :value="form.created_at" readonly class="w-full mb-4" />
+                </div>
+            </div>
+
+            <!-- 버튼 -->
+            <div class="flex gap-2 justify-end mt-2">
+                <Button v-if="mode === 'create'" label="등록" @click="saveCreate" />
+
+                <template v-else>
+                    <Button label="취소" severity="secondary" outlined @click="cancelEdit" />
+                    <Button label="저장" @click="saveUpdate" />
+                </template>
+            </div>
         </div>
     </div>
 </template>

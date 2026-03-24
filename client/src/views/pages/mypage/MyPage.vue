@@ -1,61 +1,187 @@
 <script setup>
-import { computed, ref } from 'vue';
+// computed: 현재 선택된 대상자 계산
+// ref: 반응형 변수
+// onMounted: 화면 처음 들어올 때 실행
+import { computed, ref, onMounted } from 'vue';
+
+// 왼쪽 목록 / 오른쪽 상세 컴포넌트
 import TargetList from './TargetList.vue';
 import TargetDetail from './TargetDetail.vue';
 
-const targets = ref([
-    { id: 1, name: '김철수', email: 'chulsoo@example.com', phone: '010-1234-5678' },
-    { id: 2, name: '이영희', email: 'younghee@example.com', phone: '010-9876-5432' }
-]);
+// API 함수
+import { getTargets, createTarget as createTargetApi, updateTarget as updateTargetApi } from '@/service/MyPageService';
 
-const selectedId = ref(targets.value.length ? targets.value[0].id : null);
+// 지원대상자 목록
+const targets = ref([]);
 
-const newId = ref(targets.value.length + 1);
+// 현재 선택된 대상자 id
+const selectedId = ref(null);
 
+// 신규 등록 모드 여부
+const isCreateMode = ref(false);
+
+// 로그인 사용자 정보
+const loginUser = JSON.parse(localStorage.getItem('user'));
+const loginUserNo = loginUser?.user_no || null;
+const loginUserName = loginUser?.user_name || '사용자';
+
+// 지원대상자 목록 불러오기
+async function loadTargets() {
+    try {
+        // 로그인 정보가 없으면 중단
+        if (!loginUserNo) {
+            alert('로그인 정보가 없습니다.');
+            return;
+        }
+
+        const result = await getTargets(loginUserNo);
+
+        if (result.retCode === 'OK') {
+            targets.value = result.data || [];
+
+            // 등록 모드가 아닐 때만 첫 대상 자동 선택
+            if (!isCreateMode.value) {
+                if (targets.value.length > 0) {
+                    selectedId.value = targets.value[0].id;
+                } else {
+                    selectedId.value = null;
+                }
+            }
+        } else {
+            alert(result.message || '지원대상자 목록 조회 실패');
+        }
+    } catch (err) {
+        console.error('loadTargets 오류:', err);
+        alert('지원대상자 목록을 불러오지 못했습니다.');
+    }
+}
+
+// 왼쪽 목록에서 대상 선택
 function selectTarget(id) {
+    isCreateMode.value = false;
     selectedId.value = id;
 }
 
+// 신규 등록 버튼 클릭
 function addTarget() {
-    const name = prompt('새 지원대상자 이름을 입력하세요.');
-    if (!name || !name.trim()) {
-        alert('이름을 입력해야 합니다.');
-        return;
+    isCreateMode.value = true;
+    selectedId.value = null;
+}
+
+// 신규 등록 처리
+async function createTarget(newTarget) {
+    try {
+        if (!loginUserNo) {
+            alert('로그인 정보가 없습니다.');
+            return;
+        }
+
+        const result = await createTargetApi(newTarget, loginUserNo);
+
+        if (result.retCode === 'OK') {
+            alert('등록되었습니다.');
+            isCreateMode.value = false;
+
+            // 등록 후 목록 다시 조회
+            await loadTargets();
+
+            // insertId가 있으면 해당 대상 선택
+            if (result.insertId) {
+                selectedId.value = result.insertId;
+            } else if (targets.value.length > 0) {
+                // 없으면 마지막 항목 선택
+                selectedId.value = targets.value[targets.value.length - 1].id;
+            }
+        } else {
+            alert(result.message || '등록 실패');
+        }
+    } catch (err) {
+        console.error('createTarget 오류:', err);
+        alert('등록 중 오류가 발생했습니다.');
     }
-
-    targets.value.push({
-        id: newId.value++,
-        name: name.trim(),
-        email: '',
-        phone: '',
-        status: '신규'
-    });
-
-    selectedId.value = targets.value[targets.value.length - 1].id;
 }
 
-function updateTarget(updated) {
-    const idx = targets.value.findIndex((t) => t.id === updated.id);
-    if (idx === -1) return;
-    targets.value[idx] = { ...targets.value[idx], ...updated };
+// 수정 처리
+async function updateTarget(updated) {
+    try {
+        if (!loginUserNo) {
+            alert('로그인 정보가 없습니다.');
+            return;
+        }
+
+        const result = await updateTargetApi(updated, loginUserNo);
+
+        if (result.retCode === 'OK') {
+            alert('수정되었습니다.');
+
+            // 수정 후 목록 다시 조회
+            await loadTargets();
+
+            // 수정한 대상 다시 선택
+            selectedId.value = updated.id;
+        } else {
+            alert(result.message || '수정 실패');
+        }
+    } catch (err) {
+        console.error('updateTarget 오류:', err);
+        alert('수정 중 오류가 발생했습니다.');
+    }
 }
 
-const selectedTarget = computed(() => targets.value.find((item) => item.id === selectedId.value) || null);
+// 현재 오른쪽 상세영역에 보여줄 대상자 객체
+const selectedTarget = computed(() => {
+    if (isCreateMode.value) return null;
+    return targets.value.find((item) => item.id === selectedId.value) || null;
+});
+
+// 화면 처음 열릴 때 목록 조회
+onMounted(() => {
+    loadTargets();
+});
 </script>
 
 <template>
-    <div style="display: grid; grid-template-columns: 350px 1fr; gap: 1rem; margin-top: 1rem">
-        <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
-        <TargetDetail :target="selectedTarget" @updated="updateTarget" />
+    <div class="p-6">
+        <!-- 상단 타이틀 -->
+        <div class="flex items-center justify-between py-4 mb-2">
+            <div class="flex items-center gap-2">
+                <span class="font-medium text-2xl text-surface-900 dark:text-surface-0">마이페이지</span>
+                <span class="px-1.5 py-1 bg-primary text-primary-contrast rounded-md text-xs">Beta</span>
+            </div>
+        </div>
+
+        <!-- 로그인 사용자 인사말 -->
+        <div class="mb-5">
+            <div class="text-surface-900 dark:text-surface-0 text-xl font-medium mb-1">{{ loginUserName }}님 반갑습니다.</div>
+            <span class="text-muted-color"> 등록된 지원대상자를 조회하고 정보를 수정할 수 있습니다. </span>
+        </div>
+
+        <!-- 본문 -->
+        <div class="p-0 border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden bg-surface-0 dark:bg-surface-900">
+            <div class="p-4 lg:p-6">
+                <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+                    <!-- 왼쪽 목록 -->
+                    <div>
+                        <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
+                    </div>
+
+                    <!-- 오른쪽 상세 -->
+                    <div>
+                        <TargetDetail :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
-<template>
-    <div class="mypage-menu">
-        <ul class="flex gap-4 mb-4">
-            <li><router-link to="/mypage/profile">내 정보</router-link></li>
-            <li><router-link to="/mypage/institutions">기관정보</router-link></li>
-        </ul>
-        <router-view />
-    </div>
-</template>
+<style scoped lang="scss">
+:deep(.p-datatable) {
+    border: 0 none;
+}
+
+.bg-primary\! {
+    background-color: var(--p-primary-color) !important;
+    color: var(--p-primary-contrast-color) !important;
+}
+</style>

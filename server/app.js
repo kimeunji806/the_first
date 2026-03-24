@@ -30,3 +30,7 @@ const userRouter = require("./routers/user_router.js");
 app.use("/", userRouter);
 const institutionRouter = require("./routers/institution_router.js");
 app.use("/", institutionRouter);
+const mypageRouter = require("./routers/mypage_router"); //마이페이지 지원대상자
+app.use("/api/mypage", mypageRouter);
+const institutionMyPageRouter = require("./routers/institution_mypage_router"); //마이페이지 기관담당자
+app.use("/institutionmypage", institutionMyPageRouter);
