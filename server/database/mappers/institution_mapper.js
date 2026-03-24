@@ -16,19 +16,25 @@ const selectAllInstitution = async () => {
 };
 
 // 기관정보 수정
-const updateInstitution = async (updateData) => {
+const updateInstitution = async (institution) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
     await conn.beginTransaction(); // Auto Commit 해제
-    let [result] = await conn.query(institutionSql.updateInstitution, [
+
+    const { institution_no, ...updateData } = institution;
+
+    const result = await conn.query(institutionSql.updateInstitution, [
       updateData,
+      institution_no,
     ]);
-    conn.commit();
+
+    await conn.commit();
+
     return result;
   } catch (err) {
     console.log(err);
-    conn.rollback();
+    if (conn) await conn.rollback();
   } finally {
     if (conn) conn.release();
   }

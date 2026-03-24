@@ -1,14 +1,17 @@
 <script setup>
-import { useRouter } from 'vue-router';
-const router = useRouter();
+import { useRoute, useRouter } from 'vue-router';
 import { ref, onBeforeMount } from 'vue';
-const activeTab = ref('0');
+
+const route = useRoute();
+const router = useRouter();
+
+const activeTab = ref(route.query.tab || '0');
 const institution = ref({});
 
 // 기관정보 조회
 const findAllInfo = async () => {
     try {
-        const res = await fetch(`http://localhost:3000/institutioninfo`);
+        const res = await fetch(`/api/institutioninfo`);
         const info = await res.json();
         institution.value = info;
     } catch (err) {
@@ -16,35 +19,39 @@ const findAllInfo = async () => {
     }
 };
 
-onBeforeMount(() => {
-    findAllInfo();
-});
-
 // 기관정보 수정
-const goToEditForm = () => {
-    if (!institution.value) return;
+const save = async () => {
+    try {
+        const dataToSave = {
+            name: institution.value.name,
+            tel: institution.value.tel,
+            institution_tel: institution.value.institution_tel,
+            institution_address: institution.value.institution_address,
+            institution_email: institution.value.institution_email,
+            operation: institution.value.operation
+        };
+        const res = await fetch('/api/institutioninfo', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSave)
+        });
 
-    const data = {
-        name: institution.value.name,
-        tel: institution.value.tel,
-        institution_tel: institution.value.institution_tel,
-        institution_address: institution.value.institution_address,
-        institution_email: institution.value.institution_email,
-        operation: institution.value.operation
-    };
-    fetch('http://localhost:3000/institutioninfo', {
-        method: 'PUT',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        .then((res) => res.json())
-        .then((result) => {
-            console.log('수정완료1:', result);
-        })
-        .catch((err) => console.log('수정실패:', err));
+        if (res.ok) {
+            const result = await res.json();
+            console.log('수정 완료 : ', result);
+
+            router.push({ path: '/institutioninfo', query: { tab: '1' } });
+        } else {
+            console.error('수정 실패:', res.statusText);
+        }
+    } catch (err) {
+        console.log(err);
+    }
 };
+
+onBeforeMount(findAllInfo);
 </script>
 <template>
     <div class="w-full">
@@ -82,13 +89,21 @@ const goToEditForm = () => {
                                         <label for="option2" class="ml-2">부</label>
                                     </div>
                                 </div>
+                                <div v-else-if="slotProps.data.field === 'institution_address'" class="flex flex-col gap-2 w-full">
+                                    <div class="flex gap-2">
+                                        <InputText v-model="institution.zonecode" class="w-32" readonly />
+                                        <Button label="우편번호 검색" @click="execDaumPostcode" />
+                                    </div>
+                                    <InputText v-model="institution.institution_address" readonly />
+                                    <InputText v-model="institution.detail_address" placeholder="상세 주소 입력" />
+                                </div>
                                 <InputText v-else v-model="institution[slotProps.data.field]" />
                             </template>
                         </Column>
                     </DataTable>
                 </div>
                 <div class="flex justify-end mt-4">
-                    <Button label="저장" @click="goToEditForm"></Button>
+                    <Button label="저장" @click="save"></Button>
                 </div>
             </div>
         </div>

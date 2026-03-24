@@ -8,8 +8,7 @@ SELECT institution_no,
        institution_address,
        institution_email,
        tel,
-       operation,
-       created_at
+       operation
 FROM institution
 ORDER BY institution_no
 `;
@@ -18,6 +17,6 @@ ORDER BY institution_no
 const updateInstitution = `
 UPDATE institution
 SET ?
-WHERE institution_no`;
+WHERE institution_no = ?`;
 
 module.exports = { selectAllInstitution, updateInstitution };

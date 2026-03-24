@@ -1,14 +1,17 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
-import { useRouter } from 'vue-router';
-const activeTab = ref('0');
-const institution = ref(null);
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute();
 const router = useRouter();
+
+const institution = ref(null);
+const activeTab = ref(route.query.tab || '0');
 
 // 기관정보 조회
 const findAllInfo = async () => {
     try {
-        const res = await fetch(`http://localhost:3000/institutioninfo`);
+        const res = await fetch(`/api/institutioninfo`);
         const info = await res.json();
         institution.value = info;
     } catch (err) {
@@ -16,15 +19,18 @@ const findAllInfo = async () => {
     }
 };
 
+// 기관정보 수정 탭으로 이동
 const goToEditForm = () => {
-    router.push('/institution/edit');
+    router.push({
+        path: '/institutioninfo/edit',
+        query: { tab: '1' } // 기관정보 탭을 활성화하기 위한 파라미터
+    });
 };
 
 onBeforeMount(() => {
     findAllInfo();
 });
 </script>
-
 <template>
     <div class="w-full">
         <div class="w-full">

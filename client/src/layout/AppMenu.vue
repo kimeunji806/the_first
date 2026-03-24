@@ -16,7 +16,7 @@ const model = computed(()=>[
             {
                 label: '마이페이지',
                 icon: 'pi pi-fw pi-user',
-                to: '/institutioninfo'
+                to: ['/institutioninfo', '/institutioninfo/edit', '/pages/mypage']
             },
             // 기관관리자로 로그인시 사이드바 추가
             ...(userStore.role === 'e3' ? [{

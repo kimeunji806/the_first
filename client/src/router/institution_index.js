@@ -15,11 +15,11 @@ export default [
     {
         path: '/institutioninfo',
         name: 'institutioninfo',
-        component: () => import('@/views/pages/InstitutionInfo.vue')
+        component: () => import('@/views/pages/mypage/InstitutionInfo.vue')
     },
     {
-        path: '/institution/edit',
+        path: '/institutioninfo/edit',
         name: 'institutioninfoEdit',
-        component: () => import('@/views/pages/InstitutionEdit.vue')
+        component: () => import('@/views/pages/mypage/InstitutionEdit.vue')
     }
 ];
