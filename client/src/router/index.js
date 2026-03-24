@@ -53,18 +53,13 @@ router.beforeEach((to, from, next) => {
     }
     //관리자가 아닌데 회원가입 승인 페이지 갈때
     if (userStore.role !== 'e3' && to.path === '/auth/approval') {
-        return next('/') // 이 루트가 회원가입으로 되어있음 나중에 페이지 만들면 경로 수정
+        return next('/'); // 이 루트가 회원가입으로 되어있음 나중에 페이지 만들면 경로 수정
     }
 
     // 승인된 유저가 승인대기 접근 막기
-<<<<<<< HEAD
-    if (Number(userStore.approval) === 1 && to.path === '/sign/access') {
-        return next('/'); //승인된 사람이 주소에 쳐서 들어갈때 다른곳으로 이동시킬거
-=======
     if (userStore.approval === 1 && to.path === '/sign/access') {
-        return next('/') //승인된 사람이 주소에 쳐서 들어갈때 다른곳으로 이동시킬거
-                        // 이 루트가 회원가입으로 되어있음 나중에 페이지 만들면 경로 수정
->>>>>>> d1df6dea72141ad1407b7a4e41ebd06ed04b1b80
+        return next('/'); //승인된 사람이 주소에 쳐서 들어갈때 다른곳으로 이동시킬거
+        // 이 루트가 회원가입으로 되어있음 나중에 페이지 만들면 경로 수정
     }
 
     next();
