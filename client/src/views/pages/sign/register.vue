@@ -84,7 +84,7 @@ const verifyCode = async (code) => {
 
     const data = await res.json();
     console.log(data);
-    if (data.retCode === 'true') {
+    if (data.retCode === true) {
         alert('인증 성공');
     } else {
         alert(data.message);
