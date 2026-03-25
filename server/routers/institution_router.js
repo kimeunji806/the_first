@@ -4,13 +4,13 @@ const router = express.Router();
 const institutionService = require("../services/institution_service");
 
 // 기관정보 조회
-router.get("/institutioninfo", async (req, res) => {
+router.get("/admin/institutioninfo", async (req, res) => {
   let result = await institutionService.findAll();
-  res.send(result);
+  res.json(result || {});
 });
 
 // 기관정보 수정
-router.put("/institutioninfo", async (req, res) => {
+router.put("/admin/institutioninfo", async (req, res) => {
   try {
     let target = req.body;
     let result = await institutionService.modifyInfo(target);

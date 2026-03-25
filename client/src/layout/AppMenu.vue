@@ -9,7 +9,7 @@ const userStore = useUserStore();
 const myPageRouteMap = {
     e1: '/pages/mypage',
     e2: '/institutioninfo',
-    e3: '/auth/admin-dash',
+    e3: '/admin/institutioninfo',
     e4: '/pages/guardian'
 };
 
@@ -35,22 +35,17 @@ const model = computed(() => {
                 // e3(관리자) 또는 e4(보호자)에게 보여줄 메뉴
                 ...(currentRole === 'e3' || currentRole === 'e4'
                     ? [
-                          {
-                              label: '대상자 통합 조회',
-                              icon: 'pi pi-fw pi-search',
-                              to: '/info/search'
-                          }
-                      ]
-                    : []),
-
+                        {
+                            label: '대상자 통합 조회',
+                            icon: 'pi pi-fw pi-search',
+                            to: '/info/search'
+                        }
+                    ]: []),
                 // e3(관리자) 전용 메뉴
-                ...(currentRole === 'e3'
-                    ? [
-                          { label: '담당자 조회', icon: 'pi pi-fw pi-users', to: '/info/manager' },
-                          { label: '회원가입 승인', icon: 'pi pi-fw pi-verified', to: '/auth/approval' }
-                      ]
-                    : []),
-
+                ...(currentRole === 'e3' ? [
+                    { label: '담당자 조회', icon: 'pi pi-fw pi-users', to: '/info/manager' },
+                    { label: '회원가입 승인', icon: 'pi pi-fw pi-verified', to: '/auth/approval' }
+                ]: []),
                 {
                     label: '공지사항',
                     icon: 'pi pi-fw pi-bell',

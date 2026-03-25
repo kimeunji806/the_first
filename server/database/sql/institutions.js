@@ -4,10 +4,10 @@ const { pool } = require("../DAO");
 const selectAllInstitution = `
 SELECT institution_no,
        name,
-       institution_tel,
+       tel,
        institution_address,
        institution_email,
-       tel,
+       business_number,
        operation
 FROM institution
 ORDER BY institution_no

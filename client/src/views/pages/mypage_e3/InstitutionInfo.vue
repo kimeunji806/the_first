@@ -11,7 +11,7 @@ const activeTab = ref(route.query.tab || '0');
 // 기관정보 조회
 const findAllInfo = async () => {
     try {
-        const res = await fetch(`/api/institutioninfo`);
+        const res = await fetch(`/api/admin/institutioninfo`);
         const info = await res.json();
         institution.value = info;
     } catch (err) {
@@ -22,7 +22,7 @@ const findAllInfo = async () => {
 // 기관정보 수정 탭으로 이동
 const goToEditForm = () => {
     router.push({
-        path: '/institutioninfo/edit',
+        path: '/admin/institutioninfo/edit',
         query: { tab: '1' } // 기관정보 탭을 활성화하기 위한 파라미터
     });
 };
@@ -47,8 +47,8 @@ onBeforeMount(() => {
                     <DataTable
                         :value="[
                             { label: '기관', value: institution.name },
-                            { label: '사업자번호', value: institution.tel },
-                            { label: '대표번호', value: institution.institution_tel },
+                            { label: '사업자번호', value: institution.business_number },
+                            { label: '대표번호', value: institution.tel },
                             { label: '주소', value: institution.institution_address },
                             { label: '이메일', value: institution.institution_email },
                             { label: '운영여부', value: institution.operation === 1 ? '여' : '부' }
