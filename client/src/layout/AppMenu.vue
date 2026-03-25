@@ -9,7 +9,7 @@ const userStore = useUserStore();
 const myPageRouteMap = {
     e1: '/pages/mypage',
     e2: '/institutioninfo',
-    e3: '/auth/admin-dash',
+    e3: '/admin/institutioninfo',
     e4: '/pages/guardian'
 };
 
@@ -23,7 +23,7 @@ const model = computed(() => {
                 {
                     label: '지원신청내역',
                     icon: 'pi pi-fw pi-home',
-                    to: '/'
+                    to: '/list'
                 },
                 {
                     label: '마이페이지',
