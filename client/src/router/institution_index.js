@@ -1,14 +1,14 @@
 export default [
-    // {
-    //     path: '/institutioninfo',
-    //     name: 'institutioninfo',
-    //     component: () => import('@/views/pages/InstitutionInfo.vue')
-    // },
-    // {
-    //     path: '/institution/edit',
-    //     name: 'institutioninfoEdit',
-    //     component: () => import('@/views/pages/InstitutionEdit.vue')
-    // },
+    {
+        path: 'admin/institutioninfo',
+        name: 'admin_institutioninfo',
+        component: () => import('@/views/pages/mypage_e3/InstitutionInfo.vue')
+    },
+    {
+        path: 'admin/institutioninfo/edit',
+        name: 'admin_institutioninfoEdit',
+        component: () => import('@/views/pages/mypage_e3/InstitutionInfoEdit.vue')
+    },
     {
         path: '/institutioninfo',
         name: 'institutioninfo',

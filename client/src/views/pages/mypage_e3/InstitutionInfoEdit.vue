@@ -8,29 +8,37 @@ const router = useRouter();
 const activeTab = ref(route.query.tab || '0');
 const institution = ref({});
 
-// 기관정보 조회
+// 기관정보 조회 API
 const findAllInfo = async () => {
     try {
-        const res = await fetch(`/api/institutioninfo`);
+        const res = await fetch(`/api/admin/institutioninfo`);
         const info = await res.json();
         institution.value = info;
+        // 주소 나누기(우편번호/기본주소/상세주소)
+        splitAddress(info.institution_address);
     } catch (err) {
         console.log(err);
     }
 };
 
-// 기관정보 수정
+// 주소 합치기(저장용)
+function makeFinalAddress() {
+    return [institution.value.zonecode ? `(${institution.value.zonecode})` : '', institution.value.institution_address, institution.value.detail_address].filter(Boolean).join(' ').trim();
+}
+
+// 기관정보 수정 API
 const save = async () => {
     try {
         const dataToSave = {
+            institution_no: institution.value.institution_no, // PK
             name: institution.value.name,
+            business_number: institution.value.business_number,
             tel: institution.value.tel,
-            institution_tel: institution.value.institution_tel,
-            institution_address: institution.value.institution_address,
+            institution_address: makeFinalAddress(), // 우편번호/기본주소/상세주소 합친 주소
             institution_email: institution.value.institution_email,
             operation: institution.value.operation
         };
-        const res = await fetch('/api/institutioninfo', {
+        const res = await fetch('/api/admin/institutioninfo', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -41,8 +49,8 @@ const save = async () => {
         if (res.ok) {
             const result = await res.json();
             console.log('수정 완료 : ', result);
-
-            router.push({ path: '/institutioninfo', query: { tab: '1' } });
+            // 성공시 조회 페이지로 이동
+            router.push({ path: '/admin/institutioninfo', query: { tab: '1' } });
         } else {
             console.error('수정 실패:', res.statusText);
         }
@@ -51,12 +59,50 @@ const save = async () => {
     }
 };
 
+// 주소 문자열 -> 분리(조회 시)
+function splitAddress(fullAddress) {
+    if (!fullAddress) {
+        institution.value.zonecode = '';
+        institution.value.institution_address = '';
+        institution.value.detail_address = '';
+        return;
+    }
+
+    const text = String(fullAddress).trim();
+    const zoneMatch = text.match(/^\((\d{5})\)\s*/);
+
+    if (zoneMatch) {
+        institution.value.zonecode = zoneMatch[1]; // 우편번호
+        institution.value.institution_address = text.replace(/^\(\d{5}\)\s*/, ''); // 기본주소
+        institution.value.detail_address = ''; // 상세주호 초기화
+    } else {
+        institution.value.zonecode = '';
+        institution.value.institution_address = text;
+        institution.value.detail_address = '';
+    }
+}
+
+function searchAddress() {
+    new window.daum.Postcode({
+        oncomplete: function (data) {
+            // 우편번호
+            institution.value.zonecode = data.zonecode;
+            // 기본주소 (도로명 우선)
+            institution.value.institution_address = data.roadAddress || data.jibunAddress;
+            // 상세주소 초기화
+            institution.value.detail_address = '';
+        }
+    }).open();
+}
+
+// 컴포넌트 시작시 데이터 조회
 onBeforeMount(findAllInfo);
 </script>
 <template>
     <div class="w-full">
         <div class="w-full">
             <div class="card">
+                <!-- 탭 영역 (내정보 / 기관정보) -->
                 <Tabs v-model:value="activeTab">
                     <TabList>
                         <Tab value="0">내 정보</Tab>
@@ -64,12 +110,15 @@ onBeforeMount(findAllInfo);
                     </TabList>
                 </Tabs>
                 <div v-if="activeTab === '1' && institution" class="mt-4">
+                    <!-- 제목 -->
                     <div class="font-semibold text-xl mb-4">기관정보</div>
+
+                    <!-- 데이터 테이블 -->
                     <DataTable
                         :value="[
                             { label: '기관', field: 'name' },
-                            { label: '사업자번호', field: 'tel' },
-                            { label: '대표번호', field: 'institution_tel' },
+                            { label: '사업자번호', field: 'business_number' },
+                            { label: '대표번호', field: 'tel' },
                             { label: '주소', field: 'institution_address' },
                             { label: '이메일', field: 'institution_email' },
                             { label: '운영여부', field: 'operation' }
@@ -78,9 +127,11 @@ onBeforeMount(findAllInfo);
                         <Column field="label" header="" class="w-3xs"></Column>
                         <Column field="field" header="">
                             <template #body="slotProps">
-                                <span v-if="slotProps.data.field === 'tel'">{{ institution.tel }}</span>
+                                <!-- 사업자번호는 그냥 텍스트로 표시 -->
+                                <span v-if="slotProps.data.field === 'business_number'">{{ institution.business_number }}</span>
                                 <div v-else-if="slotProps.data.field === 'operation'" class="flex gap-4">
                                     <div class="flex items-center">
+                                        <!-- 운영여부 (라디오 버튼) -->
                                         <RadioButton id="option1" name="operation" :value="1" v-model="institution.operation" />
                                         <label for="option1" class="ml-2">여</label>
                                     </div>
@@ -89,14 +140,19 @@ onBeforeMount(findAllInfo);
                                         <label for="option2" class="ml-2">부</label>
                                     </div>
                                 </div>
+                                <!-- 주소 영역 (우편번호 + 주소 + 상세주소) -->
+
                                 <div v-else-if="slotProps.data.field === 'institution_address'" class="flex flex-col gap-2 w-full">
                                     <div class="flex gap-2">
                                         <InputText v-model="institution.zonecode" class="w-32" readonly />
-                                        <Button label="우편번호 검색" @click="execDaumPostcode" />
+                                        <Button label="우편번호 검색" @click="searchAddress" />
                                     </div>
+                                    <!-- 기본 주소 -->
                                     <InputText v-model="institution.institution_address" readonly />
+                                    <!-- 상세 주소 -->
                                     <InputText v-model="institution.detail_address" placeholder="상세 주소 입력" />
                                 </div>
+                                <!-- 나머지 필드 (기관명, 전화번호, 이메일 등) -->
                                 <InputText v-else v-model="institution[slotProps.data.field]" />
                             </template>
                         </Column>
