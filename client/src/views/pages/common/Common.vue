@@ -29,8 +29,8 @@ const targetInfo = ref({
     gender_name: '남',
     birth: '2001.01.01',
     disability_type: '발달장애',
-    manager_no: null,
-    sub_manager_no: null,
+    manager_no: 3007,
+    sub_manager_no: 3007,
     survey_no: 1001,
     beneficiaries_no: 5
 });
