@@ -32,14 +32,12 @@ app.post("/mail", async (req, res) => {
 
   const result = await nodemailer.sendEmail(email);
 
+  console.log(result);
   if (result.messageId) {
     res.json({ retCode: "OK" });
   } else {
     res.json({ retCode: "NG" });
   }
-
-  // res.json(result);
-  // res.send("<p>메일발송성공</p>");
 });
 
 app.post("/verify", (req, res) => {
@@ -51,6 +49,8 @@ app.post("/verify", (req, res) => {
 
     if (!data) throw new Error("요청없음");
 
+    console.log("현재시간:", Date.now());
+    console.log("만료시간:", data.expiresAt);
     if (Date.now() > data.expiresAt) {
       codeStore.delete(user_email);
       throw new Error("만료됨");

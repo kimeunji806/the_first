@@ -23,6 +23,11 @@ export default [
                 path: 'resultCheck',
                 name: 'resultCheck',
                 component: () => import('@/components/result/ResultCheck.vue')
+            },
+            {
+                path: 'surveyCheck',
+                name: 'surveyCheck',
+                component: () => import('@/components/survey/SurveyCheck.vue')
             }
         ]
     }

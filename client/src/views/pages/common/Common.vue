@@ -80,10 +80,11 @@ const handleAssigned = (data) => {
 
                 <Tabs value="0">
                     <TabList>
-                        <Tab value="0"><RouterLink :to="{ name: 'counselCheck' }">상담기록</RouterLink></Tab>
-                        <Tab value="1"><RouterLink :to="{ name: 'priorityCheck' }">우선순위</RouterLink></Tab>
-                        <Tab value="2"><RouterLink :to="{ name: 'planCheck' }">지원계획</RouterLink></Tab>
-                        <Tab value="3"><RouterLink :to="{ name: 'resultCheck' }">지원결과</RouterLink></Tab>
+                        <Tab value="0"><RouterLink :to="{ name: 'surveyCheck' }">지원신청서</RouterLink> </Tab>
+                        <Tab value="1"><RouterLink :to="{ name: 'counselCheck' }">상담기록</RouterLink></Tab>
+                        <Tab value="2"><RouterLink :to="{ name: 'priorityCheck' }">우선순위</RouterLink></Tab>
+                        <Tab value="3"><RouterLink :to="{ name: 'planCheck' }">지원계획</RouterLink> </Tab>
+                        <Tab value="4"><RouterLink :to="{ name: 'resultCheck' }">지원결과</RouterLink> </Tab>
                     </TabList>
                 </Tabs>
 

@@ -1,8 +1,8 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
-import { useUserStore } from '@/stores/user'
-import { useRouter } from 'vue-router'
+import { useUserStore } from '@/stores/user';
+import { useRouter } from 'vue-router';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
@@ -12,7 +12,7 @@ const router = useRouter();
 const logOut = () => {
     userStore.logout();
     router.push('/sign/login');
-}
+};
 </script>
 
 <template>

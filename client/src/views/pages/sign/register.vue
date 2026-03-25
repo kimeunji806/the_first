@@ -71,7 +71,7 @@ const verifyCode = async (code) => {
     if (data.retCode === true) {
         alert('인증 성공');
     } else {
-        alert('인증 실패');
+        alert(data.message);
     }
 };
 
