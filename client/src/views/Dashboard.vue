@@ -3,6 +3,7 @@ import { onBeforeMount, reactive, ref } from 'vue';
 
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
 const userStore = useUserStore();
 const user_no = userStore.user_no;
@@ -22,6 +23,7 @@ onBeforeMount(async () => {
 const goToDetail = (surveyNo) => {
     router.push(`/common/${surveyNo}`);
 };
+
 </script>
 
 <template>

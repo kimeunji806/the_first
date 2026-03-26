@@ -29,6 +29,10 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const selectNo = Number(route.params.no);
 
+const user = ref([]);
+console.log(selectNo);
+
+
 onBeforeMount(async () => {
     await fetch(`/api/beneficiaries/${selectNo}`)
         .then((resp) => resp.json())
@@ -98,7 +102,7 @@ const handleAssigned = (data) => {
                             <div class="w-full rounded-md p-4">장애유형</div>
                             <div class="w-full rounded-md p-4">{{ user[0].disability_type }}</div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
 
                 <br />

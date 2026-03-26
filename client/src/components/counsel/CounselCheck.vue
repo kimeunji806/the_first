@@ -1,30 +1,16 @@
 <script setup>
-import { ref , onBeforeMount } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import { useUserStore } from '@/stores/user'
+import { useBeneStore } from '@/stores/surBene'
+
+const userStore = useUserStore()
+const userbeneStore = useBeneStore();
+const userNo = userStore.user_no;
 
 const list = ref([]);
-const list1 = [
-  {
-    writer: '김미미',
-    date: '2025.06.20',
-    title: '현재는 혼자 일어서는 것이 어렵다.',
-    content: '가족(돌보는 사람)의 사망, 심각한 질병...',
-    files: ['첨부파일1', '첨부파일2'],
-    consultDate: '2025.05.21'
-  },
-  {
-    writer: '김미미',
-    date: '2025.06.20',
-    title: '현재는 혼자 일어서는 것이 어렵다.',
-    content: '가족(돌보는 사람)의 사망...',
-    files: ['첨부파일1'],
-    consultDate: '2025.05.21'
-  }
-]
-
 
 const counsel = async () => {
-    await fetch(`/api/counsel/${5}`)
+    await fetch(`/api/counsel/${2}`)
         .then((resp) => resp.json())
         .then((data) => {           
             list.value = Array.isArray(data) ? data : [data];
@@ -35,9 +21,9 @@ const counsel = async () => {
 
 
 
-
 onBeforeMount(() => {
-    counsel();
+  counsel();
+  userbeneStore.fetchUsers(userNo);
 })
 
 

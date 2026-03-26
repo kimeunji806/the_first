@@ -9,7 +9,7 @@ const userStore = useUserStore();
 const myPageRouteMap = {
     e1: '/pages/mypage',
     e2: '/institutioninfo',
-    e3: '/admin/institutioninfo',
+    e3: '/auth/admin-dash',
     e4: '/pages/guardian'
 };
 
