@@ -1,17 +1,3 @@
-// export default [
-//     {
-//         path: '/',
-//         component: AppLayout,
-//         children: [
-//             {
-//                 path: 'pages/mypage',
-//                 name: 'userMyPage',
-//                 component: () => import('@/views/pages/mypage/MyPage.vue')
-//             }
-//         ]
-//     }
-// ];
-
 export default [
     {
         path: '/pages/mypage',
@@ -22,6 +8,5 @@ export default [
         path: '/info/manager',
         name: 'managerInfo',
         component: () => import('@/views/pages/info/ManagerInfo.vue')
-    },
-
+    }
 ];

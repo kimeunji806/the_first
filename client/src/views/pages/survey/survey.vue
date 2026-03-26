@@ -10,8 +10,8 @@ const survey_li = ref([]);
 //     survey_li.value = list;
 // };
 
-// const main_isVisible = ref(false);
-// const sub_isVisible = ref(false);
+const main_isVisible = ref(false);
+const sub_isVisible = ref(false);
 
 // import { useRouter } from 'vue-router';
 // const router = useRouter();

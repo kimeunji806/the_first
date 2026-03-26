@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/common',
+        path: '/common/:no',
         name: 'common',
         component: () => import('@/views/pages/common/Common.vue'),
         children: [
@@ -30,5 +30,10 @@ export default [
                 component: () => import('@/components/survey/SurveyCheck.vue')
             }
         ]
+    },
+    {
+        path: '/',
+        name: 'dashboard',
+        component: () => import('@/views/Dashboard.vue')
     }
 ];

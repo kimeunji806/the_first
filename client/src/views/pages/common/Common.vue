@@ -1,5 +1,9 @@
 <script setup>
+<<<<<<< HEAD
 import { ref, computed, shallowRef } from 'vue';
+=======
+import { ref, computed, shallowRef, onBeforeMount } from 'vue';
+>>>>>>> e17d5661cadbc09e84137a6ab539f8ab62aed893
 import { RouterLink, RouterView } from 'vue-router';
 
 import counselForm from '@/components/counsel/CounselForm.vue';
@@ -19,10 +23,36 @@ const dropdownValues = [
 ];
 
 const dropdownValue = shallowRef(null);
+<<<<<<< HEAD
+=======
+
+import { useRoute } from 'vue-router';
+const route = useRoute();
+const selectNo = Number(route.params.no);
+
+const user = ref([]);
+console.log(selectNo);
+
+onBeforeMount(async () => {
+    await fetch(`/api/beneficiaries/${selectNo}`)
+        .then((resp) => resp.json())
+        .then((data) => {
+            if (data.gender == 'c1') {
+                data.gender = '남';
+            } else {
+                data.gender = '여';
+            }
+
+            user.value = data;
+        })
+        .catch((err) => console.log(err));
+});
+>>>>>>> e17d5661cadbc09e84137a6ab539f8ab62aed893
 
 // 임시 데이터
 // 나중에는 선택된 대상자/조사지 상세 조회값으로 교체
 const targetInfo = ref({
+<<<<<<< HEAD
     beneficiaries_name: '홍길동',
     guardian_name: '홍동길',
     priority_name: '긴급',
@@ -33,6 +63,18 @@ const targetInfo = ref({
     sub_manager_no: 3007,
     survey_no: 1001,
     beneficiaries_no: 5
+=======
+    // beneficiaries_name: user.beneficiaries_name,
+    // guardian_name: user.guardian_name,
+    // priority_name: '홍길동',
+    // gender: '야',
+    // birth: '2001.01.01',
+    // disability_type: 'ㅡㅡ',
+    manager_no: null,
+    sub_manager_no: null
+    // survey_no: 1001,
+    // beneficiaries_no: '1'
+>>>>>>> e17d5661cadbc09e84137a6ab539f8ab62aed893
 });
 
 // 담당자와 부담당자가 둘 다 있어야 "지정 완료"
@@ -56,22 +98,22 @@ const handleAssigned = (data) => {
                     <div class="flex flex-col gap-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <div class="w-full rounded-md p-4">지원자</div>
-                            <div class="w-full rounded-md p-4">{{ targetInfo.beneficiaries_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].beneficiaries_name }}</div>
 
                             <div class="w-full rounded-md p-4">보호자</div>
-                            <div class="w-full rounded-md p-4">{{ targetInfo.guardian_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].guardian_name }}</div>
 
                             <div class="w-full rounded-md p-4">우선순위</div>
-                            <div class="w-full rounded-md p-4">{{ targetInfo.priority_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].priority_id }}</div>
 
                             <div class="w-full rounded-md p-4">성별</div>
-                            <div class="w-full rounded-md p-4">{{ targetInfo.gender_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user.gender }}</div>
 
                             <div class="w-full rounded-md p-4">생년월일</div>
-                            <div class="w-full rounded-md p-4">{{ targetInfo.birth }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].birth }}</div>
 
                             <div class="w-full rounded-md p-4">장애유형</div>
-                            <div class="w-full rounded-md p-4">{{ targetInfo.disability_type }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].disability_type }}</div>
                         </div>
                     </div>
                 </div>
@@ -80,7 +122,7 @@ const handleAssigned = (data) => {
 
                 <Tabs value="0">
                     <TabList>
-                        <Tab value="0"><RouterLink :to="{ name: 'surveyCheck' }">지원신청서</RouterLink> </Tab>
+                        <Tab value="0"><RouterLink :to="{ name: 'surveyCheck' }">지원신청서</RouterLink></Tab>
                         <Tab value="1"><RouterLink :to="{ name: 'counselCheck' }">상담기록</RouterLink></Tab>
                         <Tab value="2"><RouterLink :to="{ name: 'priorityCheck' }">우선순위</RouterLink></Tab>
                         <Tab value="3"><RouterLink :to="{ name: 'planCheck' }">지원계획</RouterLink> </Tab>
@@ -98,16 +140,15 @@ const handleAssigned = (data) => {
                 <!-- 담당자 미지정 -->
                 <div v-if="!isAssigned">
                     <div class="font-semibold text-xl mb-4">담당자 지정</div>
-                    <ManagerAssignForm v-if="!isAssigned" :survey-no="targetInfo.survey_no" :institution-no="1" @assigned="handleAssigned" />
+                    <ManagerAssignForm v-if="!isAssigned" :survey-no="selectNo" :institution-no="1" @assigned="handleAssigned" />
+                    <!-- 조사지 번호 땜에 좀 바꿨어요! -->
                 </div>
 
                 <!-- 담당자 지정 완료 -->
                 <div v-else>
-                    <div class="font-semibold text-xl mb-4">업무 폼 선택</div>
-
-                    <Select v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="폼 선택하기" class="w-full mb-4" />
-
-                    <component :is="dropdownValue?.component" v-if="dropdownValue?.component" />
+                    <Select v-model="dropdownValue" :options="dropdownValues" optionLabel="name" placeholder="폼 선택하기" />
+                    <Button label="확인" />
+                    <component :is="dropdownValue?.component" />
                 </div>
             </div>
         </div>
