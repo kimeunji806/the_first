@@ -2,7 +2,7 @@ export default [
     {
         path: '/notice',
         name: 'notice',
-        component: () => import('@/views/pages/notice/notice.vue')
+        component: () => import('@/views/pages/notice/NoticeList.vue')
     },
     {
         path: '/notice/info',
@@ -12,7 +12,7 @@ export default [
     {
         path: '/notice/add',
         name: 'notice_add',
-        component: () => import('@/views/pages/notice/noticeAdd.vue')
+        component: () => import('@/views/pages/notice/NoticeAdd.vue')
     },
     {
         path: '/notice/edit',

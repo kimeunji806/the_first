@@ -85,3 +85,5 @@ const counselRouter = require("./routers/counsel_router");
 app.use("/", counselRouter);
 const managerAssignRouter = require("./routers/manager_assign_router"); // 기관담당자 지정
 app.use("/managerAssign", managerAssignRouter);
+const noticeRouter = require("./routers/notice_router.js"); // 공지사항
+app.use("/", noticeRouter);

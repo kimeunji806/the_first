@@ -43,7 +43,10 @@ onBeforeMount(() => {
                 </Tabs>
 
                 <div v-if="activeTab === '1' && institution" class="mt-4">
-                    <div class="font-semibold text-xl mb-4">기관정보</div>
+                    <div class="mb-5">
+                        <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
+                        <span class="text-muted-color"> 기관관리자 기관 정보를 확인할 수 있습니다. </span>
+                    </div>
                     <DataTable
                         :value="[
                             { label: '기관', value: institution.name },
