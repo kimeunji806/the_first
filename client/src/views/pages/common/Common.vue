@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, shallowRef } from 'vue';
 import { RouterLink, RouterView } from 'vue-router';
 
 import counselForm from '@/components/counsel/CounselForm.vue';
@@ -11,14 +11,14 @@ import resultForm from '@/components/result/ResultForm.vue';
 import ManagerAssignForm from '@/components/common/ManagerAssignForm.vue';
 
 // 오른쪽에서 담당자 지정 완료 후 사용할 셀렉 목록
-const dropdownValues = ref([
+const dropdownValues = [
     { name: '상담기록', code: 'A', component: counselForm },
-    { name: '우선순위', code: 'B', component: priorityForm },
+    { name: '우선순위', code: 'B', component: priorityForm},
     { name: '지원계획', code: 'C', component: planForm },
     { name: '지원결과', code: 'D', component: resultForm }
-]);
+];
 
-const dropdownValue = ref(null);
+const dropdownValue = shallowRef(null);
 
 // 임시 데이터
 // 나중에는 선택된 대상자/조사지 상세 조회값으로 교체

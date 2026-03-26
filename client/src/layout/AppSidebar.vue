@@ -2,7 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import AppMenu from './AppMenu.vue';
+import AppMenu from './AppMenu_eun.vue';
 
 const { layoutState, isDesktop, hasOpenOverlay } = useLayout();
 const route = useRoute();

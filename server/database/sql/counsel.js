@@ -8,8 +8,15 @@ SELECT c.counsel_title as title
         ,u.user_name as name
         ,DATE_FORMAT(c.created_at, '%Y-%m-%d') as created_at
 FROM counsel c JOIN user u ON c.writer_no = u.user_no
-              JOIN files f ON f.counsel_no = c.counsel_no
-WHERE c.beneficiaries_no = ?
-`
+                JOIN files f ON f.counsel_no = c.counsel_no
+WHERE c.survey_no = ?
+`;
 
-module.exports = {counselList}
+
+const counselAdd = `
+INSERT INTO counsel
+(survey_no , beneficairies_no ,writer_no , counsel_title,counsel_content,counsel_date)
+VALUES(?,?,?,?,?,?)
+`;
+
+module.exports = {counselList,counselAdd}

@@ -16,7 +16,7 @@ const menuByRole = {
 // 메뉴 정의
 const MENU = {
     // 지원신청내역(홈)
-    HOME: { label: '지원신청내역', to: '/list', icon: 'pi pi-fw pi-home' },
+    HOME: { label: '지원신청내역', to: '/', icon: 'pi pi-fw pi-home' },
 
     // 마이페이지
     MYPAGE: {

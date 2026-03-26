@@ -1,11 +1,14 @@
 <script setup>
 import { reactive } from 'vue'
+import { useUserStore } from '@/stores/user'
+const userStore = useUserStore()
+const userNo = userStore.user_no;
 
 const form = reactive({
   date: '',
   title: '',
   content: '',
-  file: null
+  file: []
 })
 
 const handleFile = (e) => {
@@ -18,14 +21,20 @@ const submit = async () => {
   formData.append('title', form.title)
   formData.append('content', form.content)
 
-  if (form.file) {
-    formData.append('file', form.file)
+  if (form.file.length > 0) {
+    for (let i = 0; i < form.file.length; i++) {
+      formData.append('file', form.file[i])
+    }
   }
-  console.log(form);
 
   try {
-    const result =  await fetch.post('/api/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
+    await fetch(`/api/counselUpload`, {
+      method: 'POST',
+      body: JSON.stringify({
+        selectNo, //신청서 번호
+        beneNo, // 지원대상자 번호
+        userNo
+      }),formData
     })
 
     alert('저장 완료')
@@ -34,6 +43,7 @@ const submit = async () => {
     alert('에러 발생')
   }
 }
+
 </script>
 
 <template>
@@ -42,33 +52,29 @@ const submit = async () => {
 
       <h2 class="text-lg font-bold mb-4 border-b pb-2">상담기록 입력</h2>
 
-      <!-- 상담일 -->
       <div class="mb-4">
         <label class="block mb-1  text-sm">상담일</label>
         <input type="date" v-model="form.date"
           class="w-full border rounded px-3  py-2 bg-gray-100"/>
       </div>
 
-      <!-- 제목 -->
       <div class="mb-4 ">
         <label class="block mb-1 border-t pt-2 text-sm">제목</label>
         <input type="text" v-model="form.title"
           class="w-full border rounded px-3 py-2 bg-gray-100"/>
       </div>
 
-      <!-- 내용 -->
       <div class="mb-4">
         <label class="block mb-1 border-t pt-2 text-sm">내용</label>
         <textarea v-model="form.content"
           class="w-full border rounded px-3 py-2 bg-gray-100 h-32"></textarea>
       </div>
 
-      <!-- 첨부파일 -->
       <div class="mb-6 flex border-t pt-2 items-center gap-3">
-        <input type="file" multiple @change="handleFile" />
+        <label class="block mb-1  text-sm">첨부파일</label>
       </div>
+      <input type="file" multiple @change="handleFile" />
 
-      <!-- 저장 버튼 -->
       <div class="text-right">
         <button @click="submit"
           class="bg-green-400 hover:bg-green-500 text-white px-6 py-2 rounded-full">
