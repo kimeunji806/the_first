@@ -21,4 +21,8 @@ const questionInfoService = async (questionNo) => {
   return list;
 };
 
+const createMainService = async (mainObj) => {
+  let result = await userMapper.mainCreate(mainObj);
+};
+
 module.exports = { mainInfoService, subInfoService, questionInfoService };

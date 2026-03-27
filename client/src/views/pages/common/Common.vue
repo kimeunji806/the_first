@@ -73,7 +73,7 @@ const handleAssigned = (data) => {
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-8 mt-6 h-screen">
+    <div class="flex flex-col md:flex-row gap-8 mt-6 h-full">
         <!-- 왼쪽: 조회창 -->
         <div class="md:w-2/4">
             <div class="h-9/10">
@@ -99,6 +99,12 @@ const handleAssigned = (data) => {
 
                             <div class="w-full rounded-md p-4">장애유형</div>
                             <div class="w-full rounded-md p-4">{{ user[0].disability_type }}</div>
+
+                            <div class="w-full rounded-md p-4">담당자</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].manager_name }}</div>
+
+                            <div class="w-full rounded-md p-4">부담당자</div>
+                            <div class="w-full rounded-md p-4">{{ user[0].sub_manager_name }}</div>
                         </div>
                     </div>
                 </div>

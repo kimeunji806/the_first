@@ -22,11 +22,10 @@ onBeforeMount(async () => {
 const goToDetail = (surveyNo) => {
     router.push(`/common/${surveyNo}`);
 };
-
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-8 mt-6 h-screen">
+    <div class="flex flex-col md:flex-row gap-8 mt-6 h-full">
         <div class="md:w-1/7">
             <div class="h-9/10">
                 <div class="font-semibold text-xl mb-4">상세검색</div>

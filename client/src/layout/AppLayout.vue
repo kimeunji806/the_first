@@ -19,14 +19,14 @@ const containerClass = computed(() => {
 </script>
 
 <template>
-    <div class="layout-wrapper" :class="containerClass">
+    <div class="layout-wrapper flex flex-col h-screen" :class="containerClass">
         <AppTopbar />
         <AppSidebar />
-        <div class="layout-main-container">
-            <div class="layout-main">
+        <div class="layout-main-container flex flex-1 overflow-hidden">
+            <div class="layout-main flex-1 overflow-hidden">
                 <router-view />
             </div>
-            <AppFooter />
+            <!-- <AppFooter /> -->
         </div>
         <div class="layout-mask animate-fadein" @click="hideMobileMenu" />
     </div>
