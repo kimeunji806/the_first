@@ -38,18 +38,18 @@ const submit = async () => {
         for (let i = 0; i < form.file.length; i++) {
             formData.append('file', form.file[i]);
         }
-    }
 
-    try {
-        await fetch(`/api/counselUpload`, {
-            method: 'POST',
-            body: formData
-        });
-        userbeneStore.refreshCounsel = !userbeneStore.refreshCounsel;
-        alert('등록 완료');
-    } catch (err) {
-        console.error(err);
-        alert('에러 발생');
+        try {
+            await fetch(`/api/counselUpload`, {
+                method: 'POST',
+                body: formData
+            });
+            userbeneStore.refreshCounsel = !userbeneStore.refreshCounsel;
+            alert('등록 완료');
+        } catch (err) {
+            console.error(err);
+            alert('에러 발생');
+        }
     }
 };
 
