@@ -19,14 +19,7 @@ const counselInsert = async (surNo , beneNo, userNo,title, content , date,  file
   try {
     conn = await pool.getConnection();
     await conn.beginTransaction();
-        let result = await conn.query(counselSql.counselAdd, [
-      surNo,
-      beneNo,
-      userNo,
-      title,
-      content,
-      date
-    ]);
+        let result = await conn.query(counselSql.counselInsertSql, [surNo,beneNo,userNo,title,content,date]);
 
     const counselNo = result.insertId;
 
@@ -46,6 +39,39 @@ const counselInsert = async (surNo , beneNo, userNo,title, content , date,  file
 };
 
 
+const counselUpdate = async (no,title,content) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+    let result = await conn.query(counselSql.counselUpdateSql, [ title, content , no]);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
 
 
-module.exports = {counsel,counselInsert}
+const counselDelete = async (no) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+    let result = await conn.query(counselSql.counselDeleteSql, [no]);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+
+
+
+
+module.exports = {counsel,counselInsert,counselUpdate,counselDelete}

@@ -15,10 +15,23 @@ router.get("/counsel/:no", async (req, res) => {
 router.post("/counselUpload", upload.array('file'), async (req, res) => {
   let { surNo, beneNo, userNo, title, content, date, files } = req.body;
   let file = req.files;
-  console.log(file)
   let result = await counselService.counselInsertService(surNo , beneNo, userNo,title, content , date,  file);
   res.send(result);
 });
+
+router.put("/counselUpdate", async (req, res) => {
+  let { no,title,content} = req.body;
+  let result = await counselService.counselUpdateService(no,title,content);
+  res.send(result);
+});
+
+router.delete("/counselDelete/:no", async (req, res) => {
+  let  no  = req.params.no;
+  console.log(no)
+  let result = await counselService.counselDeleteService(no);
+  res.send(result);
+});
+
 
 
 module.exports = router;

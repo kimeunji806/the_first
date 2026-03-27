@@ -30,29 +30,32 @@ const route = useRoute();
 const selectNo = Number(route.params.no);
 
 const user = ref([]);
+const isLoading = ref(true);
 console.log(selectNo);
 
 onBeforeMount(async () => {
-    await fetch(`/api/beneficiaries/${selectNo}`)
-        .then((resp) => resp.json())
-        .then((data) => {
-            if (data.gender == 'c1') {
-                data.gender = '남';
-            } else {
-                data.gender = '여';
-            }
+    try {
+        const resp = await fetch(`/api/beneficiaries/${selectNo}`);
+        const data = await resp.json();
+        if (data.gender == 'c1') {
+            data.gender = '남';
+        } else {
+            data.gender = '여';
+        }
 
-            user.value = data;
-            targetInfo.value.manager_no = data[0].manager_no;
-            targetInfo.value.sub_manager_no = data[0].sub_manager_no;
-            institutionNo.value = data[0].institution_no;
+        user.value = data;
+        targetInfo.value.manager_no = data[0].manager_no;
+        targetInfo.value.sub_manager_no = data[0].sub_manager_no;
+        institutionNo.value = data[0].institution_no;
 
-            console.log('Common user:', user.value);
-            console.log('Common survey_no:', user.value[0]?.survey_no);
-        })
-        .catch((err) => console.log(err));
+        console.log('Common user:', user.value);
+        console.log('Common survey_no:', user.value[0]?.survey_no);
+    } catch (err) {
+        console.log(err);
+    } finally {
+        isLoading.value = false;
+    }
 });
-
 // 임시 데이터
 // 나중에는 선택된 대상자/조사지 상세 조회값으로 교체
 const targetInfo = ref({
@@ -83,19 +86,19 @@ const handleAssigned = (data) => {
                     <div class="flex flex-col gap-6">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
                             <div class="w-full rounded-md p-4">지원자</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].beneficiaries_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.beneficiaries_name }}</div>
 
                             <div class="w-full rounded-md p-4">보호자</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].guardian_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.guardian_name }}</div>
 
                             <div class="w-full rounded-md p-4">우선순위</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].priority_id }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.priority_id }}</div>
 
                             <div class="w-full rounded-md p-4">성별</div>
                             <div class="w-full rounded-md p-4">{{ user.gender }}</div>
 
                             <div class="w-full rounded-md p-4">생년월일</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].birth }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.birth }}</div>
 
                             <div class="w-full rounded-md p-4">장애유형</div>
                             <div class="w-full rounded-md p-4">{{ user[0].disability_type }}</div>
@@ -121,7 +124,7 @@ const handleAssigned = (data) => {
                     </TabList>
                 </Tabs>
 
-                <RouterView />
+                <RouterView v-if="!isLoading && user[0]" />
             </div>
         </div>
 

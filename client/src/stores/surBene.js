@@ -3,7 +3,8 @@ import { defineStore } from 'pinia'
 export const useBeneStore = defineStore('bene', {
   state: () => ({
     beneficiaries_no: 0,
-    survey_no: 0
+    survey_no: 0,
+    refreshCounsel: false
   }),
   actions: {
     async fetchUsers(user_no) {

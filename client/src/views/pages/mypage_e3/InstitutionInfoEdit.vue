@@ -15,7 +15,7 @@ const findAllInfo = async () => {
     try {
         const insNo = userStore.institution;
 
-        const res = await fetch(`/api/admin/institutioninfo?institution_no=${insNo}`);
+        const res = await fetch(`/api/admin/institutioninfo/${insNo}`);
         const info = await res.json();
         institution.value = {
             ...info,

@@ -3,6 +3,7 @@ import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import { computed } from 'vue';
 
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
@@ -13,6 +14,18 @@ const logOut = () => {
     userStore.logout();
     router.push('/sign/login');
 };
+
+const roleName = computed(() => {
+    const roleMap = {
+        e1: '일반이용자',
+        e2: '기관담당자',
+        e3: '기관관리자',
+        e4: '시스템관리자'
+    };
+    return roleMap[userStore.role] || '사용자';
+});
+
+const userName = computed(() => userStore.user_name || '');
 </script>
 
 <template>
@@ -45,7 +58,8 @@ const logOut = () => {
         </div>
 
         <div class="layout-topbar-actions">
-            <div class="layout-config-menu">
+            <div class="layout-config-menu flex items-center gap-3">
+                <div class="text-sm font-medium whitespace-nowrap">{{ userName }}({{ roleName }})님 반갑습니다.</div>
                 <Button label="로그아웃" raised @click="logOut" />
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>

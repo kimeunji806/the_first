@@ -4,9 +4,9 @@ const router = express.Router();
 const institutionService = require("../services/institution_service");
 
 // 기관정보 조회
-router.get("/admin/institutioninfo", async (req, res) => {
+router.get("/admin/institutioninfo/:institution_no", async (req, res) => {
   try {
-    let institutionNo = req.query.institution_no;
+    let institutionNo = req.params.institution_no;
     let result = await institutionService.findAll(institutionNo);
     res.json(result || {});
   } catch (err) {

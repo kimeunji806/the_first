@@ -7,7 +7,6 @@ app.use(cors());
 const port = 3000;
 const codeStore = require("./codeStore");
 
-
 // 미들웨어 등록 영역
 // body parser
 // content-type : application/x-www-form-urlencoded
@@ -71,8 +70,6 @@ app.post("/verify", (req, res) => {
     });
   }
 });
-
-
 
 // 기능별 라우터 모듈 등록
 const userRouter = require("./routers/user_router.js");

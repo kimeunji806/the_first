@@ -23,7 +23,7 @@ const logOut = () => {
                         <span class="text-muted-color mb-8">관리자의 승인을 기다리고 있습니다</span>
                         <img src="/demo/images/access/asset-access.svg" alt="Access denied" class="mb-8" width="80%" />
                         <div class="col-span-12 mt-8 text-center">
-                            <Button as="router-link" label="로그인페이지로 돌아가기" to="/sign/login" severity="warn" />
+                            <Button as="router-link" label="로그인페이지로 돌아가기" to="/sign/login" severity="warn" @click="logOut" />
                         </div>
                         <div class="col-span-12 mt-8 text-center">
                             <Button as="router-link" label="로그아웃" to="/sign/login" class="accessBtn" @click="logOut" />

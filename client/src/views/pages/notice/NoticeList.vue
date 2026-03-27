@@ -14,7 +14,7 @@ const findAllNotice = async () => {
     try {
         const insNo = userStore.institution;
 
-        const res = await fetch(`/api/notice?institution_no=${insNo}`);
+        const res = await fetch(`/api/notice/${insNo}`);
         const data = await res.json();
         notice.value = Array.isArray(data) ? data : [data];
     } catch (err) {
@@ -65,6 +65,7 @@ onBeforeMount(() => {
         <DataTable
             :value="notice"
             :filters="filters"
+            :globalFilterFields="['notice_title']"
             class="w-full"
             :pt="{
                 headerRow: { class: 'text-center' },
@@ -77,7 +78,11 @@ onBeforeMount(() => {
             :rows="10"
             :totalRecords="notice.length"
         >
-            <Column field="notice_no" header="번호" class="w-20"></Column>
+            <Column header="번호" class="w-20">
+                <template #body="slotProps">
+                    {{ slotProps.index + 1 }}
+                </template>
+            </Column>
             <Column header="제목">
                 <template #body="slotProps">
                     <span class="cursor-pointer" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)">
@@ -85,6 +90,7 @@ onBeforeMount(() => {
                     </span>
                 </template>
             </Column>
+            <Column v-if="userStore.role === 'e4'" field="name" header="기관" class="w-32"></Column>
             <Column field="user_name" header="작성자" class="w-32"></Column>
             <Column header="작성일자" class="w-40">
                 <template #body="slotProps">

@@ -27,7 +27,7 @@ const MENU = {
     },
 
     // 관리자/공통 메뉴
-    SEARCH: { label: '대상자 통합 조회', to: '/info/search', icon: 'pi pi-fw pi-search' },
+    SEARCH: { label: '대상자 통합 조회', to: '/info/search', icon: 'pi pi-fw pi-search' }, // 삭제 예정
     MANAGER: { label: '담당자 조회', to: '/info/manager', icon: 'pi pi-fw pi-users' },
     APPROVAL: { label: '회원가입 승인', to: '/auth/approval', icon: 'pi pi-fw pi-verified' },
     NOTICE: { label: '공지사항', to: '/notice', icon: 'pi pi-fw pi-bell' }
