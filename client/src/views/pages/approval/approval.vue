@@ -42,6 +42,29 @@ const approvalAcess = async(e) => {
 }
 
 
+const approvalRefuse = async (e) => {
+    const tr = e.target.closest('tr');
+    const userId = tr.children[2].innerText;
+    const userName = tr.children[1].innerText;
+    let result = await fetch('/api/access/refuse', {
+        method: 'delete',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ userId })
+    })
+        .then((resp) => resp.json())
+        .catch((err) => console.log(err))
+
+    if (result.update == "success") {
+        alert(`${userName}님의 회원가입 반려처리 완료`)
+        await approval(ins_no);
+    } else {
+        alert('반려처리 중에 문제가 생겼습니다')
+    }
+}
+
+
 onBeforeMount(() => {
     approval(ins_no);
 })
@@ -75,7 +98,8 @@ const filters = ref({
                 'tel',
                 'email',
                 'created_at',
-                'approval'
+                'approval',
+                'refuse'
             ]"
         >
             <Column field="no" header="번호"></Column>
@@ -86,12 +110,21 @@ const filters = ref({
             <Column field="email" header="이메일"></Column>
             <Column field="created_at" header="가입일"></Column>
             <Column field="approval" header="사용승인">
-                <template #body="slotProps">
+            <template #body="slotProps"> 
                 <Button
                     label="승인"
                     severity="success"
                     size="small"
                     @click="approvalAcess"/>
+                </template>
+            </Column>
+            <Column field="refuse" header="반려">
+            <template #body="slotProps"> 
+                <Button
+                    label="반려"
+                    severity="danger"
+                    size="small"
+                    @click="approvalRefuse"/>
                 </template>
             </Column>
         </DataTable>

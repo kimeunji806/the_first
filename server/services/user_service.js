@@ -59,10 +59,23 @@ const signAccess = async (userId) => {
   return result;
 };
 
+const signRefuseService = async (userId) => {
+  let result = await userMapper.signX(userId);
+  return result;
+}
+
+const insTelService = async (no) => {
+  let result = await userMapper.insTel(no);
+  return result;
+}
+
+
 module.exports = {
   findAll,
   loginService,
   createUser,
   approvalAccess,
   signAccess,
+  signRefuseService,
+  insTelService
 };

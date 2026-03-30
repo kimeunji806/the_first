@@ -53,12 +53,31 @@ SET approval = 1
 WHERE user_id = ?
 `;
 
+const signRefuse = `
+DELETE FROM sign_approval
+WHERE user_id = ?
+`
+
+const signRefuse2 = `
+DELETE FROM user
+WHERE user_id = ?
+`
+
+const instelSelect = `
+SELECT tel
+FROM institution
+WHERE institution_no = ?
+`
+
 module.exports = {
-  selectAllUser,
-  loginUser,
-  approval,
-  insertUser,
-  signApproval,
-  access,
-  signAccess,
+        selectAllUser,
+        loginUser,
+        approval,
+        insertUser,
+        signApproval,
+        access,
+        signAccess,
+        signRefuse,
+        signRefuse2,
+        instelSelect
 };

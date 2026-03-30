@@ -13,10 +13,17 @@ const counselInsertService = async (surNo , beneNo, userNo,title, content , date
 
 
 
-const counselUpdateService = async (no,title,content) => {
-  let list = await counselMapper.counselUpdate(no,title,content);
+const counselUpdateService = async (no,title,content,name,role) => {
+  let list = await counselMapper.counselUpdate(no,title,content,name,role);
   return list;
 };
+
+const counselHistoryService = async (cNo) => {
+  let list = await counselMapper.counselHistory(cNo);
+  return list;
+};
+
+
 
 const counselDeleteService = async (no) => {
   let list = await counselMapper.counselDelete(no);
@@ -26,4 +33,4 @@ const counselDeleteService = async (no) => {
 
 
 
-module.exports = {counselInfoService ,counselInsertService,counselUpdateService,counselDeleteService}
+module.exports = {counselInfoService ,counselInsertService,counselUpdateService,counselHistoryService,counselDeleteService}

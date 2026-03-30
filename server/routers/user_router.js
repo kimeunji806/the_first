@@ -34,10 +34,23 @@ router.put("/access", async (req, res) => {
   }
   res.send({update : 'fail'})
 })
+
+router.delete("/access/refuse", async (req, res) => {
+  const userId = req.body;
+  let result = await userService.signRefuseService(userId);
+  console.log(result)
+  if (result.affectedRows === 1) {
+    res.send({update : 'success'})
+  }
+  res.send({update : 'fail'})
+})
   
 
-
-
+router.get("/institution/:no", async (req, res) => {
+  const no = req.params.no;
+  let result = await userService.insTelService(no);
+  res.send(result);
+});
 
 
 
