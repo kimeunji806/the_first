@@ -6,7 +6,9 @@ import counselForm from '@/components/counsel/CounselForm.vue';
 import priorityForm from '@/components/priority/PriorityForm.vue';
 import planForm from '@/components/plan/PlanForm.vue';
 import resultForm from '@/components/result/ResultForm.vue';
-
+import AdminPlanApprovalForm from '@/components/plan/AdminPlanApprovalForm.vue'; // 관리자용 지원계획 승인/반려 폼
+const loginUser = JSON.parse(localStorage.getItem('user')); // 로그인 사용자 정보
+const loginRole = loginUser?.role; // 로그인 사용자 역할
 // 오른쪽에서 담당자 지정할 때 쓸 컴포넌트
 import ManagerAssignForm from '@/components/common/ManagerAssignForm.vue';
 
@@ -14,7 +16,7 @@ import ManagerAssignForm from '@/components/common/ManagerAssignForm.vue';
 const dropdownValues = [
     { name: '상담기록', code: 'A', component: counselForm },
     { name: '우선순위', code: 'B', component: priorityForm },
-    { name: '지원계획', code: 'C', component: planForm },
+    { name: '지원계획', code: 'C', component: loginRole === 'e3' ? AdminPlanApprovalForm : planForm },
     { name: '지원결과', code: 'D', component: resultForm }
 ];
 // 셀렉트에서 선택한 값
