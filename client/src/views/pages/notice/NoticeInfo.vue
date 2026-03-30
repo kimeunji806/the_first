@@ -17,7 +17,7 @@ const notice = ref({
 
 const noticeData = ref([]);
 
-// 상세조회
+// 공지사항 상세조회
 const findNoticeByNo = async () => {
     try {
         const noticeNo = route.params.noticeNo;
@@ -62,23 +62,41 @@ const goToEditForm = () => {
     router.push(`/notice/edit/${route.params.noticeNo}`);
 };
 
-// 공지사항 삭제 후 목록으로 이동
-const goToDelForm = async () => {
+// 공지사항 삭제
+const deleteNotice = async () => {
+    const isConfirm = confirm('정말 삭제하시겠습니까?');
+    if (!isConfirm) return;
+
     try {
         const noticeNo = route.params.noticeNo;
 
-        const isConfirm = confirm('정말 삭제하시겠습니까?');
-        if (!isConfirm) return;
-
-        const res = await fetch(`/api/notice/${noticeNo}`, {
+        const res = await fetch(`/api/notice/del/${noticeNo}`, {
             method: 'DELETE'
         });
-        const result = await res.json();
 
-        alert(result.message || '삭제되었습니다.');
+        const data = await res.json();
+        if (data.status) {
+            alert('삭제되었습니다.');
+            router.push('/notice');
+        } else {
+            alert('삭제에 실패했습니다.');
+        }
     } catch (err) {
         console.log(err);
     }
+};
+
+// 첨부파일 다운로드
+const downloadFile = (fileNo) => {
+    const downloadUrl = `/api/notice/file/${fileNo}`;
+
+    // 새창 없이 바로 다운로드
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.setAttribute('download', '');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 };
 
 onBeforeMount(() => {
@@ -114,17 +132,15 @@ onBeforeMount(() => {
                 <div class="text-sm text-gray-500 mb-2">첨부파일</div>
 
                 <div v-if="notice.files.length > 0" class="space-y-2">
-                    <div v-for="file in notice.files" :key="file.file_no" class="border rounded px-3 py-2 text-sm">
+                    <div v-for="file in notice.files" :key="file.file_no" class="border rounded px-3 py-2 text-sm cursor-pointer" @click="downloadFile(file.file_no)">
                         {{ file.file_name }}
                     </div>
                 </div>
-
-                <div v-else class="text-sm text-gray-400">첨부파일이 없습니다.</div>
             </div>
             <div class="flex justify-end gap-2 mt-6">
                 <Button label="목록" @click="goToList" />
                 <Button v-if="canManageNotice" label="글수정" @click="goToEditForm" />
-                <Button v-if="canManageNotice" label="글삭제" @click="goToDelForm" />
+                <Button v-if="canManageNotice" label="글삭제" @click="deleteNotice" />
             </div>
         </div>
     </div>

@@ -4,6 +4,7 @@ const { pool } = require("../DAO");
 const selectAllNotice = `
 SELECT n.notice_no,
        n.notice_title,
+       n.notice_content,
        i.name,
        u.user_name,
        n.created_at
@@ -40,13 +41,14 @@ WHERE notice_no = ?
 // 공지사항 등록
 const insertNotice = `
 INSERT INTO notice (
+notice_no,
 user_no,
 institution_no,
 notice_title,
 notice_content,
 created_at
 )
-VALUES(?,?,?,?, NOW())
+VALUES(?,?,?,?,?, NOW())
 `;
 
 // 첨부파일 등록
@@ -73,19 +75,12 @@ DELETE FROM notice
 WHERE notice_no = ?
 `;
 
-// 첨부파일 등록
-const fileAdd = `
-INSERT INTO files
-(notice_no,file_name,file_path,file_size)
-values(?,?,?,?)
-`;
-
 module.exports = {
   selectAllNotice,
   selectNoticeByNo,
   insertNotice,
   updateNotice,
   deleteNotice,
-  fileAdd,
   selectFilesByNoticeNo,
+  insertNoticeFile,
 };

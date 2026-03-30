@@ -16,7 +16,12 @@ const findAllNotice = async () => {
 
         const res = await fetch(`/api/notice/${insNo}`);
         const data = await res.json();
-        notice.value = Array.isArray(data) ? data : [data];
+        const list = Array.isArray(data) ? data : [data];
+
+        notice.value = list.map((item) => ({
+            ...item,
+            create_at_formatted: dateFormat(item.created_at)
+        }));
     } catch (err) {
         console.error(err);
     }
@@ -65,7 +70,7 @@ onBeforeMount(() => {
         <DataTable
             :value="notice"
             :filters="filters"
-            :globalFilterFields="['notice_title']"
+            :globalFilterFields="['notice_title', 'notice_content', 'create_at_formatted']"
             class="w-full"
             :pt="{
                 headerRow: { class: 'text-center' },
