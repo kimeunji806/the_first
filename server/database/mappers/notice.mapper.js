@@ -123,7 +123,7 @@ const deleteNotice = async (noticeNo) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let [result] = await conn.query(noticeSql.deleteNotice, noticeNo);
+    let result = await conn.query(noticeSql.deleteNotice, [noticeNo]);
     return result;
   } catch (err) {
     console.log(err);

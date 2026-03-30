@@ -30,13 +30,5 @@ export default [
         meta: {
             roles: ['e2', 'e3', 'e4']
         }
-    },
-    {
-        path: '/notice/del/:noticeNo',
-        name: 'notice_del',
-        component: () => import('@/views/pages/notice/NoticeDel.vue'),
-        meta: {
-            roles: ['e2', 'e3', 'e4']
-        }
     }
 ];

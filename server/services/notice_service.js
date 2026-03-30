@@ -69,14 +69,13 @@ const findFileByNo = async (fileNo) => {
   return file;
 };
 
-// 공지사항 수정(재확인 필요)
-const modifyInfo = async (noticeMapper, noticeInfo) => {
-  let result = await noticeMapper.updateNotice(noticeInfo, noticeInfo);
+// 공지사항 수정
+const modifyInfo = async (noticeInfo) => {
+  let result = await noticeMapper.updateNotice(noticeInfo);
 
   let resObj = {
     status: result.changedRows > 0 || result.affectedRows > 0,
     target: {
-      notice_no: noticeInfo,
       ...noticeInfo,
     },
   };

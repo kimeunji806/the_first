@@ -19,15 +19,8 @@ router.get("/notice/file/:fileNo", async (req, res) => {
     const fileNo = req.params.fileNo;
     const file = await noticeService.findFileByNo(fileNo);
 
-    if (!file || !file.file_path) {
-      return res.status(404).send("파일 정보가 없습니다.");
-    }
-
-    const absolutePath = path.join("D:/the_first/uploads", file.file_path);
-
-    if (!fs.existsSync(absolutePath)) {
-      return res.status(404).send("파일이 존재하지 않습니다.");
-    }
+    const cleanPath = file.file_path.replace(/^uploads[\\/]/, "");
+    const absolutePath = path.join("D:/the_first/server/uploads", cleanPath);
 
     const encodedName = encodeURIComponent(file.file_name.normalize("NFC"));
 
@@ -83,19 +76,28 @@ router.post(`/notice`, upload.array("files"), async (req, res) => {
 });
 
 // 공지사항 수정
-router.put(`/:noticeNo`, async (req, res) => {
-  const noticeNo = req.params.noticeNo;
-  const target = req.body;
-  const result = await noticeService.modifyInfo(noticeNo, target);
-  res.json(result);
+router.put(`/notice/detail/:noticeNo`, async (req, res) => {
+  try {
+    const noticeInfo = {
+      notice_no: req.params.noticeNo,
+      notice_title: req.body.notice_title,
+      notice_content: req.body.notice_content,
+    };
+    const result = await noticeService.modifyInfo(noticeInfo);
+
+    res.json(result);
+  } catch (err) {
+    console.log(err);
+  }
 });
 
 // 공지사항 삭제
-router.delete(`/notice/:noticeNo`, async (req, res) => {
+router.delete(`/notice/del/:noticeNo`, async (req, res) => {
   try {
     const noticeNo = req.params.noticeNo;
-    await noticeService.removeNotice(noticeNo);
-    res.json();
+
+    const result = await noticeService.removeInfo(noticeNo);
+    res.json(result);
   } catch (err) {
     console.log(err);
     res.status.json();

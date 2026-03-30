@@ -10,7 +10,7 @@ const menuByRole = {
     e1: ['HOME', 'MYPAGE', 'NOTICE'],
     e2: ['HOME', 'MYPAGE', 'NOTICE'],
     e3: ['HOME', 'MYPAGE', 'APPROVAL', 'SEARCH', 'MANAGER', 'NOTICE'],
-    e4: ['MYPAGE', 'APPROVAL', 'SEARCH', 'NOTICE']
+    e4: ['MYPAGE', 'APPROVAL', 'NOTICE']
 };
 
 // 메뉴 정의
@@ -27,9 +27,8 @@ const MENU = {
     },
 
     // 관리자/공통 메뉴
-    SEARCH: { label: '대상자 통합 조회', to: '/info/search', icon: 'pi pi-fw pi-search' }, // 삭제 예정
     MANAGER: { label: '담당자 조회', to: '/info/manager', icon: 'pi pi-fw pi-users' },
-    APPROVAL: { label: '회원가입 승인', to: '/auth/approval', icon: 'pi pi-fw pi-verified' },
+    APPROVAL: { label: '회원가입 승인요청', to: '/auth/approval', icon: 'pi pi-fw pi-verified' },
     NOTICE: { label: '공지사항', to: '/notice', icon: 'pi pi-fw pi-bell' }
 };
 
@@ -37,15 +36,16 @@ const model = computed(() => {
     const role = userStore.role;
 
     // 해당 권한에 맞는 메뉴 key 배열 가져와서 실제 menu 객체로 변환
-    const items = (menuByRole[role] || []).map((key) => {
-        // 마이페이지는 롤별로 경로 다르기 때문에 따로 처리
-        if (key === 'MYPAGE') {
-            return MENU.MYPAGE[role];
-        }
-        // 나머지는 공통 menu에서 그대로 가져옴
-        return MENU[key];
-    });
-
+    const items = (menuByRole[role] || [])
+        .map((key) => {
+            // 마이페이지는 롤별로 경로 다르기 때문에 따로 처리
+            if (key === 'MYPAGE') {
+                return MENU.MYPAGE[role];
+            }
+            // 나머지는 공통 menu에서 그대로 가져옴
+            return MENU[key];
+        })
+        .filter(Boolean);
     return [{ items }];
 });
 </script>
