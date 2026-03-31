@@ -105,3 +105,5 @@ app.use("/", surveyInputRouter);
 const fileRouter = require("./routers/file_router");
 app.use("/", fileRouter);
 
+const priorityRouter = require("./routers/priority_router");
+app.use("/", priorityRouter);

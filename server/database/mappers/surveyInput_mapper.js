@@ -83,10 +83,28 @@ const createSurveyInput = async (values) => {
     if (conn) await conn.rollback();
   }
 };
+
+const survey_QA = async (surveyNo) => {
+  console.log(surveyNo);
+
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query(surveyInputSql.survey_QA, [surveyNo]);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   list,
   beneficiaries,
   createSurvey,
   createSurveyInput,
   surveyQuestion,
+  survey_QA,
 };

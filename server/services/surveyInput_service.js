@@ -43,10 +43,18 @@ const createSurveyInputService = async (answers) => {
   let result = await surveyInputMapper.createSurveyInput(values);
 };
 
+const survey_QAService = async (surveyNo) => {
+  console.log(surveyNo);
+
+  let list = await surveyInputMapper.survey_QA(surveyNo);
+  return list;
+};
+
 module.exports = {
   beneficiariesList,
   beneficiariesInfo,
   createSurveyService,
   createSurveyInputService,
   surveyQuestionService,
+  survey_QAService,
 };

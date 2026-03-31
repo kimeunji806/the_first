@@ -20,9 +20,6 @@ onBeforeMount(async () => {
         })
         .catch((err) => console.log(err));
 });
-const goToDetail = (surveyNo) => {
-    router.push(`/common/${surveyNo}`);
-};
 </script>
 
 <template>
@@ -61,7 +58,7 @@ const goToDetail = (surveyNo) => {
                         </Column>
                         <Column header="지원신청서" style="min-width: 8rem">
                             <template #body="{ data }">
-                                <Button type="submit" label="보기" v-on:click="goToDetail(data.survey_no)" />
+                                <Button type="submit" label="보기" v-on:click="" />
                             </template>
                         </Column>
                         <Column header="담당자" style="min-width: 8rem">
@@ -73,7 +70,7 @@ const goToDetail = (surveyNo) => {
                         </Column>
                         <Column header="상담내역" style="min-width: 8rem">
                             <template #body="{ data }">
-                                <Button type="submit" label="보기" v-on:click="goToDetail(data.survey_no)" />
+                                <Button type="submit" label="보기" v-on:click="" />
                             </template>
                         </Column>
                         <Column header="우선순위" style="min-width: 8rem">
@@ -93,14 +90,14 @@ const goToDetail = (surveyNo) => {
                         <Column header="지원계획" style="min-width: 8rem">
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
-                                    <Button type="submit" label="보기" v-on:click="goToDetail(data.survey_no)" />
+                                    <Button type="submit" label="보기" v-on:click="" />
                                 </div>
                             </template>
                         </Column>
                         <Column header="지원결과" style="min-width: 8rem">
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
-                                    <Button type="submit" label="보기" v-on:click="goToDetail(data.survey_no)" />
+                                    <Button type="submit" label="보기" v-on:click="" />
                                 </div>
                             </template>
                         </Column>

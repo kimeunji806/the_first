@@ -44,12 +44,6 @@ onBeforeMount(async () => {
     try {
         const resp = await fetch(`/api/beneficiaries/${selectNo}`);
         const data = await resp.json();
-        if (data.gender == 'c1') {
-            data.gender = '남';
-        } else {
-            data.gender = '여';
-        }
-
         user.value = data;
         targetInfo.value.manager_no = data[0].manager_no;
         targetInfo.value.sub_manager_no = data[0].sub_manager_no;
@@ -99,22 +93,22 @@ const handleAssigned = (data) => {
                             <div class="w-full rounded-md p-4">{{ user[0]?.guardian_name }}</div>
 
                             <div class="w-full rounded-md p-4">우선순위</div>
-                            <div class="w-full rounded-md p-4">{{ user[0]?.priority_id }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.priority_name }}</div>
 
                             <div class="w-full rounded-md p-4">성별</div>
-                            <div class="w-full rounded-md p-4">{{ user.gender }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.gender_name }}</div>
 
                             <div class="w-full rounded-md p-4">생년월일</div>
                             <div class="w-full rounded-md p-4">{{ user[0]?.birth }}</div>
 
                             <div class="w-full rounded-md p-4">장애유형</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].disability_type }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.disability_type }}</div>
 
                             <div class="w-full rounded-md p-4">담당자</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].manager_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.manager_name }}</div>
 
                             <div class="w-full rounded-md p-4">부담당자</div>
-                            <div class="w-full rounded-md p-4">{{ user[0].sub_manager_name }}</div>
+                            <div class="w-full rounded-md p-4">{{ user[0]?.sub_manager_name }}</div>
                         </div>
                     </div>
                 </div>

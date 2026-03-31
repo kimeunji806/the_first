@@ -40,4 +40,12 @@ router.post("/createSurveyInput", async (req, res) => {
   res.send(result);
 });
 
+router.get("/surveyQuestion/:no", async (req, res) => {
+  let surveyNo = req.params.no;
+  console.log(surveyNo);
+  let result = await surveyInputtService.survey_QAService(surveyNo);
+  console.log(result);
+  res.send(result);
+});
+
 module.exports = router;
