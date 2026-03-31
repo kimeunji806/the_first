@@ -153,7 +153,7 @@ onBeforeMount(async () => {
     <div class="text-xs text-gray-400 mt-3 text-right">
         등록일자:{{ item.created_at }}
     </div>
-    <Button @click.stop="deleteSave" class="ml-105 mt-2" severity="danger">삭제</Button>
+    <Button @click.stop="deleteSave" class="ml-130 mt-2" severity="danger">삭제</Button>
 </div>
 </div>
     <h2 class="text-lg font-bold mb-4 border-b pb-2">상담기록 입력</h2>

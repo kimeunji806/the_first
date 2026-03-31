@@ -68,11 +68,6 @@ onBeforeMount(async () => {
                                 </div>
                             </template>
                         </Column>
-                        <Column header="상담내역" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <Button type="submit" label="보기" v-on:click="" />
-                            </template>
-                        </Column>
                         <Column header="우선순위" style="min-width: 8rem">
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
