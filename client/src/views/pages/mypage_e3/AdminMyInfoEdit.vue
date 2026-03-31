@@ -129,7 +129,10 @@ async function saveInfo() {
 
         if (result.retCode === 'OK') {
             alert('수정되었습니다.');
-            router.push('/admin/institutioninfo');
+            router.push({
+                path: '/admin/mypage',
+                query: { tab: '0' }
+            });
         } else {
             alert(result.message || '수정 실패');
         }
@@ -140,7 +143,10 @@ async function saveInfo() {
 }
 
 function cancelEdit() {
-    router.push('/admin/mypage');
+    router.push({
+        path: '/admin/mypage',
+        query: { tab: '0' }
+    });
 }
 
 onMounted(() => {

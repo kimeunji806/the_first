@@ -227,7 +227,11 @@ DELETE FROM files
 WHERE file_no = ?
   AND support_plan_no = ?
 `;
-
+// 계획서 삭제 전에 연결된 수정이력 전체 삭제
+const deletePlanHistoryByPlanNo = `
+DELETE FROM support_history
+WHERE support_plan_no = ?
+`;
 // 계획서 삭제 전에 연결된 첨부파일 전체 삭제
 const deletePlanFilesByPlanNo = `
 DELETE FROM files
@@ -338,6 +342,7 @@ LEFT JOIN common_code cc
 WHERE sh.support_plan_no = ?
 ORDER BY sh.created_at DESC
 `;
+
 module.exports = {
   planList,
   findBeneficiaryNoBySurvey,
@@ -362,4 +367,5 @@ module.exports = {
   selectPlanWritePermission,
   insertPlanHistory,
   selectPlanHistoryList,
+  deletePlanHistoryByPlanNo,
 };

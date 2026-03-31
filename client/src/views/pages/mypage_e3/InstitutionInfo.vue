@@ -28,7 +28,12 @@ const findAllInfo = async () => {
         console.log(err);
     }
 };
-
+const changeTab = (tabValue) => {
+    router.push({
+        path: '/admin/mypage',
+        query: { tab: String(tabValue) }
+    });
+};
 const goToEditForm = () => {
     router.push({
         path: '/admin/institutioninfo/edit',

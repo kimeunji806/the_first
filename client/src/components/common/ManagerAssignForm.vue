@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onBeforeMount } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     surveyNo: Number,
@@ -15,6 +15,12 @@ const subManagerNo = ref('');
 // 담당자 목록 조회
 const managerFetch = async () => {
     try {
+        // institutionNo가 없으면 조회하지 않음
+        if (!props.institutionNo) {
+            managerList.value = [];
+            return;
+        }
+
         const resp = await fetch(`/api/managerAssign/managerList/${props.institutionNo}`);
         const data = await resp.json();
         managerList.value = data;
@@ -22,6 +28,19 @@ const managerFetch = async () => {
         console.error('담당자 목록 조회 실패:', err);
     }
 };
+
+// institutionNo가 처음 들어오거나 변경될 때 담당자 목록 다시 조회
+watch(
+    () => props.institutionNo,
+    (newValue) => {
+        if (newValue) {
+            managerFetch();
+        } else {
+            managerList.value = [];
+        }
+    },
+    { immediate: true }
+);
 
 // 담당자 지정 저장
 const saveAssign = async () => {
@@ -64,10 +83,6 @@ const saveAssign = async () => {
         console.error('담당자 지정 저장 실패:', err);
     }
 };
-
-onBeforeMount(() => {
-    managerFetch();
-});
 </script>
 
 <template>

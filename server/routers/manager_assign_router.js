@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const service = require("../services/manager_assign_service");
 
+// 기관번호 기준 담당자 목록 조회
 router.get("/managerList/:institutionNo", async (req, res) => {
   try {
     const { institutionNo } = req.params;
@@ -13,6 +14,7 @@ router.get("/managerList/:institutionNo", async (req, res) => {
   }
 });
 
+// 조사지 담당자 / 부담당자 지정 저장
 router.put("/assign", async (req, res) => {
   try {
     const { survey_no, manager_no, sub_manager_no } = req.body;

@@ -433,7 +433,7 @@ const editPlan = async ({
     지원계획 삭제
 ========================= */
 // 검토중(a0)인 본인 계획서만 삭제
-// 삭제 전 연결된 첨부파일도 함께 삭제
+// 삭제 전 연결된 첨부파일, 수정이력도 함께 삭제
 const removePlan = async ({ support_plan_no, writer_no }) => {
   let conn;
   try {
@@ -443,7 +443,10 @@ const removePlan = async ({ support_plan_no, writer_no }) => {
     // 1. 첨부파일 먼저 삭제
     await conn.query(sql.deletePlanFilesByPlanNo, [support_plan_no]);
 
-    // 2. 지원계획 삭제
+    // 2. 수정이력 먼저 삭제
+    await conn.query(sql.deletePlanHistoryByPlanNo, [support_plan_no]);
+
+    // 3. 마지막으로 지원계획 삭제
     const deleteResult = await conn.query(sql.deletePlan, [
       support_plan_no,
       writer_no,

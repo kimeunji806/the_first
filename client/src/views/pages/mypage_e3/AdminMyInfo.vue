@@ -44,7 +44,7 @@ async function loadMyInfo() {
 
 // 수정 페이지로 이동
 function goEdit() {
-    router.push('/admin/institutioninfo/edit');
+    router.push('/admin/mypage/edit');
 }
 
 // 화면 처음 열릴 때 조회
