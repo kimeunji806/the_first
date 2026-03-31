@@ -19,11 +19,13 @@ router.post("/counselUpload", upload.array('file'), async (req, res) => {
   res.send(result);
 });
 
-router.put("/counselUpdate", async (req, res) => {
-  let { no,title,content,name,role} = req.body;
-  let result = await counselService.counselUpdateService(no,title,content,name,role);
-  res.send(result);
-});
+router.put("/counselUpdate",upload.array("files"),async (req, res) => {
+    let { no, title, content, name, role } = req.body;
+    let deleteFiles = JSON.parse(req.body.deleteFiles || "[]");
+    let result = await counselService.counselUpdateService(no,title,content,name,role,req.files,deleteFiles);
+    res.send(result);
+  }
+);
 
 router.get("/counselHistory/:no", async (req, res) => {
   let no = req.params.no;
@@ -37,8 +39,25 @@ router.delete("/counselDelete/:no", async (req, res) => {
   res.send(result);
 });
 
+router.post("/counselSave", async (req, res) => {
+  let { date, title, content, surNo, wNo ,beneNo} = req.body;
+  let result = await counselService.storageService(date, title, content, surNo, wNo,beneNo)
+  res.send(result);
+})
+
+router.get("/counselSaveInfo/:sNo/:no", async (req, res) => {
+  let surNo  = req.params.sNo;
+  let wNo = req.params.no;
+  let result = await counselService.counselStorageInfoService( surNo , wNo);
+  res.send(result);
+});
 
 
+router.delete("/counselSaveDelete/:no", async (req, res) => {
+  let sNo = req.params.no;
+  let result = await counselService.counselSaveDeleteService(sNo);
+  res.send(result);
+})
 
 
 module.exports = router;

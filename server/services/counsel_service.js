@@ -11,11 +11,12 @@ const counselInsertService = async (surNo , beneNo, userNo,title, content , date
   return list;
 };
 
-
-
-const counselUpdateService = async (no,title,content,name,role) => {
-  let list = await counselMapper.counselUpdate(no,title,content,name,role);
-  return list;
+const counselUpdateService = async (
+  no, title, content, name, role, files, deleteFiles
+) => {
+  return await counselMapper.counselUpdate(
+    no, title, content, name, role, files, deleteFiles
+  );
 };
 
 const counselHistoryService = async (cNo) => {
@@ -31,6 +32,19 @@ const counselDeleteService = async (no) => {
 };
 
 
+const storageService = async (date, title, content, surNo, wNo,beneNo) => {
+  let list = await counselMapper.counselSave(date, title, content, surNo, wNo,beneNo);
+  return list;
+}
 
+const counselStorageInfoService = async (surNo, wNo) => {
+  let list = await counselMapper.counselSaveList(surNo, wNo)
+  return list;
+}
 
-module.exports = {counselInfoService ,counselInsertService,counselUpdateService,counselHistoryService,counselDeleteService}
+const counselSaveDeleteService = async (sNo) => {
+  let list = await counselMapper.counselSaveDelete(sNo);
+  return list;
+}
+
+module.exports = {counselInfoService ,counselInsertService,counselUpdateService,counselHistoryService,counselDeleteService,storageService,counselStorageInfoService,counselSaveDeleteService}

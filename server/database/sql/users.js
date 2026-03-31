@@ -63,6 +63,7 @@ DELETE FROM user
 WHERE user_id = ?
 `
 
+
 const instelSelect = `
 SELECT tel
 FROM institution
