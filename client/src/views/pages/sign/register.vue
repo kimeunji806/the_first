@@ -27,7 +27,7 @@ const sendCode = async (email) => {
     await fetch('/api/mail', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json' // ⭐ 필수
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
             email: email
@@ -91,7 +91,7 @@ const addUserInfo = async () => {
         headers: {
             'content-type': 'application/json'
         },
-        body: JSON.stringify( data )
+        body: JSON.stringify(data)
     })
         // .then((res) => res.json())
         .catch((err) => console.log(err));

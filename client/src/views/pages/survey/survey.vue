@@ -409,14 +409,6 @@ const subshowButton = computed(() => {
                     <!-- 못찾았을떄 -->
                     <template #empty> No customers found. </template>
 
-                    <Column header="삭제" style="min-width: 1rem">
-                        <template #body="{ data }">
-                            <div class="flex items-center gap-2">
-                                <!-- <Checkbox id="checkOption1" name="option" value="Chicago" v-model="checkboxValue" /> -->
-                                <span><Button type="submit" label="삭제" @click="questionDelete(data.question_no)"></Button></span>
-                            </div>
-                        </template>
-                    </Column>
                     <Column header="질문" style="min-width: 40rem">
                         <template #body="{ data }">
                             <div>
@@ -433,6 +425,14 @@ const subshowButton = computed(() => {
                                 <span
                                     ><Button type="submit" label="수정" @click="toggleEditQ(data)">{{ data.isEditing ? '저장' : '수정' }}</Button></span
                                 >
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="삭제" style="min-width: 1rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <!-- <Checkbox id="checkOption1" name="option" value="Chicago" v-model="checkboxValue" /> -->
+                                <span><Button type="submit" label="삭제" @click="questionDelete(data.question_no)"></Button></span>
                             </div>
                         </template>
                     </Column>

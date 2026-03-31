@@ -33,8 +33,8 @@ const sendEmail = (email) => {
   const mailOptions = {
     from: process.env.NODEMAILER_USER,
     to: email,
-    subject: "회원가입 인증 코드",
-    text: `회원가입인증 코드는 ${code}`,
+    subject: "발달장애인지원 프로그램 인증 코드",
+    text: `발달장애인지원 프로그램 인증 코드는 ${code}`,
   };
   transport.sendMail(mailOptions, (error, info) => {
     if (error) {
