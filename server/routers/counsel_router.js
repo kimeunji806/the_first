@@ -61,5 +61,12 @@ router.delete("/counselSaveDelete/:no", async (req, res) => {
   res.send(result);
 })
 
+router.get("/counselBene/:no", async (req, res) => {
+  let beneNo = req.params.no
+  let result = await counselService.counselBeneInfoService(beneNo);
+  res.send(result);
+});
+
+
 
 module.exports = router;

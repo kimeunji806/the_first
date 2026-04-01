@@ -94,4 +94,10 @@ const counselFileDeleteSql = `
 DELETE FROM files WHERE counsel_no = ? AND file_name = ?
 `
 
-module.exports = {counselList,counselInsertSql,fileAdd ,counselUpdateSql,counselHistorySelect,counselHistory,counselDeleteSql,counselSaveSql,counselSaveInfoSql,counselSaveDeleteSql,counselFileDeleteSql}
+const beneList = `
+SELECT beneficiaries_no , manager_no , sub_manager_no
+FROM beneficiaries
+WHERE beneficiaries_no = ?
+`
+
+module.exports = {counselList,counselInsertSql,fileAdd ,counselUpdateSql,counselHistorySelect,counselHistory,counselDeleteSql,counselSaveSql,counselSaveInfoSql,counselSaveDeleteSql,counselFileDeleteSql,beneList}

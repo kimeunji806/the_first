@@ -47,4 +47,10 @@ const counselSaveDeleteService = async (sNo) => {
   return list;
 }
 
-module.exports = {counselInfoService ,counselInsertService,counselUpdateService,counselHistoryService,counselDeleteService,storageService,counselStorageInfoService,counselSaveDeleteService}
+
+const counselBeneInfoService = async (beneNo) => {
+  let list = await counselMapper.counselBeneInfo(beneNo);
+  return list;
+}
+
+module.exports = {counselInfoService ,counselInsertService,counselUpdateService,counselHistoryService,counselDeleteService,storageService,counselStorageInfoService,counselSaveDeleteService,counselBeneInfoService}

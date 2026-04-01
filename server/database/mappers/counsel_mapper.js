@@ -163,4 +163,20 @@ const counselSaveDelete  = async (sNo) => {
 
 
 
-module.exports = {counsel,counselInsert,counselUpdate,counselHistory,counselDelete,counselSave,counselSaveList,counselSaveDelete}
+
+
+const counselBeneInfo = async (beneNo) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query(counselSql.beneList, [beneNo]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+
+module.exports = {counsel,counselInsert,counselUpdate,counselHistory,counselDelete,counselSave,counselSaveList,counselSaveDelete,counselBeneInfo}
