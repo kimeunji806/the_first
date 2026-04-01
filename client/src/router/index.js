@@ -61,7 +61,7 @@ router.beforeEach((to, from, next) => {
 
     }
     if (userStore.role == 'e4' && to.path === '/') {
-        return next('/sysadmin/institution-list'); // 시스템 관리자 로그인시 /로 안가고 기관목록으로 이동
+        return next('/sysadmin/institutions'); // 시스템 관리자 로그인시 /로 안가고 기관목록으로 이동
         
     }
 

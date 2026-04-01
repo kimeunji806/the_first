@@ -12,10 +12,10 @@ const counselInsertService = async (surNo , beneNo, userNo,title, content , date
 };
 
 const counselUpdateService = async (
-  no, title, content, name, role, files, deleteFiles
+  no, title, content,date, name, role, files, deleteFiles
 ) => {
   return await counselMapper.counselUpdate(
-    no, title, content, name, role, files, deleteFiles
+    no, title, content,date ,name, role, files, deleteFiles
   );
 };
 

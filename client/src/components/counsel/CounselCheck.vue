@@ -33,8 +33,6 @@ const counsel = async () => {
         ...item,
         filename: item.filename ? item.filename.split(',') : [],
         isEditing: false,
-        newFiles: [],
-        deleteFiles: [],
         isYour: item.wNo === userNo,
       }))
     })

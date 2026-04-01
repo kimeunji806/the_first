@@ -41,13 +41,13 @@ const counselInsert = async (surNo , beneNo, userNo,title, content , date,  file
 };
 
 
-const counselUpdate = async (no, title, content, name, role, files, deleteFiles) => {
+const counselUpdate = async (no, title, content,date ,name, role, files, deleteFiles) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
     await conn.beginTransaction();
     //수정
-    await conn.query(counselSql.counselUpdateSql, [title, content, no]);
+    await conn.query(counselSql.counselUpdateSql, [title, content,date,no]);
     //수정 이력
     await conn.query(counselSql.counselHistory, [
       no, name, title, content, role

@@ -17,12 +17,24 @@ const surNo = userbeneStore.survey_no;
 
 const selectNo = Number(route.params.no);
 
+const deleteFiles = ref([]);
+
 const form = reactive({
     date: '',
     title: '',
     content: '',
-    file: []
+    file: [],          // 새로 추가한 파일
+    existingFiles: []
 });
+
+const resetForm = () => {
+    form.date = ''
+    form.title = ''
+    form.content = ''
+    form.file = []
+    form.existingFiles = []
+    deleteFiles.value = []
+}
 
 // 수정 모드 상태
 const isEditMode = ref(false)
@@ -34,15 +46,20 @@ watch(() => userbeneStore.selectedCounsel, (data) => {
         isEditMode.value = true
         editNo.value = data.no
 
-        // 강제 초기화 후 세팅 (반응성 안정화)
         form.date = ''
         form.title = ''
         form.content = ''
+        form.file = []
+        form.existingFiles = []
 
         setTimeout(() => {
             form.date = data.counseldate?.substring(0, 10) || ''
             form.title = data.title || ''
             form.content = data.content || ''
+
+            form.existingFiles = Array.isArray(data.filename)
+                ? data.filename
+                : (data.filename ? data.filename.split(',') : [])
         })
     }
 })
@@ -61,6 +78,11 @@ const loadTempData = (item) => {
     form.date = item.record_date?.substring(0, 10) || ''
     form.title = item.title || ''
     form.content = item.content || ''
+}
+
+const removeExistingFile = (file) => {
+    deleteFiles.value.push(file)
+    form.existingFiles = form.existingFiles.filter(f => f !== file)
 }
 
 // 등록
@@ -86,6 +108,7 @@ const submit = async () => {
         })
         userbeneStore.refreshCounsel = !userbeneStore.refreshCounsel
         alert('등록 완료')
+        resetForm()
     } catch (err) {
         console.error(err)
         alert('에러 발생')
@@ -107,19 +130,23 @@ const update = async () => {
     formData.append("no", counselNo);
     formData.append("name", userName);
     formData.append("role", userRole);
+    formData.append("deleteFiles", JSON.stringify(deleteFiles.value))
 
-    item.newFiles.forEach(file => {
-        formData.append("files", file);
-    });
-
-    formData.append("deleteFiles", JSON.stringify(item.deleteFiles));
+    if (form.file.length > 0) {
+        for (let i = 0; i < form.file.length; i++) {
+        formData.append('files', form.file[i])
+        }
+    }
 
     await fetch(`/api/counselUpdate`, {
         method: "PUT",
         body: formData
     });
+    alert('수정 처리 되었습니다')
+    userbeneStore.refreshCounsel = !userbeneStore.refreshCounsel
+    userbeneStore.isEditMode = false;
+    resetForm()
 
-    await counsel();
 };
 
 
@@ -168,17 +195,22 @@ const deleteSave = async () => {
     }
 }
 
+const updateCancel = async () => {
+    userbeneStore.isEditMode = false;
+}
+
 onBeforeMount(async () => {
     await userbeneStore.fetchUsers(selectNo);
     if (userbeneStore.survey_no) {
         await temporaryStorageInfo(userbeneStore.survey_no, userNo);
     }
+    userbeneStore.isEditMode = false;
 })
 </script>
 
 <template >
-    <div class="p-6 bg-slate-100 min-h-full">
-        <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+    <div class="card h-full flex flex-col gap-4">
+        <div class="max-h-[800px] overflow-y-auto pr-2">
             <div v-if="tempList.length !== 0 && !userbeneStore.isEditMode" class="mb-4">
                 <h3 class="text-sm font-bold mb-3 inline-block">임시저장 목록</h3>
                 
@@ -229,12 +261,47 @@ onBeforeMount(async () => {
             <textarea v-model="form.content" class="w-full border rounded px-3 py-2 bg-gray-100 h-32"></textarea>
         </div>
 
-        <div class="mb-6 flex border-t pt-2 items-center gap-3">
-            <label class="block mb-1 text-sm">첨부파일</label>
-        </div>
-        <input type="file" multiple @change="handleFile" />
+<!-- 등록 모드 -->
+
+<div v-if="!userbeneStore.isEditMode">
+  <div class="mb-6 flex border-t pt-2 items-center gap-3">
+    <label class="block mb-1 text-sm">첨부파일</label>
+  </div>
+  <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+  <i class="pi pi-info-circle text-blue-400"></i>
+  <span>첨부파일은 임시저장되지 않습니다.</span>
+</div>
+  <input type="file" multiple @change="handleFile" />
+</div>
+
+
+<!-- 수정 모드 -->
+<div v-else>
+  <div class="mb-6 flex border-t pt-2 items-center gap-3">
+    <label class="block mb-1 text-sm">첨부파일</label>
+  </div>
+
+  <!-- 🔥 기존 파일 목록 -->
+  <div v-if="form.existingFiles.length > 0" class="mb-2">
+    <div v-for="(file, i) in form.existingFiles" :key="i" class="flex items-center gap-2">
+      <a :href="`/api/download/${encodeURIComponent(file)}`">
+        {{ file }}
+      </a>
+      <button @click="removeExistingFile(file)">X</button>
+    </div>
+  </div>
+
+  <!-- 🔥 새 파일 추가 -->
+  <input type="file" multiple @change="handleFile" />
+</div>
 
         <div class="text-right">
+            <button 
+                v-if="userbeneStore.isEditMode"
+                @click="updateCancel"
+                class="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 mr-2 rounded-full">
+                수정취소
+            </button>
             <button 
                 v-if="!userbeneStore.isEditMode"
                 @click="temporaryStorage"

@@ -35,7 +35,7 @@ values(?,?,?,?)
 
 const counselUpdateSql = `
 UPDATE counsel
-SET counsel_title = ?  , counsel_content = ?
+SET counsel_title = ?  , counsel_content = ? , counsel_date = ?
 WHERE counsel_no = ?
 `
 
@@ -93,7 +93,5 @@ WHERE record_no = ?
 const counselFileDeleteSql = `
 DELETE FROM files WHERE counsel_no = ? AND file_name = ?
 `
-
-
 
 module.exports = {counselList,counselInsertSql,fileAdd ,counselUpdateSql,counselHistorySelect,counselHistory,counselDeleteSql,counselSaveSql,counselSaveInfoSql,counselSaveDeleteSql,counselFileDeleteSql}
