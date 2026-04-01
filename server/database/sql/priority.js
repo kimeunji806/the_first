@@ -7,7 +7,8 @@ SELECT  priority_no
         , approval
         , writer_no
         ,reason_rejection
-FROM priority;
+FROM priority
+WHERE survey_no = ?;
 `;
 
 const createPriority = `

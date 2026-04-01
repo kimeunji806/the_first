@@ -13,10 +13,7 @@ const mainList = async () => {
         .then((data) => {
             main.value = data.map((item) => ({
                 ...item,
-                isEditing: false,
-                isNew: false,
-                isDirty: false,
-                isDeleted: false
+                isEditing: false
             }));
         })
         .catch((err) => console.log(err));
@@ -31,10 +28,7 @@ const subList = async (mainNo) => {
         .then((data) => {
             sub.value = data.map((item) => ({
                 ...item,
-                isEditing: false,
-                isNew: false,
-                isDirty: false,
-                isDeleted: false
+                isEditing: false
             }));
         })
         .catch((err) => console.log(err));
@@ -49,10 +43,7 @@ const questionList = async (subNo) => {
         .then((data) => {
             question.value = (Array.isArray(data) ? data : [data]).map((item) => ({
                 ...item,
-                isEditing: false,
-                isNew: false,
-                isDirty: false,
-                isDeleted: false
+                isEditing: false
             }));
         })
         .catch((err) => console.log(err));
@@ -61,111 +52,242 @@ const questionList = async (subNo) => {
 const content = reactive({
     main_title: '',
     sub_title: '',
-    question_text: ''
+    question_text: '',
+    main_no: main_no,
+    sub_no: sub_no
 });
 // 메인항목 추가
 const mainCreate = async () => {
-    if (!content.main_title.trim()) return;
+    let data = {
+        main_title: content.main_title
+    };
+    console.log(data);
 
-    main.value.push({
-        main_no: null,
-        main_title: content.main_title,
-        isNew: true,
-        isDirty: false,
-        isDeleted: false,
-        isEditing: false
-    });
-
-    content.main_title = '';
-    main_isVisible.value = false;
+    let result = await fetch('./api/main', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        // .then((resp) => resp.json())
+        // .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == 'OK') {
+        //         alert('등록 성공');
+        //         location.herf = 'board_list.html';
+        //     } else {
+        //         alert(`에러 : ${data.retMsg}`);
+        //     }
+        // })
+        .catch((err) => console.log(err));
+    mainList();
 };
 
 // 서브항목 추가
 const subCreate = async () => {
-    if (!content.sub_title.trim()) return;
+    let data = {
+        main_no: content.main_no,
+        sub_title: content.sub_title
+    };
+    console.log(data);
 
-    sub.value.push({
-        sub_no: null,
-        main_no: main_no.value,
-        sub_title: content.sub_title,
-        isNew: true,
-        isDirty: false,
-        isDeleted: false,
-        isEditing: false
-    });
-
-    content.sub_title = '';
-    sub_isVisible.value = false;
+    let result = await fetch('./api/sub', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        // .then((resp) => resp.json())
+        // .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == 'OK') {
+        //         alert('등록 성공');
+        //         location.herf = 'board_list.html';
+        //     } else {
+        //         alert(`에러 : ${data.retMsg}`);
+        //     }
+        // })
+        .catch((err) => console.log(err));
+    subList(content.main_no);
 };
 
 // 질문항목 추가
 const questionCreate = async () => {
-    if (!content.question_text.trim()) return;
+    let data = {
+        sub_no: content.sub_no,
+        question_text: content.question_text
+    };
+    console.log(data);
 
-    question.value.push({
-        question_no: null,
-        sub_no: sub_no.value,
-        question_text: content.question_text,
-        isNew: true,
-        isDirty: false,
-        isDeleted: false,
-        isEditing: false
-    });
-
-    content.question_text = '';
-    question_isVisible.value = false;
+    let result = await fetch('./api/question', {
+        method: 'post',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        // .then((resp) => resp.json())
+        // .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == 'OK') {
+        //         alert('등록 성공');
+        //         location.herf = 'board_list.html';
+        //     } else {
+        //         alert(`에러 : ${data.retMsg}`);
+        //     }
+        // })
+        .catch((err) => console.log(err));
+    questionList(content.sub_no);
 };
 
 // 메인 항목 삭제
 const mainDelete = async (deleteId) => {
-    const index = main.value.findIndex((v) => v.main_no === deleteId);
-
-    if (index === -1) return;
-
-    const item = main.value[index];
-
-    if (item.isNew) {
-        main.value.splice(index, 1);
-    } else {
-        item.isDeleted = true;
-    }
+    console.log(deleteId);
+    let result = fetch('./api/main/' + deleteId, {
+        method: 'delete'
+    })
+        //   .then((resp) => resp.json())
+        //   .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == "OK") {
+        //       alert("삭제 성공");
+        //       location.herf = "board_list.html";
+        //     } else {
+        //       alert(`에러 : ${data.retMsg}`);
+        //     }
+        //   })
+        .catch((err) => console.log(err));
+    mainList();
 };
 
 // 서브 항목 삭제
 const subDelete = async (deleteId) => {
-    const index = sub.value.findIndex((v) => v.sub_no === deleteId);
-
-    if (index === -1) return;
-
-    const item = sub.value[index];
-
-    if (item.isNew) {
-        sub.value.splice(index, 1);
-    } else {
-        item.isDeleted = true;
-    }
+    console.log(deleteId);
+    let result = fetch('./api/sub/' + deleteId, {
+        method: 'delete'
+    })
+        //   .then((resp) => resp.json())
+        //   .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == "OK") {
+        //       alert("삭제 성공");
+        //       location.herf = "board_list.html";
+        //     } else {
+        //       alert(`에러 : ${data.retMsg}`);
+        //     }
+        //   })
+        .catch((err) => console.log(err));
+    subList(content.main_no);
 };
 
 // 질문 삭제
 const questionDelete = async (deleteId) => {
-    const index = question.value.findIndex((v) => v.question_no === deleteId);
-
-    if (index === -1) return;
-
-    const item = question.value[index];
-
-    if (item.isNew) {
-        question.value.splice(index, 1);
-    } else {
-        item.isDeleted = true;
-    }
+    console.log(deleteId);
+    let result = fetch('./api/question/' + deleteId, {
+        method: 'delete'
+    })
+        //   .then((resp) => resp.json())
+        //   .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == "OK") {
+        //       alert("삭제 성공");
+        //       location.herf = "board_list.html";
+        //     } else {
+        //       alert(`에러 : ${data.retMsg}`);
+        //     }
+        //   })
+        .catch((err) => console.log(err));
+    questionList(content.sub_no);
 };
 
-const visibleMain = computed(() => main.value.filter((v) => !v.isDeleted));
+// 서브항목 수정
+const subUpdate = async (updateSub) => {
+    const updateId = updateSub.sub_no;
+    let data = {
+        sub_title: updateSub.sub_title
+    };
+    console.log(updateSub);
 
-const visibleSub = computed(() => sub.value.filter((v) => !v.isDeleted));
+    let result = await fetch('./api/sub/' + updateId, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        // .then((resp) => resp.json())
+        // .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == 'OK') {
+        //         alert('등록 성공');
+        //         location.herf = 'board_list.html';
+        //     } else {
+        //         alert(`에러 : ${data.retMsg}`);
+        //     }
+        // })
+        .catch((err) => console.log(err));
+    subList(content.main_no);
+};
 
-const visibleQuestion = computed(() => question.value.filter((v) => !v.isDeleted));
+// 메인항목 수정
+const mainUpdate = async (updateMain) => {
+    const updateId = updateMain.main_no;
+    let data = {
+        main_title: updateMain.main_title
+    };
+    console.log(updateSub);
+
+    let result = await fetch('./api/main/' + updateId, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        // .then((resp) => resp.json())
+        // .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == 'OK') {
+        //         alert('등록 성공');
+        //         location.herf = 'board_list.html';
+        //     } else {
+        //         alert(`에러 : ${data.retMsg}`);
+        //     }
+        // })
+        .catch((err) => console.log(err));
+    subList(content.main_no);
+};
+
+// 질문항목 수정
+const questionUpdate = async (updateQuestion) => {
+    const updateId = updateQuestion.question_no;
+    let data = {
+        question_text: updateQuestion.question_text
+    };
+    console.log(data);
+    console.log(updateId);
+    let result = await fetch('./api/question/' + updateId, {
+        method: 'put',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+        // .then((resp) => resp.json())
+        // .then((data) => {
+        //     console.log(data);
+        //     if (data.retCode == 'OK') {
+        //         alert('등록 성공');
+        //         location.herf = 'board_list.html';
+        //     } else {
+        //         alert(`에러 : ${data.retMsg}`);
+        //     }
+        // })
+        .catch((err) => console.log(err));
+    subList(content.main_no);
+};
 
 onBeforeMount(() => {
     mainList();
@@ -179,25 +301,28 @@ const sub_update_isVisible = ref(false);
 
 // const isEditing = ref(null);
 const toggleEditM = (item) => {
-    item.isEditing = !item.isEditing;
-
-    if (!item.isEditing && !item.isNew) {
-        item.isDirty = true;
+    if (item.isEditing) {
+        console.log(main_no._value);
+        mainUpdate(item);
+        // questionList(sub_no._value);
     }
+    item.isEditing = !item.isEditing;
 };
 const toggleEdit = (item) => {
-    item.isEditing = !item.isEditing;
-
-    if (!item.isEditing && !item.isNew) {
-        item.isDirty = true;
+    if (item.isEditing) {
+        console.log(sub_no._value);
+        subUpdate(item);
+        // questionList(sub_no._value);
     }
+    item.isEditing = !item.isEditing;
 };
 const toggleEditQ = (item) => {
-    item.isEditing = !item.isEditing;
-
-    if (!item.isEditing && !item.isNew) {
-        item.isDirty = true;
+    if (item.isEditing) {
+        console.log(item.question_no);
+        questionUpdate(item);
+        // questionList(sub_no._value);
     }
+    item.isEditing = !item.isEditing;
 };
 const mainshowButton = computed(() => {
     return !main_update_isVisible.value && !main_isVisible.value;
@@ -206,34 +331,6 @@ const mainshowButton = computed(() => {
 const subshowButton = computed(() => {
     return !sub_update_isVisible.value && !sub_isVisible.value;
 });
-
-const saveAll = async () => {
-    const payload = {
-        mainCreated: main.value.filter((v) => v.isNew && !v.isDeleted),
-        mainUpdated: main.value.filter((v) => !v.isNew && v.isDirty && !v.isDeleted),
-        mainDeleted: main.value.filter((v) => !v.isNew && v.isDeleted).map((v) => v.main_no),
-
-        subCreated: sub.value.filter((v) => v.isNew && !v.isDeleted),
-        subUpdated: sub.value.filter((v) => !v.isNew && v.isDirty && !v.isDeleted),
-        subDeleted: sub.value.filter((v) => !v.isNew && v.isDeleted).map((v) => v.sub_no),
-
-        questionCreated: question.value.filter((v) => v.isNew && !v.isDeleted),
-        questionUpdated: question.value.filter((v) => !v.isNew && v.isDirty && !v.isDeleted),
-        questionDeleted: question.value.filter((v) => !v.isNew && v.isDeleted).map((v) => v.question_no)
-    };
-
-    await fetch('/api/save_all', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    });
-
-    alert('저장 완료');
-
-    await mainList();
-    if (main_no.value) await subList(main_no.value);
-    if (sub_no.value) await questionList(sub_no.value);
-};
 </script>
 
 <template>
@@ -242,12 +339,12 @@ const saveAll = async () => {
             <div class="card h-full flex flex-col gap-4">
                 <div class="font-semibold text-xl mb-4">지원서 항목</div>
                 <div class="overflow-y-auto">
-                    <ul v-for="value in visibleMain">
+                    <ul v-for="value in main">
                         <li class="font-semibold text-xl mb-4" v-on:click="subList(value.main_no)">
                             <div class="flex items-center justify-between w-full">
                                 <div class="flex items-center gap-2">
                                     <!-- 수정 상태일 때 -->
-                                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="value.isEditing" v-model="value.main_title" @input="value.isDirty = !value.isNew" />
+                                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="value.isEditing" v-model="value.main_title" />
                                     <!-- 보기 상태일 때 -->
                                     <span v-else>{{ value.main_title }}</span>
                                 </div>
@@ -267,19 +364,19 @@ const saveAll = async () => {
                 <div class="mt-auto grid grid-cols-2 gap-2 w-full">
                     <div v-if="!main_isVisible"><Button type="submit" label="항목추가" class="w-full" @click="main_isVisible = !main_isVisible"></Button></div>
                     <div v-if="mainshowButton"><Button type="submit" label="항목수정" @click="main_update_isVisible = !main_update_isVisible" class="w-full"></Button></div>
-                    <div v-if="main_update_isVisible"><Button type="submit" label="확인" @click="main_update_isVisible = !main_update_isVisible" class="w-full"></Button></div>
+                    <div v-if="main_update_isVisible"><Button type="submit" label="전체저장" @click="main_update_isVisible = !main_update_isVisible" class="w-full"></Button></div>
                 </div>
             </div>
         </div>
         <div class="md:w-2/8 h-full">
             <div class="card h-full flex flex-col gap-4">
                 <div class="font-semibold text-xl mb-4">세부 항목</div>
-                <ul class="overflow-y-auto" v-for="value in visibleSub">
+                <ul class="overflow-y-auto" v-for="value in sub">
                     <li class="font-semibold text-l mb-4" v-on:click="questionList(value.sub_no)">
                         <div class="flex items-center justify-between w-full">
                             <div class="flex items-center gap-2">
                                 <!-- 수정 상태일 때 -->
-                                <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="value.isEditing" v-model="value.sub_title" @input="value.isDirty = !value.isNew" />
+                                <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="value.isEditing" v-model="value.sub_title" />
                                 <!-- 보기 상태일 때 -->
                                 <span v-else>{{ value.sub_title }}</span>
                             </div>
@@ -299,7 +396,7 @@ const saveAll = async () => {
                 <div class="mt-auto grid grid-cols-2 gap-2 w-full">
                     <div v-if="!sub_isVisible"><Button type="submit" label="항목추가" @click="sub_isVisible = !sub_isVisible" class="w-full"></Button></div>
                     <div v-if="subshowButton"><Button type="submit" label="항목수정" @click="sub_update_isVisible = !sub_update_isVisible" class="w-full"></Button></div>
-                    <div v-if="sub_update_isVisible"><Button type="submit" label="확인" @click="sub_update_isVisible = !sub_update_isVisible" class="w-full"></Button></div>
+                    <div v-if="sub_update_isVisible"><Button type="submit" label="전체저장" @click="sub_update_isVisible = !sub_update_isVisible" class="w-full"></Button></div>
                 </div>
             </div>
         </div>
@@ -308,7 +405,7 @@ const saveAll = async () => {
                 <div class="font-semibold text-xl mb-4">질문 항목</div>
                 <div class="font-semibold text-xl mb-4">지원신청내역</div>
                 <!-- <DataTable :value="question" :paginator="true" :rows="5" dataKey="id" :rowHover="true" showGridlines> -->
-                <DataTable :value="visibleQuestion" scrollable scrollHeight="500px" dataKey="id" :rowHover="true" showGridlines>
+                <DataTable :value="question" scrollable scrollHeight="500px" dataKey="id" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
                     <template #empty> No customers found. </template>
 
@@ -316,7 +413,7 @@ const saveAll = async () => {
                         <template #body="{ data }">
                             <div>
                                 <!-- 수정 상태일 때 -->
-                                <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="data.isEditing" v-model="data.question_text" @input="data.isDirty = !data.isNew" />
+                                <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="data.isEditing" v-model="data.question_text" />
                                 <!-- 보기 상태일 때 -->
                                 <span v-else>{{ data.question_text }}</span>
                             </div>
@@ -352,7 +449,7 @@ const saveAll = async () => {
                 <div class="mt-auto flex justify-end gap-2">
                     <Button type="submit" label="수정이력" class="w-24" v-on:click="" />
                     <Button type="submit" label="전체보기" class="w-24" v-on:click="" />
-                    <Button type="submit" label="전체저장" class="w-24" v-on:click="saveAll" />
+                    <Button type="submit" label="전체저장" class="w-24" v-on:click="" />
                 </div>
             </div>
         </div>

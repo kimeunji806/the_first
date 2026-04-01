@@ -89,4 +89,10 @@ router.delete("/question/:no", async (req, res) => {
   res.send(result);
 });
 
+router.post("/save_all", async (req, res) => {
+  let target = req.body;
+  let result = await surveyService.saveAllService(target);
+  res.send(result);
+});
+
 module.exports = router;

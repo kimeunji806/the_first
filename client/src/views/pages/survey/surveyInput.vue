@@ -127,7 +127,7 @@ onBeforeMount(() => {
                 <div>
                     <div class="md:w-1/2">
                         <label for="gender" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">성별</label>
-                        <InputText id="gender" class="w-full mb-8" v-model="info[0].gender" disabled />
+                        <InputText id="gender" class="w-full mb-8" v-model="info[0].gender_name" disabled />
                     </div>
                     <div class="md:w-1/2">
                         <label for="birth" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">생년월일</label>

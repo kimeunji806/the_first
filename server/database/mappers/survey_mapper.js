@@ -202,6 +202,85 @@ const deleteQuestion = async (no) => {
   }
 };
 
+const saveAll = async (data) => {
+  let conn = null;
+
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+
+    const {
+      mainCreated = [],
+      mainUpdated = [],
+      mainDeleted = [],
+      subCreated = [],
+      subUpdated = [],
+      subDeleted = [],
+      questionCreated = [],
+      questionUpdated = [],
+      questionDeleted = [],
+    } = data;
+
+    // 1. 삭제는 자식부터
+    for (const questionNo of questionDeleted) {
+      await conn.query(surveySql.deleteQuestion, [questionNo]);
+    }
+
+    for (const subNo of subDeleted) {
+      await conn.query(surveySql.deleteSub, [subNo]);
+    }
+
+    for (const mainNo of mainDeleted) {
+      await conn.query(surveySql.deleteMain, [mainNo]);
+    }
+
+    // 2. 메인 추가
+    for (const item of mainCreated) {
+      await conn.query(surveySql.insertMain, [item.main_title]);
+    }
+
+    // 3. 메인 수정
+    for (const item of mainUpdated) {
+      await conn.query(surveySql.updateMain, [item.main_title, item.main_no]);
+    }
+
+    // 4. 서브 추가
+    for (const item of subCreated) {
+      await conn.query(surveySql.insertSub, [item.main_no, item.sub_title]);
+    }
+
+    // 5. 서브 수정
+    for (const item of subUpdated) {
+      await conn.query(surveySql.updateSub, [item.sub_title, item.sub_no]);
+    }
+
+    // 6. 질문 추가
+    for (const item of questionCreated) {
+      await conn.query(surveySql.insertQuestion, [
+        item.sub_no,
+        item.question_text,
+      ]);
+    }
+
+    // 7. 질문 수정
+    for (const item of questionUpdated) {
+      await conn.query(surveySql.updateQuestion, [
+        item.question_text,
+        item.question_no,
+      ]);
+    }
+
+    await conn.commit();
+    return { success: true, message: "저장 완료" };
+  } catch (err) {
+    if (conn) await conn.rollback();
+    console.log(err);
+    return { success: false, message: "저장 실패", error: err.message };
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   main,
   sub,
@@ -215,4 +294,5 @@ module.exports = {
   deleteMain,
   deleteSub,
   deleteQuestion,
+  saveAll,
 };

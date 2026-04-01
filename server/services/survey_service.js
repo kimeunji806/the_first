@@ -113,6 +113,11 @@ const deleteQuestionService = async (questionNo) => {
   return info;
 };
 
+const saveAllService = async (target) => {
+  let result = await surveyMapper.saveAll(target);
+  return result;
+};
+
 module.exports = {
   mainInfoService,
   subInfoService,
@@ -126,4 +131,5 @@ module.exports = {
   deleteMainService,
   deleteSubService,
   deleteQuestionService,
+  saveAllService,
 };

@@ -10,6 +10,7 @@ const selectNo = Number(route.params.no);
 const priority = ref([]);
 
 onBeforeMount(async () => {
+    console.log(`조사지 번호${selectNo}`);
     try {
         const resp = await fetch(`/api/priority/${selectNo}`);
         const data = await resp.json();
@@ -46,7 +47,6 @@ onBeforeMount(async () => {
                     </div>
                 </div>
             </div>
-            
         </div>
     </div>
 </template>

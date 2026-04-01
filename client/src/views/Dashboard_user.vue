@@ -72,6 +72,7 @@ onBeforeMount(async () => {
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
                                     <span>{{ data.manager_name }}</span>
+                                    <span v-if="data.manager_name == null">미지정</span>
                                 </div>
                             </template>
                         </Column>
@@ -80,13 +81,16 @@ onBeforeMount(async () => {
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
                                     <span>{{ data.priority_name }}</span>
+                                    <span v-if="data.priority_name == null">미지정</span>
                                 </div>
                             </template>
                         </Column>
                         <Column header="계획/결과 진행" style="min-width: 8rem">
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
-                                    <span>NULL</span>
+                                    <span v-if="data.finish_cnt == 0">진행중 {{ data.progress_cnt }}건</span>
+                                    <span v-if="data.finish_cnt == 0">결과 {{ data.e1_result_cnt }}건</span>
+                                    <span v-if="data.finish_cnt > 0">종결 {{ data.finish_cnt }}건</span>
                                 </div>
                             </template>
                         </Column>

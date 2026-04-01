@@ -14,11 +14,16 @@ WHERE b.guardian_no = ?;
 
 // -> 지원대상자에대한 정보 불러오기 SELECT
 const beneficiariesInfo = `
-SELECT beneficiaries_name
-		, disability_type
-    ,DATE_FORMAT(birth, '%Y-%m-%d') as birth
-    , gender
-FROM beneficiaries 
+SELECT b.beneficiaries_name
+      , b.disability_type
+      ,DATE_FORMAT(b.birth, '%Y-%m-%d') as birth
+      , b.gender
+      ,c.code_name as gender_name
+
+FROM beneficiaries b
+LEFT JOIN common_code c
+      ON c.group_id = 'gender'
+     AND c.common_id = b.gender
 WHERE beneficiaries_no = ?;
 `;
 
