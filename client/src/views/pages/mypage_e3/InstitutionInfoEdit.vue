@@ -59,7 +59,7 @@ const save = async () => {
             const result = await res.json();
             console.log('수정 완료 : ', result);
             // 성공시 조회 페이지로 이동
-            router.push({ path: '/admin/institutioninfo', query: { tab: '1' } });
+            router.push({ path: '/admin/institutioninfo', query: { tab: 1 } });
         } else {
             console.error('수정 실패:', res.statusText);
         }
@@ -111,11 +111,10 @@ onBeforeMount(findAllInfo);
     <div class="w-full">
         <div class="w-full">
             <div class="card">
-                <!-- 탭 영역 (내정보 / 기관정보) -->
                 <Tabs v-model:value="activeTab">
                     <TabList>
-                        <Tab value="0">내 정보</Tab>
-                        <Tab value="1">기관정보</Tab>
+                        <Tab :value="0">내 정보</Tab>
+                        <Tab :value="1">기관정보</Tab>
                     </TabList>
                 </Tabs>
                 <div v-if="activeTab === 1 && institution" class="mt-4">

@@ -62,13 +62,34 @@ const signAccess = async (userId) => {
 const signRefuseService = async (userId) => {
   let result = await userMapper.signX(userId);
   return result;
-}
+};
 
 const insTelService = async (no) => {
   let result = await userMapper.insTel(no);
   return result;
-}
+};
 
+// 비밀번호 찾기
+const findUserById = async (userId) => {
+  const result = await userMapper.findUserById(userId);
+
+  return {
+    status: !!result,
+    target: result || null,
+  };
+};
+
+// 비밀번호 변경
+const resetUserPassword = async (userId, userObj) => {
+  const result = await userMapper.updatePw(userId, userObj.user_pw);
+
+  return {
+    status: result.affectedRows > 0,
+    target: {
+      user_id: userId,
+    },
+  };
+};
 
 module.exports = {
   findAll,
@@ -77,5 +98,7 @@ module.exports = {
   approvalAccess,
   signAccess,
   signRefuseService,
-  insTelService
+  insTelService,
+  findUserById,
+  resetUserPassword,
 };

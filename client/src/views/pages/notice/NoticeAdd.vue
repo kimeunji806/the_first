@@ -1,7 +1,8 @@
 <script setup>
-import { ref } from 'vue';
+import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
+import notice_index from '@/router/notice_index';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -12,6 +13,8 @@ const notice = ref({
 });
 
 const files = ref([]);
+const dropdownValues = ref([]);
+const dropdownValue = ref(null);
 
 // 파일 선택
 const handleFileChange = (e) => {
@@ -50,11 +53,28 @@ const createNotice = async () => {
         console.log(err);
     }
 };
+
+// 기관 선택(시스템관리자만)
+const handelChange = async (e) => {
+    InstitutionInfo.value = e.value.institution;
+};
+
+onBeforeMount(() => {
+    fetch(`/api/noticeList/${notice_index}`)
+        .then((res) => res.json())
+        .then((data) => {
+            dropdownValues.value = data;
+        })
+        .catch((err) => console.log(err));
+});
 </script>
 
 <template>
     <div class="card border-none bg-transparent p-0">
         <div class="text-xl font-bold mb-4 ml-1">글 등록하기</div>
+        <div class="flex mb-3">
+            <Select v-if="filteredApprovalForm.length === 0" v-model="dropdownValue" :options="filteredPriority" optionLabel="priority_no" placeholder="기관" />
+        </div>
         <div class="flex mb-3">
             <div class="label-box">제목</div>
             <div class="flex-1">
