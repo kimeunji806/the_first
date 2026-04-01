@@ -35,5 +35,10 @@ export default [
         path: '/',
         name: 'dashboard',
         component: () => import('@/views/Dashboard.vue')
+    },
+    {
+        path: '/dashboard_user',
+        name: 'dashboard_user',
+        component: () => import('@/views/Dashboard_user.vue')
     }
 ];

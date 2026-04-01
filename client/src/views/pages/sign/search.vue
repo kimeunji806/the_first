@@ -2,7 +2,6 @@
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { ref } from 'vue';
 
-
 const listboxValues = ref([
     { name: 'New York', code: 'NY' },
     { name: 'Rome', code: 'RM' },
@@ -18,13 +17,11 @@ const listboxValues = ref([
     { name: 'Istanbul', code: 'IST' },
     { name: 'Paris', code: 'PRS' }
 ]);
-
-
 </script>
 
 <template>
     <FloatingConfigurator />
-    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-full min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
@@ -49,10 +46,8 @@ const listboxValues = ref([
                         <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">기관찾기</div>
                     </div>
 
-                <div class="font-semibold text-xl">기관찾기</div>
-                <Listbox v-model="listboxValue" :options="listboxValues" optionLabel="name" :filter="true" class="w-full md:w-[30rem] mb-8"/>
-
-                
+                    <div class="font-semibold text-xl">기관찾기</div>
+                    <Listbox v-model="listboxValue" :options="listboxValues" optionLabel="name" :filter="true" class="w-full md:w-[30rem] mb-8" />
                 </div>
             </div>
         </div>

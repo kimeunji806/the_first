@@ -31,7 +31,7 @@ router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
 
     //로그인 없이 접근 가능한 페이지
-    const publicPages = ['/sign/login', '/sign/register'];
+    const publicPages = ['/sign/login', '/sign/register', '/sign/find-password', '/sign/reset-password'];
 
     // 로그인 안됨
     if (!userStore.user_no) {

@@ -23,11 +23,6 @@ const info = reactive({
 });
 
 const sendCode = async (email) => {
-    // const code = generateRandomNumber(6);
-    // codeStore.set(email, {
-    //     code,
-    //     expiresAt: Date.now() + 3 * 60 * 1000
-    // });
     console.log(email);
     await fetch('/api/mail', {
         method: 'POST',
@@ -96,9 +91,9 @@ const addUserInfo = async () => {
         headers: {
             'content-type': 'application/json'
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify( data )
     })
-        .then((res) => res.json())
+        // .then((res) => res.json())
         .catch((err) => console.log(err));
     // if (result.status == 'success') {
     //     router.resolve('/sign/login');
@@ -137,7 +132,7 @@ const checked = ref(false);
 
 <template>
     <FloatingConfigurator />
-    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-full min-w-[100vw] overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
@@ -196,15 +191,8 @@ const checked = ref(false);
 
                         <label for="institution" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">기관</label>
                         <InputText id="institution" type="selected" placeholder="기관을 선택해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.institution" @click="goToSearch" />
-                        <!-- <Select id="institution" v-model="institution" :options="dropdownItems" optionLabel="name" placeholder="기관을 입력해주세요" class="w-full"></Select> -->
 
-                        <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                            <div class="flex items-center">
-                                <Checkbox v-model="checked" id="rememberme1" binary class="mr-2"></Checkbox>
-                                <label for="rememberme1">아이디 기억하기</label>
-                            </div>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">비밀번호 찾기</span>
-                        </div>
+                        <div class="flex items-center justify-between mt-2 mb-8 gap-8"></div>
                         <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
                     </div>
                 </div>

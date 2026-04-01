@@ -129,7 +129,7 @@ async function saveInfo() {
 
         if (result.retCode === 'OK') {
             alert('수정되었습니다.');
-            router.push('/admin/mypage');
+            router.push('/admin/institutioninfo');
         } else {
             alert(result.message || '수정 실패');
         }

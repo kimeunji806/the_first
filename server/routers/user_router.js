@@ -24,22 +24,58 @@ router.get("/approval/:no", async (req, res) => {
   let insNo = req.params.no;
   let result = await userService.approvalAccess(insNo);
   res.send(result);
-})
+});
 
 router.put("/access", async (req, res) => {
   const userId = req.body;
   let result = await userService.signAccess(userId);
   if (result.affectedRows === 1) {
-    res.send({update : 'success'})
+    res.send({ update: "success" });
   }
-  res.send({update : 'fail'})
-})
-  
+  res.send({ update: "fail" });
+});
 
+router.delete("/access/refuse", async (req, res) => {
+  const userId = req.body;
+  let result = await userService.signRefuseService(userId);
+  console.log(result);
+  if (result.affectedRows === 1) {
+    res.send({ update: "success" });
+  }
+  res.send({ update: "fail" });
+});
 
+router.get("/institution/:no", async (req, res) => {
+  const no = req.params.no;
+  let result = await userService.insTelService(no);
+  res.send(result);
+});
 
+// 비밀번호 찾기
+router.post("/user/check-user", async (req, res) => {
+  try {
+    const { user_id } = req.body;
 
+    const result = await userService.findUserById(user_id);
 
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
+// 비밀번호 변경
+router.put("/userpw/:userId", async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const target = req.body;
+
+    const result = await userService.resetUserPassword(userId, target);
+
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = router;

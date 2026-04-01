@@ -8,9 +8,7 @@ const getAdminMyPage = async (userNo) => {
 
   try {
     conn = await dao.pool.getConnection();
-
     const rows = await conn.query(sql.selectAdminMyPage, [userNo]);
-
     return mapper.adminMyPage(rows);
   } catch (err) {
     console.error("service - getAdminMyPage 에러:", err);
@@ -21,7 +19,7 @@ const getAdminMyPage = async (userNo) => {
 };
 
 // 기관관리자 본인정보 수정
-const modifyAdminMyPage = async (adminInfo) => {
+const updateAdminMyPage = async (adminInfo) => {
   let conn = null;
 
   try {
@@ -36,10 +34,9 @@ const modifyAdminMyPage = async (adminInfo) => {
     ];
 
     const result = await conn.query(sql.updateAdminMyPage, params);
-
     return result;
   } catch (err) {
-    console.error("service - modifyAdminMyPage 에러:", err);
+    console.error("service - updateAdminMyPage 에러:", err);
     throw err;
   } finally {
     if (conn) conn.release();
@@ -48,5 +45,5 @@ const modifyAdminMyPage = async (adminInfo) => {
 
 module.exports = {
   getAdminMyPage,
-  modifyAdminMyPage,
+  updateAdminMyPage,
 };

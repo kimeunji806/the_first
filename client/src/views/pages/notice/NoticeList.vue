@@ -12,11 +12,27 @@ const notice = ref([]);
 // 공지사항 전체조회
 const findAllNotice = async () => {
     try {
+        const role = userStore.role;
         const insNo = userStore.institution;
 
-        const res = await fetch(`/api/notice?institution_no=${insNo}`);
+        let url = '';
+
+        // 시스템관리자 : 전체 공지 조회
+        if (role === 'e4') {
+            url = `/api/notice`;
+        } else {
+            // 일반이용자/기관담당자/기관관리자 : 본인 기관 공지만 조회
+            url = `/api/notice/${insNo}`;
+        }
+
+        const res = await fetch(url);
         const data = await res.json();
-        notice.value = Array.isArray(data) ? data : [data];
+        const list = Array.isArray(data) ? data : [data];
+
+        notice.value = list.map((item) => ({
+            ...item,
+            create_at_formatted: dateFormat(item.created_at)
+        }));
     } catch (err) {
         console.error(err);
     }
@@ -65,6 +81,7 @@ onBeforeMount(() => {
         <DataTable
             :value="notice"
             :filters="filters"
+            :globalFilterFields="['notice_title', 'notice_content', 'create_at_formatted', 'name']"
             class="w-full"
             :pt="{
                 headerRow: { class: 'text-center' },
@@ -77,18 +94,29 @@ onBeforeMount(() => {
             :rows="10"
             :totalRecords="notice.length"
         >
-            <Column field="notice_no" header="번호" class="w-20"></Column>
-            <Column header="제목">
+            <Column header="번호" class="w-20 text-center">
                 <template #body="slotProps">
-                    <span class="cursor-pointer" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)">
-                        {{ slotProps.data.notice_title }}
-                    </span>
+                    <div class="text-center">
+                        {{ slotProps.index + 1 }}
+                    </div>
                 </template>
             </Column>
-            <Column field="user_name" header="작성자" class="w-32"></Column>
-            <Column header="작성일자" class="w-40">
+            <Column header="제목" class="text-center">
                 <template #body="slotProps">
-                    {{ dateFormat(slotProps.data.created_at) }}
+                    <div>
+                        <span class="cursor-pointer inline-block" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)">
+                            {{ slotProps.data.notice_title }}
+                        </span>
+                    </div>
+                </template>
+            </Column>
+            <Column v-if="userStore.role === 'e4'" field="name" header="기관" class="w-57 text-center"></Column>
+            <Column field="user_name" header="작성자" class="w-32 text-center"></Column>
+            <Column header="작성일자" class="w-40 text-center">
+                <template #body="slotProps">
+                    <div class="text-center">
+                        {{ dateFormat(slotProps.data.created_at) }}
+                    </div>
                 </template>
             </Column>
         </DataTable>

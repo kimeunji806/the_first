@@ -17,9 +17,11 @@ function formatDate(value) {
 // 본인정보 조회 함수
 async function loadMyInfo() {
     try {
-        // localStorage에서 로그인 사용자 정보 가져오기
         const loginUser = JSON.parse(localStorage.getItem('user'));
+        console.log('loginUser:', loginUser);
+
         const userNo = loginUser?.user_no;
+        console.log('userNo:', userNo);
 
         if (!userNo) {
             alert('로그인 정보가 없습니다.');
@@ -27,6 +29,7 @@ async function loadMyInfo() {
         }
 
         const result = await getAdminMyPage(userNo);
+        console.log('조회 결과:', result);
 
         if (result.retCode === 'OK') {
             info.value = result.data;
@@ -41,7 +44,7 @@ async function loadMyInfo() {
 
 // 수정 페이지로 이동
 function goEdit() {
-    router.push('/admin/mypage/edit');
+    router.push('/admin/institutioninfo/edit');
 }
 
 // 화면 처음 열릴 때 조회

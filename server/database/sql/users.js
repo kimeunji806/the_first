@@ -53,6 +53,36 @@ SET approval = 1
 WHERE user_id = ?
 `;
 
+const signRefuse = `
+DELETE FROM sign_approval
+WHERE user_id = ?
+`;
+
+const signRefuse2 = `
+DELETE FROM user
+WHERE user_id = ?
+`;
+
+const instelSelect = `
+SELECT tel
+FROM institution
+WHERE institution_no = ?
+`;
+
+// 비밀번호 찾기
+const findUserById = `
+SELECT user_id,email
+FROM user
+WHERE user_id = ?
+`;
+
+// 비밀번호 변경
+const updatePw = `
+UPDATE user
+SET user_pw = ?
+WHERE user_id = ?
+`;
+
 module.exports = {
   selectAllUser,
   loginUser,
@@ -61,4 +91,9 @@ module.exports = {
   signApproval,
   access,
   signAccess,
+  signRefuse,
+  signRefuse2,
+  instelSelect,
+  findUserById,
+  updatePw,
 };

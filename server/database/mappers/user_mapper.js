@@ -78,4 +78,79 @@ const access = async (userId) => {
   }
 };
 
-module.exports = { selectAllUser, insertUser, loginUser, approval, access };
+const signX = async (userId) => {
+  let conn = null;
+  const user = userId.userId;
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+    let result = await conn.query(userSql.signRefuse, [user]);
+    await conn.query(userSql.signRefuse2, [user]);
+    conn.commit();
+    return result;
+  } catch (err) {
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+const insTel = async (no) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let [result] = await conn.query(userSql.instelSelect, [no]);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+// 비밀번호 찾기
+const findUserById = async (userId) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+
+    let rows = await conn.query(userSql.findUserById, [userId]);
+    return rows[0] || null;
+  } catch (err) {
+    console.log(err);
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+// 비밀번호 변경
+const updatePw = async (userId, userPw) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction(); // Auto Commit 해제
+
+    let result = await conn.query(userSql.updatePw, [userPw, userId]);
+
+    await conn.commit();
+    return result;
+  } catch (err) {
+    console.log(err);
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+module.exports = {
+  selectAllUser,
+  insertUser,
+  loginUser,
+  approval,
+  access,
+  signX,
+  insTel,
+  findUserById,
+  updatePw,
+};

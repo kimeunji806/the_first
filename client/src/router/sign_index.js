@@ -19,5 +19,15 @@ export default [
         path: '/sign/access',
         name: 'accessWait',
         component: () => import('@/views/pages/sign/Access.vue')
-        },
+    },
+    {
+        path: '/sign/find-password',
+        name: 'findPassword',
+        component: () => import('@/views/pages/sign/FIndPassword.vue')
+    },
+    {
+        path: '/sign/reset-password',
+        name: 'resetPassword',
+        component: () => import('@/views/pages/sign/ResetPassword.vue')
+    }
 ];

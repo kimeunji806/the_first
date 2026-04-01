@@ -7,7 +7,7 @@ const route = useRoute();
 const router = useRouter();
 const userStore = useUserStore();
 
-const activeTab = ref(route.query.tab || '0');
+const activeTab = ref(Number(route.query.tab ?? 1));
 const institution = ref({});
 
 // 기관정보 조회 API
@@ -15,7 +15,7 @@ const findAllInfo = async () => {
     try {
         const insNo = userStore.institution;
 
-        const res = await fetch(`/api/admin/institutioninfo?institution_no=${insNo}`);
+        const res = await fetch(`/api/admin/institutioninfo/${insNo}`);
         const info = await res.json();
         institution.value = {
             ...info,
@@ -59,7 +59,7 @@ const save = async () => {
             const result = await res.json();
             console.log('수정 완료 : ', result);
             // 성공시 조회 페이지로 이동
-            router.push({ path: '/admin/institutioninfo', query: { tab: '1' } });
+            router.push({ path: '/admin/institutioninfo', query: { tab: 1 } });
         } else {
             console.error('수정 실패:', res.statusText);
         }
@@ -111,18 +111,18 @@ onBeforeMount(findAllInfo);
     <div class="w-full">
         <div class="w-full">
             <div class="card">
-                <!-- 탭 영역 (내정보 / 기관정보) -->
                 <Tabs v-model:value="activeTab">
                     <TabList>
-                        <Tab value="0">내 정보</Tab>
-                        <Tab value="1">기관정보</Tab>
+                        <Tab :value="0">내 정보</Tab>
+                        <Tab :value="1">기관정보</Tab>
                     </TabList>
                 </Tabs>
-                <div v-if="activeTab === '1' && institution" class="mt-4">
-                    <!-- 제목 -->
+                <div v-if="activeTab === 1 && institution" class="mt-4">
                     <div class="font-semibold text-xl mb-4">기관정보</div>
-
-                    <!-- 데이터 테이블 -->
+                    <div class="mb-5">
+                        <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
+                        <span class="text-muted-color"> 기관관리자 기관 정보를 수정할 수 있습니다. </span>
+                    </div>
                     <DataTable
                         :value="[
                             { label: '기관', field: 'name' },
@@ -136,11 +136,9 @@ onBeforeMount(findAllInfo);
                         <Column field="label" header="" class="w-3xs"></Column>
                         <Column field="field" header="">
                             <template #body="slotProps">
-                                <!-- 사업자번호는 그냥 텍스트로 표시 -->
                                 <span v-if="slotProps.data.field === 'business_number'">{{ institution.business_number }}</span>
                                 <div v-else-if="slotProps.data.field === 'operation'" class="flex gap-4">
                                     <div class="flex items-center">
-                                        <!-- 운영여부 (라디오 버튼) -->
                                         <RadioButton id="option1" name="operation" :value="1" v-model="institution.operation" />
                                         <label for="option1" class="ml-2">여</label>
                                     </div>
@@ -149,19 +147,14 @@ onBeforeMount(findAllInfo);
                                         <label for="option2" class="ml-2">부</label>
                                     </div>
                                 </div>
-                                <!-- 주소 영역 (우편번호 + 주소 + 상세주소) -->
-
                                 <div v-else-if="slotProps.data.field === 'institution_address'" class="flex flex-col gap-2 w-full">
                                     <div class="flex gap-2">
                                         <InputText v-model="institution.zonecode" class="w-32" readonly />
                                         <Button label="우편번호 검색" @click="searchAddress" />
                                     </div>
-                                    <!-- 기본 주소 -->
                                     <InputText v-model="institution.institution_address" readonly />
-                                    <!-- 상세 주소 -->
                                     <InputText v-model="institution.detail_address" placeholder="상세 주소 입력" />
                                 </div>
-                                <!-- 나머지 필드 (기관명, 전화번호, 이메일 등) -->
                                 <InputText v-else v-model="institution[slotProps.data.field]" />
                             </template>
                         </Column>

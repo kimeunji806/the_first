@@ -36,6 +36,11 @@ const userLogin = async () => {
         alert('아이디 또는 비밀번호 틀림');
     }
 };
+
+// 비밀번호 찾기 이동
+const goToFindPassword = () => {
+    router.push('/sign/find-password');
+};
 </script>
 
 <template>
@@ -74,7 +79,7 @@ const userLogin = async () => {
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">아이디 찾기</span>
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">비밀번호 찾기</span>
+                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="goToFindPassword">비밀번호 찾기</span>
                         </div>
                         <Button label="로그인" class="w-full" @click="userLogin"></Button>
                         <Button label="회원가입" class="w-full mt-2" as="router-link" to="/sign/register"></Button>
