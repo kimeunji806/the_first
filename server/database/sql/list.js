@@ -136,6 +136,7 @@ SELECT b.beneficiaries_name as beneficiaries_name
         ,g.user_name as guardian_name
         ,p.priority_id as priority_id
         , cc.code_name AS priority_name
+        ,p.approval as approval
         ,b.gender as gender
         ,c.code_name as gender_name
         ,DATE_FORMAT(b.birth, '%Y-%m-%d')  as birth

@@ -47,16 +47,36 @@ const openFormByCode = (code) => {
 };
 
 // 확인 버튼 클릭 시 선택한 폼 열기
+// const confirmForm = () => {
+//     if (!dropdownValue.value) {
+//         return;
+//     }
+
+//     openFormByCode(dropdownValue.value.code);
+// };
 const confirmForm = () => {
     if (!dropdownValue.value) {
         return;
     }
 
-    openFormByCode(dropdownValue.value.code);
+    const selectedCode = dropdownValue.value.code;
+    const approval = user.value[0]?.approval;
+
+    // 지원계획(C), 지원결과(D)는 승인된 신청내역만 작성 가능
+    if (selectedCode === 'C' || selectedCode === 'D') {
+        if (approval == null) {
+            alert('우선순위가 지정되지 않아 지원계획/지원결과를 작성할 수 없습니다.');
+            return;
+        }
+
+        if (approval !== 'a1') {
+            alert('승인된 신청내역만 지원계획/지원결과를 작성할 수 있습니다.');
+            return;
+        }
+    }
+
+    openFormByCode(selectedCode);
 };
-// const confirmForm = () => {
-//     selectedForm.value = dropdownValue.value;
-// };
 
 import { useRoute } from 'vue-router';
 const route = useRoute();
@@ -110,6 +130,7 @@ onBeforeMount(async () => {
 
         console.log('Common user:', user.value);
         console.log('Common survey_no:', user.value[0]?.survey_no);
+        console.log('approval 확인:', user.value[0]?.approval);
     } catch (err) {
         console.log(err);
     } finally {
@@ -149,6 +170,10 @@ const isAssigned = computed(() => {
     return !!targetInfo.value.manager_no;
 });
 
+const filteredApprovalForm = computed(() => {
+    return user.value.filter((item) => item.approval === 'a1');
+});
+
 const handleAssigned = (data) => {
     targetInfo.value.manager_no = data.manager_no;
     targetInfo.value.sub_manager_no = data.sub_manager_no;
@@ -172,7 +197,8 @@ const handleAssigned = (data) => {
                             <div class="w-full rounded-md p-4">{{ user[0]?.guardian_name }}</div>
 
                             <div class="w-full rounded-md p-4">우선순위</div>
-                            <div class="w-full rounded-md p-4">{{ user[0]?.priority_name }}</div>
+                            <div v-if="user[0]?.priority_name == null" class="w-full rounded-md p-4">미지정</div>
+                            <div v-if="filteredApprovalForm.length > 0" class="w-full rounded-md p-4">{{ filteredApprovalForm[0]?.priority_name }}</div>
 
                             <div class="w-full rounded-md p-4">성별</div>
                             <div class="w-full rounded-md p-4">{{ user[0]?.gender_name }}</div>

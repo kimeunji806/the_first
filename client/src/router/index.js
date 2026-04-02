@@ -61,7 +61,6 @@ router.beforeEach((to, from, next) => {
     }
     if (userStore.role == 'e4' && to.path === '/') {
         return next('/sysadmin/institutions'); // 시스템 관리자 로그인시 /로 안가고 기관목록으로 이동
-        
     }
 
     // 승인된 유저가 승인대기 접근 막기
