@@ -3,17 +3,20 @@ import { onBeforeMount, reactive, ref, computed } from 'vue';
 
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import SurveyHistoryModal from '@/components/dialog/survey_dialog.vue';
 
 const router = useRouter();
+
+const historyDialog = ref(false);
 
 const userStore = useUserStore();
 const user_no = userStore.user_no;
 const selectedSurveyNo = ref(null);
 
-// const openModal = (surveyNo) => {
-//     selectedSurveyNo.value = surveyNo;
-//     visible.value = true;
-// };
+const openHistoryModal = (surveyNo) => {
+    selectedSurveyNo.value = surveyNo;
+    historyDialog.value = true;
+};
 
 const planDialog = ref(false);
 const resultDialog = ref(false);
@@ -125,9 +128,8 @@ onBeforeMount(async () => {
                         </Column>
                         <Column header="지원신청서" style="min-width: 8rem">
                             <template #body="{ data }">
-                                <Button type="submit" label="보기" v-on:click="" />
-                                <!-- openModal(data.survey_no) -->
-                                <!-- <PriorityModal v-model:visible="visible" :surveyNo="selectedSurveyNo" /> -->
+                                <Button type="submit" label="보기" v-on:click="openHistoryModal(data.survey_no)" />
+                                <SurveyHistoryModal v-model:visible="historyDialog" :surveyNo="selectedSurveyNo" />
                             </template>
                         </Column>
                         <Column header="담당자" style="min-width: 8rem">

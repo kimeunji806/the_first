@@ -5,7 +5,22 @@ const sub = ref([]);
 const question = ref([]);
 const sub_no = ref([]);
 const main_no = ref([]);
+const historyDialog = ref(false);
+import SurveyHistoryModal from '@/components/dialog/surveyPreviewdialog.vue';
+const selectedMainNo = ref(null);
+const selectedSubNo = ref(null);
 
+const clickMain = (item) => {
+    selectedMainNo.value = item.main_no;
+    selectedSubNo.value = null;
+};
+
+const clickSub = (item) => {
+    selectedSubNo.value = item.sub_no;
+};
+const openHistoryModal = () => {
+    historyDialog.value = true;
+};
 // 메인항목 조회
 const mainList = async () => {
     await fetch(`/api/main`)
@@ -24,6 +39,8 @@ const mainList = async () => {
 
 // 세부항목 조회
 const subList = async (mainNo) => {
+    selectedMainNo.value = mainNo;
+    selectedSubNo.value = null;
     console.log(mainNo);
     main_no.value = mainNo;
     await fetch(`/api/sub/${mainNo}`)
@@ -42,6 +59,7 @@ const subList = async (mainNo) => {
 
 // 질문항목 조회
 const questionList = async (subNo) => {
+    selectedSubNo.value = subNo;
     console.log(subNo);
     sub_no.value = subNo;
     await fetch(`/api/question/${subNo}`)
@@ -243,7 +261,7 @@ const saveAll = async () => {
                 <div class="font-semibold text-xl mb-4">지원서 항목</div>
                 <div class="overflow-y-auto">
                     <ul v-for="value in visibleMain">
-                        <li class="font-semibold text-xl mb-4" v-on:click="subList(value.main_no)">
+                        <li class="font-semibold text-xl mb-4" :class="selectedMainNo === value.main_no ? 'bg-gray-50 text-gray-700 border border-gray-200 rounded-md' : 'hover:bg-gray-100'" v-on:click="subList(value.main_no)">
                             <div class="flex items-center justify-between w-full">
                                 <div class="flex items-center gap-2">
                                     <!-- 수정 상태일 때 -->
@@ -275,7 +293,7 @@ const saveAll = async () => {
             <div class="card h-full flex flex-col gap-4">
                 <div class="font-semibold text-xl mb-4">세부 항목</div>
                 <ul class="overflow-y-auto" v-for="value in visibleSub">
-                    <li class="font-semibold text-l mb-4" v-on:click="questionList(value.sub_no)">
+                    <li class="font-semibold text-l mb-4" :class="selectedSubNo === value.sub_no ? 'bg-gray-50 text-gray-700 border border-gray-200 rounded-md' : 'hover:bg-gray-100'" v-on:click="questionList(value.sub_no)">
                         <div class="flex items-center justify-between w-full">
                             <div class="flex items-center gap-2">
                                 <!-- 수정 상태일 때 -->
@@ -351,8 +369,9 @@ const saveAll = async () => {
 
                 <div class="mt-auto flex justify-end gap-2">
                     <Button type="submit" label="수정이력" class="w-24" v-on:click="" />
-                    <Button type="submit" label="전체보기" class="w-24" v-on:click="" />
                     <Button type="submit" label="전체저장" class="w-24" v-on:click="saveAll" />
+                    <Button type="submit" label="전체보기" class="w-24" v-on:click="openHistoryModal()" />
+                    <SurveyHistoryModal v-model:visible="historyDialog" :surveyNo="selectedSurveyNo" />
                 </div>
             </div>
         </div>

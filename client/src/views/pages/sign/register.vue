@@ -1,14 +1,42 @@
 <script setup>
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
+import SurveyHistoryModal from '@/components/dialog/Institution_dialog.vue';
 
 import router from '@/router';
 
-import { reactive, ref } from 'vue';
+const selectedRole = ref('');
+import { reactive, ref, computed } from 'vue';
 const clickRole = async (role_name) => {
-    console.log(role_name);
+    selectedRole.value = role_name;
     info.role = role_name;
 };
+const isEmailVerified = ref(false);
 
+const isGeneralUser = computed(() => info.role === 'e1');
+const getMissingFields = () => {
+    const missing = [];
+
+    if (!info.role) missing.push('회원유형');
+    if (!info.user_name?.trim()) missing.push('이름');
+    if (!info.user_id?.trim()) missing.push('아이디');
+    if (!info.user_pw?.trim()) missing.push('비밀번호');
+    if (!info.user_pwd?.trim()) missing.push('비밀번호 확인');
+    if (!info.user_email?.trim()) missing.push('이메일');
+    if (!info.user_account?.trim()) missing.push('인증번호');
+    if (!info.tel?.trim()) missing.push('연락처');
+    if (!info.institution?.trim()) missing.push('기관');
+
+    if (isGeneralUser.value && !info.address?.trim()) {
+        missing.push('주소');
+    }
+
+    return missing;
+};
+const form = reactive({
+    zonecode: '',
+    roadAddress: '',
+    detailAddress: ''
+});
 // const user_account = ref('');
 const info = reactive({
     user_account: '',
@@ -18,7 +46,7 @@ const info = reactive({
     user_pwd: '',
     user_email: '',
     tel: '',
-    address: '',
+
     institution: ''
 });
 
@@ -56,16 +84,51 @@ const verifyCode = async (code) => {
 
     const data = await res.json();
     console.log(data);
+
     if (data.retCode === true) {
+        isEmailVerified.value = true;
         alert('인증 성공');
     } else {
-        alert(data.message);
+        isEmailVerified.value = false;
+        alert(data.message || '인증 실패');
     }
 };
 
+function searchAddress() {
+    if (!window.kakao || !window.kakao.Postcode) {
+        alert('주소 검색 서비스를 불러오지 못했습니다.');
+        return;
+    }
+
+    new window.kakao.Postcode({
+        oncomplete(data) {
+            form.zonecode = data.zonecode || '';
+            form.roadAddress = data.roadAddress || data.address || '';
+
+            const detailInput = document.getElementById('detailAddress');
+            if (detailInput) detailInput.focus();
+        }
+    }).open();
+}
 // 데이터 파싱, 전송
 
 const addUserInfo = async () => {
+    const missingFields = getMissingFields();
+
+    if (missingFields.length > 0) {
+        alert(`입력 안 된 칸이 있습니다.\n\n${missingFields.join(', ')}`);
+        return;
+    }
+
+    if (info.user_pw !== info.user_pwd) {
+        alert('비밀번호와 비밀번호 확인이 일치하지 않습니다.');
+        return;
+    }
+    if (!isEmailVerified.value) {
+        alert('이메일 인증을 완료해주세요.');
+        return;
+    }
+
     let data = {
         role: info.role,
         user_name: info.user_name,
@@ -73,7 +136,7 @@ const addUserInfo = async () => {
         user_pwd: info.user_pwd,
         user_email: info.user_email,
         tel: info.tel,
-        address: info.address,
+        address: form,
         institution: 1
     };
 
@@ -95,29 +158,9 @@ const addUserInfo = async () => {
     //     inPrinted.value = true;
     // }
 };
-
-// // 데이터 유효성 검사
-// import { useForm } from 'vee-validate';
-// import { required, min, comfirmed } from '@vee-validate/rules';
-
-// const { handleSubmit, values, errors } = useForm({
-//     validationSchema: {
-//         role: [],
-//         user_name: [],
-//         user_id: [],
-//         user_pw: [required, min(8)],
-//         user_pwd: [],
-//         user_email: [],
-//         tel: [],
-//         address: [],
-//         institution: []
-//     }
-// });
-
-// 기관검색 이동
-const goToSearch = () => {
-    const link = router.resolve('/sign/register/search');
-    window.open(link.href, '_blank');
+const historyDialog = ref(false);
+const openHistoryModal = () => {
+    historyDialog.value = true;
 };
 
 const checked = ref(false);
@@ -151,9 +194,9 @@ const checked = ref(false);
                     </div>
 
                     <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                        <Button label="일반사용자" class="w-full md:w-[8.5rem] mb-8" v-on:click="clickRole('e1')"></Button>
-                        <Button label="기관담당자" class="w-full md:w-[8.5rem] mb-8" v-on:click="clickRole('e2')"></Button>
-                        <Button label="기관관리자" class="w-full md:w-[8.5rem] mb-8" v-on:click="clickRole('e3')"></Button>
+                        <Button label="일반사용자" :class="['w-full md:w-[8.5rem]', info.role === 'e1' ? '!bg-gray-300 !border-gray-300 !text-white' : '']" v-on:click="clickRole('e1')"></Button>
+                        <Button label="기관담당자" :class="['w-full md:w-[8.5rem]', info.role === 'e2' ? '!bg-gray-300 !border-gray-300 !text-white' : '']" v-on:click="clickRole('e2')"></Button>
+                        <Button label="기관관리자" :class="['w-full md:w-[8.5rem]', info.role === 'e3' ? '!bg-gray-300 !border-gray-300 !text-white' : '']" v-on:click="clickRole('e3')"></Button>
                     </div>
                     <div>
                         <label for="user_name" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">이름</label>
@@ -169,22 +212,28 @@ const checked = ref(false);
                         <Password id="user_pwd" v-model="info.user_pwd" placeholder="비밀번호를 입력해주세요" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
 
                         <label for="user_email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">이메일</label>
-                        <InputText id="user_email" type="text" placeholder="이메일을 입력해주세요" class="w-full md:w-[22.8rem] mb-2" v-model="info.user_email" />
+                        <InputText id="user_email" type="text" placeholder="이메일을 입력해주세요" class="w-full md:w-[22.8rem] mb-2" @input="isEmailVerified = false" v-model="info.user_email" />
                         <Button label="인증번호전송" :fluid="false" v-on:click="sendCode(info.user_email)"></Button>
 
                         <label for="user_account"><br /></label>
-                        <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" class="w-full md:w-[26.5em] mb-8" v-model="info.user_account" />
+                        <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" class="w-full md:w-[26.5em] mb-8" @input="isEmailVerified = false" v-model="info.user_account" />
                         <Button label="확인" :fluid="false" v-on:click="verifyCode(info.user_account)"></Button>
 
                         <label for="tel" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">연락처</label>
                         <InputText id="tel" type="text" placeholder="전화번호를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.tel" />
-
-                        <label for="address" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">주소</label>
-                        <InputText id="address" type="text" placeholder="주소를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.address" />
-
+                        <template v-if="isGeneralUser">
+                            <label for="address" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">주소</label>
+                            <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                                <InputText placeholder="우편번호" readonly class="w-40" v-model="form.zonecode" />
+                                <Button type="button" label="우편번호 검색" @click="searchAddress" />
+                            </div>
+                            <InputText placeholder="기본주소" readonly class="w-full md:w-[30rem] mb-8" v-model="form.roadAddress" />
+                            <br />
+                            <InputText id="detailAddress" type="text" placeholder="상세주소를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="form.detailAddress" />
+                        </template>
                         <label for="institution" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">기관</label>
-                        <InputText id="institution" type="selected" placeholder="기관을 선택해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.institution" @click="goToSearch" />
-
+                        <InputText id="institution" placeholder="기관을 선택해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.institution" @click="openHistoryModal" readonly />
+                        <SurveyHistoryModal v-model:visible="historyDialog" @selectInstitution="info.institution = $event" />
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8"></div>
                         <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
                     </div>
