@@ -243,91 +243,86 @@ onBeforeUnmount(() => {
 <template>
     <div class="card h-full flex flex-col gap-4">
         <div class="max-h-[800px] overflow-y-auto pr-2">
-            <div v-if="tempList.length !== 0 && !userbeneStore.isEditMode" class="mb-4">
-                <h3 class="text-sm font-bold mb-3">임시저장 목록</h3>
-                <div v-for="item in tempList" :key="item.record_no" @click="loadTempData(item)" class="p-4 mb-3 bg-white border border-gray-200 rounded-xl shadow-sm cursor-pointer hover:shadow-md hover:bg-gray-50 transition">
-                    <!-- 상단 -->
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-xs text-gray-400"> 상담일자: {{ item.record_date }} </span>
+            <!--담당자 아닐경우-->
+            <div v-if="userRole !== 'e2'" class="p-6 bg-gray-100 text-gray-800 rounded-lg text-center font-semibold">상담기록 등록은 담당자만 가능합니다.</div>
 
-                        <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full"> 임시저장 </span>
-                    </div>
-
-                    <!-- 제목 -->
-                    <div class="font-semibold text-base text-gray-800 truncate">
-                        {{ item.title || '제목 없음' }}
-                    </div>
-
-                    <!-- 내용 -->
-                    <div class="text-sm text-gray-600 mt-1 line-clamp-2">
-                        {{ item.content || '내용 없음' }}
-                    </div>
-
-                    <!-- 하단 -->
-                    <div class="flex justify-between items-center mt-4 pt-2 border-t">
-                        <span class="text-xs text-gray-400"> 등록일자: {{ item.created_at }} </span>
-
-                        <Button @click.stop="deleteSave" severity="danger" size="small" outlined> 삭제 </Button>
-                    </div>
-                </div>
-            </div>
-            <h2 class="text-lg font-bold mb-4 border-b pb-2">
-                {{ userbeneStore.isEditMode ? '상담기록 수정' : '상담기록 입력' }}
-            </h2>
-            <div class="mb-4">
-                <label class="block mb-1 text-sm">상담일</label>
-                <input type="date" v-model="form.date" class="w-full border rounded px-3 py-2 bg-gray-100" />
-            </div>
-
-            <div class="mb-4">
-                <label class="block mb-1 border-t pt-2 text-sm">제목</label>
-                <input type="text" v-model="form.title" class="w-full border rounded px-3 py-2 bg-gray-100" />
-            </div>
-
-            <div class="mb-4">
-                <label class="block mb-1 border-t pt-2 text-sm">내용</label>
-                <textarea v-model="form.content" class="w-full border rounded px-3 py-2 bg-gray-100 h-32"></textarea>
-            </div>
-
-            <!-- 등록 모드 -->
-
-            <div v-if="!userbeneStore.isEditMode">
-                <div class="mb-6 flex border-t pt-2 items-center gap-3">
-                    <label class="block mb-1 text-sm">첨부파일</label>
-                </div>
-                <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
-                    <i class="pi pi-info-circle text-blue-400"></i>
-                    <span>첨부파일은 임시저장되지 않습니다.</span>
-                </div>
-                <input type="file" multiple @change="handleFile" />
-            </div>
-
-            <!-- 수정 모드 -->
             <div v-else>
-                <div class="mb-6 flex border-t pt-2 items-center gap-3">
-                    <label class="block mb-1 text-sm">첨부파일</label>
-                </div>
-
-                <!-- 🔥 기존 파일 목록 -->
-                <div v-if="form.existingFiles.length > 0" class="mb-2">
-                    <div v-for="(file, i) in form.existingFiles" :key="i" class="flex items-center gap-2">
-                        <a :href="`/api/download/${encodeURIComponent(file)}`">
-                            {{ file }}
-                        </a>
-                        <button @click="removeExistingFile(file)">X</button>
+                <!-- 임시저장 목록 -->
+                <div v-if="tempList.length !== 0 && !userbeneStore.isEditMode" class="mb-4">
+                    <h3 class="text-sm font-bold mb-3">임시저장 목록</h3>
+                    <div v-for="item in tempList" :key="item.record_no" @click="loadTempData(item)" class="p-4 mb-3 bg-white border border-gray-200 rounded-xl shadow-sm cursor-pointer hover:shadow-md hover:bg-gray-50 transition">
+                        <!-- 상단 -->
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-400"> 상담일자: {{ item.record_date }} </span>
+                            <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full"> 임시저장 </span>
+                        </div>
+                        <!-- 제목 -->
+                        <div class="font-semibold text-base text-gray-800 truncate">
+                            {{ item.title || '제목 없음' }}
+                        </div>
+                        <!-- 내용 -->
+                        <div class="text-sm text-gray-600 mt-1 line-clamp-2">
+                            {{ item.content || '내용 없음' }}
+                        </div>
+                        <!-- 하단 -->
+                        <div class="flex justify-between items-center mt-4 pt-2 border-t">
+                            <span class="text-xs text-gray-400"> 등록일자: {{ item.created_at }} </span>
+                            <Button @click.stop="deleteSave" severity="danger" size="small" outlined> 삭제 </Button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 🔥 새 파일 추가 -->
-                <input type="file" multiple @change="handleFile" />
-            </div>
+                <!-- 상담 입력/수정 폼 -->
+                <h2 class="text-lg font-bold mb-4 border-b pb-2">
+                    {{ userbeneStore.isEditMode ? '상담기록 수정' : '상담기록 입력' }}
+                </h2>
+                <div class="mb-4">
+                    <label class="block mb-1 text-sm">상담일</label>
+                    <input type="date" v-model="form.date" class="w-full border rounded px-3 py-2 bg-gray-100" />
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 border-t pt-2 text-sm">제목</label>
+                    <input type="text" v-model="form.title" class="w-full border rounded px-3 py-2 bg-gray-100" />
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1 border-t pt-2 text-sm">내용</label>
+                    <textarea v-model="form.content" class="w-full border rounded px-3 py-2 bg-gray-100 h-32"></textarea>
+                </div>
 
-            <div class="text-right">
-                <button v-if="userbeneStore.isEditMode" @click="updateCancel" class="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 mr-2 rounded-full">수정취소</button>
-                <button v-if="!userbeneStore.isEditMode" @click="temporaryStorage" class="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 mr-2 rounded-full">임시저장</button>
-                <button @click="userbeneStore.isEditMode ? update() : submit()" class="bg-green-400 hover:bg-green-500 text-white px-6 py-2 rounded-full">
-                    {{ userbeneStore.isEditMode ? '수정' : '등록' }}
-                </button>
+                <!-- 첨부파일, 등록/수정 버튼 등 나머지 폼 -->
+                <div v-if="!userbeneStore.isEditMode">
+                    <div class="mb-6 flex border-t pt-2 items-center gap-3">
+                        <label class="block mb-1 text-sm">첨부파일</label>
+                    </div>
+                    <div class="flex items-center gap-2 text-sm text-gray-500 mb-2">
+                        <i class="pi pi-info-circle text-blue-400"></i>
+                        <span>첨부파일은 임시저장되지 않습니다.</span>
+                    </div>
+                    <input type="file" multiple @change="handleFile" />
+                </div>
+
+                <div v-else>
+                    <div class="mb-6 flex border-t pt-2 items-center gap-3">
+                        <label class="block mb-1 text-sm">첨부파일</label>
+                    </div>
+
+                    <div v-if="form.existingFiles.length > 0" class="mb-2">
+                        <div v-for="(file, i) in form.existingFiles" :key="i" class="flex items-center gap-2">
+                            <a :href="`/api/download/${encodeURIComponent(file)}`">{{ file }}</a>
+                            <button @click="removeExistingFile(file)">X</button>
+                        </div>
+                    </div>
+
+                    <input type="file" multiple @change="handleFile" />
+                </div>
+
+                <div class="text-right">
+                    <button v-if="userbeneStore.isEditMode" @click="updateCancel" class="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 mr-2 rounded-full">수정취소</button>
+                    <button v-if="!userbeneStore.isEditMode" @click="temporaryStorage" class="bg-yellow-400 hover:bg-yellow-500 text-white px-6 py-2 mr-2 rounded-full">임시저장</button>
+                    <button @click="userbeneStore.isEditMode ? update() : submit()" class="bg-green-400 hover:bg-green-500 text-white px-6 py-2 rounded-full">
+                        {{ userbeneStore.isEditMode ? '수정' : '등록' }}
+                    </button>
+                </div>
             </div>
         </div>
     </div>
