@@ -15,6 +15,7 @@ import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 const user_role = userStore.role;
+
 // 오른쪽에서 담당자 지정할 때 쓸 컴포넌트
 import ManagerAssignForm from '@/components/common/ManagerAssignForm.vue';
 
@@ -56,7 +57,6 @@ const confirmForm = () => {
 // const confirmForm = () => {
 //     selectedForm.value = dropdownValue.value;
 // };
-
 
 import { useRoute } from 'vue-router';
 const route = useRoute();
