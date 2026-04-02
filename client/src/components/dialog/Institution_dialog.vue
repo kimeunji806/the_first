@@ -27,19 +27,16 @@ const getInstitutionList = async () => {
 };
 const emit = defineEmits(['update:visible', 'selectInstitution']);
 
-const selectInstitution = (item) => {
-    emit('selectInstitution', item.name); // 또는 item 전체
-    emit('update:visible', false);
-};
-
 watch(
-    () => notice.institution_no,
+    () => notice.value.institution_no,
     (val) => {
         if (!val) return;
 
         const selected = dropdownValues.value.find((item) => item.institution_no === val);
 
-        emit('selectInstitution', selected.institution_name);
+        if (!selected) return;
+
+        emit('selectInstitution', selected);
         emit('update:visible', false);
     }
 );

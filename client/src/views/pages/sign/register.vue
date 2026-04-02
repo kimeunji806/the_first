@@ -26,8 +26,12 @@ const getMissingFields = () => {
     if (!info.tel?.trim()) missing.push('연락처');
     if (!info.institution?.trim()) missing.push('기관');
 
-    if (isGeneralUser.value && !info.address?.trim()) {
-        missing.push('주소');
+    if (isGeneralUser.value) {
+        const isAddressEmpty = !form.zonecode || !form.roadAddress || !form.detailAddress;
+
+        if (isAddressEmpty) {
+            missing.push('주소');
+        }
     }
 
     return missing;
@@ -36,6 +40,10 @@ const form = reactive({
     zonecode: '',
     roadAddress: '',
     detailAddress: ''
+});
+
+const formdata = computed(() => {
+    return form.zonecode + ' ' + form.roadAddress + ' ' + form.detailAddress;
 });
 // const user_account = ref('');
 const info = reactive({
@@ -46,8 +54,8 @@ const info = reactive({
     user_pwd: '',
     user_email: '',
     tel: '',
-
-    institution: ''
+    institution: '',
+    institution_no: null
 });
 
 const sendCode = async (email) => {
@@ -127,36 +135,36 @@ const addUserInfo = async () => {
     if (!isEmailVerified.value) {
         alert('이메일 인증을 완료해주세요.');
         return;
+    } else {
+        let data = {
+            role: info.role,
+            user_name: info.user_name,
+            user_id: info.user_id,
+            user_pwd: info.user_pwd,
+            user_email: info.user_email,
+            tel: info.tel,
+            address: formdata.value,
+            institution: info.institution_no
+        };
+
+        console.log(data);
+
+        let result = await fetch(`/api/users`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            // .then((res) => res.json())
+            .catch((err) => console.log(err));
+        // if (result.status == 'success') {
+        //     router.resolve('/sign/login');
+        // } else {
+        //     console.log('등록되지않았습니다.');
+        //     inPrinted.value = true;
+        // }
     }
-
-    let data = {
-        role: info.role,
-        user_name: info.user_name,
-        user_id: info.user_id,
-        user_pwd: info.user_pwd,
-        user_email: info.user_email,
-        tel: info.tel,
-        address: form,
-        institution: 1
-    };
-
-    console.log(data);
-
-    let result = await fetch(`/api/users`, {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-        // .then((res) => res.json())
-        .catch((err) => console.log(err));
-    // if (result.status == 'success') {
-    //     router.resolve('/sign/login');
-    // } else {
-    //     console.log('등록되지않았습니다.');
-    //     inPrinted.value = true;
-    // }
 };
 const historyDialog = ref(false);
 const openHistoryModal = () => {
@@ -233,7 +241,15 @@ const checked = ref(false);
                         </template>
                         <label for="institution" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">기관</label>
                         <InputText id="institution" placeholder="기관을 선택해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.institution" @click="openHistoryModal" readonly />
-                        <SurveyHistoryModal v-model:visible="historyDialog" @selectInstitution="info.institution = $event" />
+                        <SurveyHistoryModal
+                            v-model:visible="historyDialog"
+                            @selectInstitution="
+                                (item) => {
+                                    info.institution = item.institution_name;
+                                    info.institution_no = item.institution_no;
+                                }
+                            "
+                        />
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8"></div>
                         <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
                     </div>
