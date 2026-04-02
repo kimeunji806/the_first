@@ -32,7 +32,7 @@ const MENU = {
     NOTICE: { label: '공지사항', to: '/notice', icon: 'pi pi-bell' },
 
     // 일반사용자 메뉴
-    SURVEY_INPUT: { label: '지원신청서 관리', to: '/survey/input', icon: 'pi pi-file-edit' },
+    SURVEY_INPUT: { label: '지원신청서 등록', to: '/survey/input', icon: 'pi pi-file-edit' },
 
     // 시스템관리자 메뉴
     SURVEY: { label: '지원신청서 관리', to: '/survey', icon: 'pi pi-file-edit' },

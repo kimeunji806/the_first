@@ -58,13 +58,10 @@ router.beforeEach((to, from, next) => {
     }
     if (userStore.role == 'e1' && to.path === '/') {
         return next('/dashboard_user'); // 일반사용자 로그인시 일반사용자의 지원신청내역으로 이동
-
     }
     if (userStore.role == 'e4' && to.path === '/') {
-        return next('/sysadmin/institution-list'); // 시스템 관리자 로그인시 /로 안가고 기관목록으로 이동
-        
+        return next('/sysadmin/institutions'); // 시스템 관리자 로그인시 /로 안가고 기관목록으로 이동
     }
-
 
     // 승인된 유저가 승인대기 접근 막기
     if (userStore.approval === 1 && to.path === '/sign/access') {

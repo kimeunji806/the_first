@@ -104,6 +104,13 @@ function searchAddress() {
     }).open();
 }
 
+function cancelEdit() {
+    router.push({
+        path: '/admin/institutioninfo',
+        query: { tab: '1' }
+    });
+}
+
 // 컴포넌트 시작시 데이터 조회
 onBeforeMount(findAllInfo);
 </script>
@@ -160,7 +167,8 @@ onBeforeMount(findAllInfo);
                         </Column>
                     </DataTable>
                 </div>
-                <div class="flex justify-end mt-4">
+                <div class="flex gap-2 justify-end mt-2">
+                    <Button label="취소" severity="secondary" outlined @click="cancelEdit"></Button>
                     <Button label="저장" @click="save"></Button>
                 </div>
             </div>

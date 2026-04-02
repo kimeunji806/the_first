@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import logoImage from '@/assets/logo/logo2.png';
 
@@ -12,11 +12,24 @@ const findForm = ref({
 });
 
 const isVerified = ref(false);
+const isUserMatched = ref(false);
 
 // 타이머
 const timer = ref(180);
 let interval = null;
 const isExpired = ref(false);
+
+// 아이디/이메일 바꾸면 기존 인증 상태 초기화
+watch(
+    () => [findForm.value.user_id, findForm.value.email],
+    () => {
+        isVerified.value = false;
+        isUserMatched.value = false;
+        findForm.value.auth_code = '';
+        isExpired.value = false;
+        clearInterval(interval);
+    }
+);
 
 // 타이머 시작
 const startTimer = () => {
@@ -50,6 +63,46 @@ const formatTime = computed(() => {
     return `${min}:${sec}`;
 });
 
+// 아이디 및 이메일 DB 일치 확인 함수
+const checkUserMatch = async () => {
+    if (!findForm.value.user_id) {
+        alert('아이디를 입력해주세요.');
+        return false;
+    }
+    if (!findForm.value.email) {
+        alert('이메일을 입력해주세요.');
+        return false;
+    }
+    try {
+        const checkRes = await fetch('/api/user/check-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: findForm.value.user_id,
+                email: findForm.value.email
+            })
+        });
+
+        const checkData = await checkRes.json();
+
+        if (!checkRes.ok || !checkData.status) {
+            isUserMatched.value = false;
+            alert(checkData.message || '아이디 또는 이메일이 일치하지 않습니다.');
+            return false;
+        }
+
+        isUserMatched.value = true;
+        return true;
+    } catch (err) {
+        console.error(err);
+        isUserMatched.value = false;
+        alert('사용자 확인 중 오류가 발생했습니다.');
+        return false;
+    }
+};
+
 // 이메일 인증번호 발송(이메일 인증)
 const sendCode = async (email) => {
     if (!findForm.value.user_id) {
@@ -61,22 +114,10 @@ const sendCode = async (email) => {
         return;
     }
     try {
-        // 아이디가 실제 회원인지 확인
-        const checkRes = await fetch('/api/user/check-user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: findForm.value.user_id
-            })
-        });
-        const checkData = await checkRes.json();
+        // 아이디 및 이메일 실제 회원인지 확인
+        const isValidUser = await checkUserMatch();
+        if (!isValidUser) return;
 
-        if (!checkRes.ok || !checkData.status) {
-            alert(checkData.message || '존재하지 않는 아이디입니다.');
-            return;
-        }
         // 사용자 확인 성공 시에만 메일 발송
         const res = await fetch('/api/mail', {
             method: 'POST',
@@ -89,6 +130,7 @@ const sendCode = async (email) => {
         });
 
         await res.json();
+        isVerified.value = false;
         startTimer();
         alert('인증번호가 발송되었습니다.');
     } catch (err) {
@@ -106,6 +148,9 @@ const verifyCode = async (code) => {
         alert('인증시간이 만료되었습니다. 다시 인증해주세요.');
         return;
     }
+    // 인증 확인 전에 아이디+이메일 다시 일치 확인
+    const isValidUser = await checkUserMatch();
+    if (!isValidUser) return;
     try {
         const emailData = {
             user_email: findForm.value.email,

@@ -2,11 +2,18 @@ const { pool } = require("../DAO");
 const noticeSql = require("../sql/notice");
 
 // 공지사항 조회(기관별)
-const selectAllNotice = async (institutionNo) => {
+const selectAllNotice = async (institutionNo, keyword = "") => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.execute(noticeSql.selectAllNotice, [institutionNo]);
+    const rows = await conn.execute(noticeSql.selectAllNotice, [
+      institutionNo,
+      keyword,
+      keyword,
+      keyword,
+      keyword,
+      keyword,
+    ]);
     return rows || [];
   } catch (err) {
     console.log(err);
@@ -16,11 +23,17 @@ const selectAllNotice = async (institutionNo) => {
 };
 
 // 공지사항 조회(전체 : 시스템관리자)
-const selectAllNoticeAdmin = async () => {
+const selectAllNoticeAdmin = async (keyword = "") => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.execute(noticeSql.selectAllNoticeAdmin);
+    const rows = await conn.execute(noticeSql.selectAllNoticeAdmin, [
+      keyword,
+      keyword,
+      keyword,
+      keyword,
+      keyword,
+    ]);
     return rows || [];
   } catch (err) {
     console.log(err);
@@ -160,6 +173,12 @@ const selectNoticeWriter = async (noticeNo) => {
   }
 };
 
+// 첨부파일 삭제
+const deleteNoticeFile = async (conn, fileNo) => {
+  const result = await conn.execute(noticeSql.deleteNoticeFile, [fileNo]);
+  return result;
+};
+
 module.exports = {
   selectAllNotice,
   selectAllNoticeAdmin,
@@ -171,4 +190,5 @@ module.exports = {
   insertNoticeFile,
   selectFileByFileNo,
   selectNoticeWriter,
+  deleteNoticeFile,
 };

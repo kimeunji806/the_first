@@ -109,12 +109,12 @@ const insTel = async (no) => {
 };
 
 // 비밀번호 찾기
-const findUserById = async (userId) => {
+const findUserByIdAndEmail = async (userId) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
 
-    let rows = await conn.query(userSql.findUserById, [userId]);
+    let rows = await conn.query(userSql.findUserByIdAndEmail, [userId, email]);
     return rows[0] || null;
   } catch (err) {
     console.log(err);
@@ -151,6 +151,6 @@ module.exports = {
   access,
   signX,
   insTel,
-  findUserById,
+  findUserByIdAndEmail,
   updatePw,
 };

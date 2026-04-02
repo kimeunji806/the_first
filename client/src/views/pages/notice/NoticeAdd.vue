@@ -2,19 +2,18 @@
 import { onBeforeMount, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import notice_index from '@/router/notice_index';
 
 const router = useRouter();
 const userStore = useUserStore();
 
 const notice = ref({
     notice_title: '',
-    notice_content: ''
+    notice_content: '',
+    institution_no: null
 });
 
 const files = ref([]);
 const dropdownValues = ref([]);
-const dropdownValue = ref(null);
 
 // 파일 선택
 const handleFileChange = (e) => {
@@ -27,15 +26,35 @@ const removeFile = (index) => {
     files.value.splice(index, 1);
 };
 
+// 기관 목록 조회
+const getInstitutionList = async () => {
+    try {
+        const res = await fetch('/api/institution');
+        const data = await res.json();
+        dropdownValues.value = data;
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 // 공지사항 등록
 const createNotice = async () => {
     try {
+        // 시스템관리자는 기관 선택 필수!
+        if (userStore.role === 'e4' && !notice.value.institution_no) {
+            alert('기관을 선택해주세요.');
+            return;
+        }
+
         const formData = new FormData();
 
         formData.append('notice_title', notice.value.notice_title);
         formData.append('notice_content', notice.value.notice_content);
         formData.append('user_no', userStore.user_no);
-        formData.append('institution_no', userStore.institution);
+
+        // 시스템관리자는 선택한 기관, 그 외는 본인 기관 자동 저장
+        const institutionNo = userStore.role === 'e4' ? notice.value.institution_no : userStore.institution;
+        formData.append('institution_no', institutionNo);
 
         // 파일 여러 개
         for (let i = 0; i < files.value.length; i++) {
@@ -54,26 +73,22 @@ const createNotice = async () => {
     }
 };
 
-// 기관 선택(시스템관리자만)
-const handelChange = async (e) => {
-    InstitutionInfo.value = e.value.institution;
-};
-
 onBeforeMount(() => {
-    fetch(`/api/noticeList/${notice_index}`)
-        .then((res) => res.json())
-        .then((data) => {
-            dropdownValues.value = data;
-        })
-        .catch((err) => console.log(err));
+    // 시스템관리자(e4)일 때만 기관 목록 조회
+    if (userStore.role === 'e4') {
+        getInstitutionList();
+    }
 });
 </script>
 
 <template>
     <div class="card border-none bg-transparent p-0">
         <div class="text-xl font-bold mb-4 ml-1">글 등록하기</div>
-        <div class="flex mb-3">
-            <Select v-if="filteredApprovalForm.length === 0" v-model="dropdownValue" :options="filteredPriority" optionLabel="priority_no" placeholder="기관" />
+        <div class="flex mb-3" v-if="userStore.role === 'e4'">
+            <div class="label-box">기관</div>
+            <div class="flex-1">
+                <Select v-model="notice.institution_no" :options="dropdownValues" optionLabel="institution_name" optionValue="institution_no" placeholder="기관 선택" class="w-full" />
+            </div>
         </div>
         <div class="flex mb-3">
             <div class="label-box">제목</div>

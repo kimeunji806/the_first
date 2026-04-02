@@ -70,10 +70,11 @@ WHERE institution_no = ?
 `;
 
 // 비밀번호 찾기
-const findUserById = `
+const findUserByIdAndEmail = `
 SELECT user_id,email
 FROM user
 WHERE user_id = ?
+AND   email = ?
 `;
 
 // 비밀번호 변경
@@ -94,6 +95,6 @@ module.exports = {
   signRefuse,
   signRefuse2,
   instelSelect,
-  findUserById,
+  findUserByIdAndEmail,
   updatePw,
 };

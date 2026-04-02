@@ -19,6 +19,22 @@ const selectAllInstitution = async (institutionNo) => {
   }
 };
 
+// 기관 목록 전체조회(셀렉박스용)
+const selectInstitutionList = async () => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+
+    const rows = await conn.execute(institutionSql.selectInstitutionList);
+
+    return rows || [];
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 // 기관정보 수정
 const updateInstitution = async (institution) => {
   let conn = null;
@@ -44,4 +60,8 @@ const updateInstitution = async (institution) => {
   }
 };
 
-module.exports = { selectAllInstitution, updateInstitution };
+module.exports = {
+  selectAllInstitution,
+  selectInstitutionList,
+  updateInstitution,
+};

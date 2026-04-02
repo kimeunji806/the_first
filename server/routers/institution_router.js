@@ -1,7 +1,6 @@
 const express = require("express");
-const router = express.Router();
-
 const institutionService = require("../services/institution_service");
+const router = express.Router();
 
 // 기관정보 조회
 router.get("/admin/institutioninfo/:institution_no", async (req, res) => {
@@ -9,6 +8,16 @@ router.get("/admin/institutioninfo/:institution_no", async (req, res) => {
     let institutionNo = req.params.institution_no;
     let result = await institutionService.findAll(institutionNo);
     res.json(result || {});
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+// 기관 목록 전체조회(셀렉박스용)
+router.get("/institution", async (req, res) => {
+  try {
+    let result = await institutionService.findInstitutionList();
+    res.json(result || []);
   } catch (err) {
     console.log(err);
   }

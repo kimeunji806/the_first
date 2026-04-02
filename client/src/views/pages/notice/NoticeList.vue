@@ -2,41 +2,12 @@
 import { ref, onBeforeMount, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import { FilterMatchMode } from '@primevue/core/api';
 
 const router = useRouter();
 const userStore = useUserStore();
 
 const notice = ref([]);
-
-// 공지사항 전체조회
-const findAllNotice = async () => {
-    try {
-        const role = userStore.role;
-        const insNo = userStore.institution;
-
-        let url = '';
-
-        // 시스템관리자 : 전체 공지 조회
-        if (role === 'e4') {
-            url = `/api/notice`;
-        } else {
-            // 일반이용자/기관담당자/기관관리자 : 본인 기관 공지만 조회
-            url = `/api/notice/${insNo}`;
-        }
-
-        const res = await fetch(url);
-        const data = await res.json();
-        const list = Array.isArray(data) ? data : [data];
-
-        notice.value = list.map((item) => ({
-            ...item,
-            create_at_formatted: dateFormat(item.created_at)
-        }));
-    } catch (err) {
-        console.error(err);
-    }
-};
+const keyword = ref('');
 
 // 날짜포맷
 const dateFormat = (dateVal) => {
@@ -47,10 +18,68 @@ const dateFormat = (dateVal) => {
     return `${year}-${month}-${day}`;
 };
 
-// 검색
-const filters = ref({
-    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
-});
+// 공지사항 전체조회
+const findAllNotice = async () => {
+    try {
+        const role = userStore.role;
+        const insNo = userStore.institution;
+
+        let url = '';
+
+        // 검색어가 있으면 query string으로 붙여서 DB 검색
+        const searchQuery = keyword.value.trim() ? `?keyword=${encodeURIComponent(keyword.value.trim())}` : '';
+
+        // 시스템관리자 : 전체 공지 조회
+        if (role === 'e4') {
+            url = `/api/notice${searchQuery}`;
+        } else {
+            // 일반이용자/기관담당자/기관관리자 : 본인 기관 공지만 조회
+            url = `/api/notice/${insNo}${searchQuery}`;
+        }
+
+        const res = await fetch(url);
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+
+        notice.value = list.map((item) => ({
+            ...item,
+            create_at_formatted: dateFormat(item.created_at)
+        }));
+    } catch (err) {
+        console.error(err);
+    }
+};
+
+// 검색 실행
+const searchNotice = () => {
+    findAllNotice();
+};
+
+// 엔터 검색
+const handleSearchEnter = (e) => {
+    if (e.key === 'Enter') {
+        findAllNotice();
+    }
+};
+
+// 검색 초기화
+const resetSearch = async () => {
+    keyword.value = '';
+    await findAllNotice();
+};
+
+// 내용 검색일 떄만 내용 표시
+const shouldShowContent = (row) => {
+    const trimmedKeyword = keyword.value.trim().toLowerCase();
+
+    // 검색어 없으면 내용 숨김
+    if (!trimmedKeyword) return false;
+
+    const content = (row.notice_content || '').toLowerCase();
+
+    // notice_content에 검색어가 실제 포함될 때만 true
+    return content.includes(trimmedKeyword);
+};
 
 // 공지사항 등록 권한 체크
 const canManageNotice = computed(() => {
@@ -73,15 +102,14 @@ onBeforeMount(() => {
         <div class="flex justify-between items-center mb-3">
             <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium">공지사항</div>
 
-            <div class="relative">
-                <InputText v-model="filters.global.value" placeholder="검색" class="pr-10 w-64" />
-                <i class="pi pi-search text-xl text-gray-500 absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"></i>
+            <div class="flex gap-2">
+                <InputText v-model="keyword" placeholder="제목 / 내용 / 작성자 / 작성일자 검색" class="w-72" @keydown="handleSearchEnter" />
+                <Button icon="pi pi-search" @click="searchNotice" />
+                <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
             </div>
         </div>
         <DataTable
             :value="notice"
-            :filters="filters"
-            :globalFilterFields="['notice_title', 'notice_content', 'create_at_formatted', 'name']"
             class="w-full"
             :pt="{
                 headerRow: { class: 'text-center' },
@@ -103,10 +131,15 @@ onBeforeMount(() => {
             </Column>
             <Column header="제목" class="text-center">
                 <template #body="slotProps">
-                    <div>
-                        <span class="cursor-pointer inline-block" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)">
-                            {{ slotProps.data.notice_title }}
-                        </span>
+                    <div class="text-left">
+                        <div>
+                            <span class="cursor-pointer inline-block" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)">
+                                {{ slotProps.data.notice_title }}
+                            </span>
+                        </div>
+                        <div v-if="shouldShowContent(slotProps.data)" class="text-sm text-gray-500 mt-1 truncate">
+                            {{ slotProps.data.notice_content }}
+                        </div>
                     </div>
                 </template>
             </Column>

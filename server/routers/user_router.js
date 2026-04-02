@@ -54,9 +54,9 @@ router.get("/institution/:no", async (req, res) => {
 // 비밀번호 찾기
 router.post("/user/check-user", async (req, res) => {
   try {
-    const { user_id } = req.body;
+    const { user_id, email } = req.body;
 
-    const result = await userService.findUserById(user_id);
+    const result = await userService.findUserByIdAndEmail(user_id, email);
 
     res.send(result);
   } catch (err) {

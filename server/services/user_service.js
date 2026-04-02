@@ -70,8 +70,8 @@ const insTelService = async (no) => {
 };
 
 // 비밀번호 찾기
-const findUserById = async (userId) => {
-  const result = await userMapper.findUserById(userId);
+const findUserByIdAndEmail = async (userId) => {
+  const result = await userMapper.findUserByIdAndEmail(userId, email);
 
   return {
     status: !!result,
@@ -99,6 +99,6 @@ module.exports = {
   signAccess,
   signRefuseService,
   insTelService,
-  findUserById,
+  findUserByIdAndEmail,
   resetUserPassword,
 };
