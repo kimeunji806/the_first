@@ -136,6 +136,7 @@ SELECT b.beneficiaries_name as beneficiaries_name
         ,g.user_name as guardian_name
         ,p.priority_id as priority_id
         , cc.code_name AS priority_name
+        ,p.approval as approval
         ,b.gender as gender
         ,c.code_name as gender_name
         ,DATE_FORMAT(b.birth, '%Y-%m-%d')  as birth
@@ -143,8 +144,8 @@ SELECT b.beneficiaries_name as beneficiaries_name
         ,b.beneficiaries_no as beneficiaries_no
         ,s.manager_no as manager_no
         ,s.sub_manager_no as sub_manager_no
-        ,u.user_name as sub_manager_name
-        ,h.user_name as manager_name
+        ,u.user_name as manager_name
+        ,h.user_name as sub_manager_name
         ,s.survey_no as survey_no
         ,b.institution_no as institution_no
 FROM survey_input s

@@ -18,14 +18,18 @@ onBeforeMount(async () => {
     } catch {
         (err) => console.log(err);
     }
+    console.log(question.value[0]?.subs[0]?.questions[0]?.answer_name);
 });
 </script>
 
 <template>
     <div class="card h-6/10 flex flex-col gap 4">
         <div class="font-semibold text-xl mb-4">지원신청서</div>
+
+        <div v-if="question[0]?.subs?.[0]?.questions?.[0]?.answer_name == null" class="font-semibold text-l mb-4">지원신청내역이 없습니다.</div>
         <div class="card h-full flex flex-col gap-4 overflow-y-auto">
-            <div v-for="mainItem in question" :key="mainItem.main_no">
+            <div v-if="question[0]?.subs?.[0]?.questions?.[0]?.answer_name != null" class="text-sm text-gray-600">작성일 {{ question[0]?.created_at }}</div>
+            <div v-if="question[0]?.subs?.[0]?.questions?.[0]?.answer_name != null" v-for="mainItem in question" :key="mainItem.main_no">
                 <div v-for="subItem in mainItem.subs" :key="subItem.sub_no">
                     <span class="text-xl font-bold text-surface-900 dark:text-surface-0">
                         {{ mainItem.main_title }}

@@ -137,7 +137,8 @@ onBeforeMount(() => {
                 <Button label="지원신청하기" class="w-full md:w-[8.5rem] mb-8" v-on:click="surveyForm()"></Button>
             </div>
         </div>
-        <div class="md:w-4/5">
+        <div v-if="info[0].is_finish == 'N'" class="font-semibold text-xl mb-4">종결이 안된 지원신청내역이 있습니다.</div>
+        <div v-if="info[0].is_finish == 'Y'" class="md:w-4/5">
             <div class="h-9/10">
                 <div class="font-semibold text-xl mb-4">지원신청하기</div>
                 <div class="card h-full flex flex-col gap-4 overflow-y-auto">

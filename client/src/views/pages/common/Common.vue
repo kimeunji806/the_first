@@ -57,7 +57,6 @@ const confirmForm = () => {
 //     selectedForm.value = dropdownValue.value;
 // };
 
-
 import { useRoute } from 'vue-router';
 const route = useRoute();
 const selectNo = Number(route.params.no);
@@ -143,6 +142,10 @@ const isAssigned = computed(() => {
     return !!targetInfo.value.manager_no;
 });
 
+const filteredApprovalForm = computed(() => {
+    return user.value.filter((item) => item.approval === 'a1');
+});
+
 const handleAssigned = (data) => {
     targetInfo.value.manager_no = data.manager_no;
     targetInfo.value.sub_manager_no = data.sub_manager_no;
@@ -166,7 +169,8 @@ const handleAssigned = (data) => {
                             <div class="w-full rounded-md p-4">{{ user[0]?.guardian_name }}</div>
 
                             <div class="w-full rounded-md p-4">우선순위</div>
-                            <div class="w-full rounded-md p-4">{{ user[0]?.priority_name }}</div>
+                            <div v-if="user[0]?.priority_name == null" class="w-full rounded-md p-4">미지정</div>
+                            <div v-if="filteredApprovalForm.length > 0" class="w-full rounded-md p-4">{{ filteredApprovalForm[0]?.priority_name }}</div>
 
                             <div class="w-full rounded-md p-4">성별</div>
                             <div class="w-full rounded-md p-4">{{ user[0]?.gender_name }}</div>
