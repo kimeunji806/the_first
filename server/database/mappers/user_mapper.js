@@ -108,8 +108,24 @@ const insTel = async (no) => {
   }
 };
 
+// 아이디 찾기
+const findUserIdByEmail = async (email) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+
+    let rows = await conn.query(userSql.findUserIdByEmail, [email]);
+    return rows[0] || null;
+  } catch (err) {
+    console.log(err);
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 // 비밀번호 찾기
-const findUserByIdAndEmail = async (userId) => {
+const findUserByIdAndEmail = async (userId, email) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
@@ -143,6 +159,20 @@ const updatePw = async (userId, userPw) => {
   }
 };
 
+// 회원탈퇴
+const withdrawUser = async (email) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(userSql.withdrawUser, [email]);
+    return result;
+  } catch (err) {
+    console.log();
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 module.exports = {
   selectAllUser,
   insertUser,
@@ -151,6 +181,8 @@ module.exports = {
   access,
   signX,
   insTel,
+  findUserIdByEmail,
   findUserByIdAndEmail,
   updatePw,
+  withdrawUser,
 };

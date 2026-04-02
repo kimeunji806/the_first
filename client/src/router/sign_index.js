@@ -29,5 +29,20 @@ export default [
         path: '/sign/reset-password',
         name: 'resetPassword',
         component: () => import('@/views/pages/sign/ResetPassword.vue')
+    },
+    {
+        path: '/sign/find-id',
+        name: 'findId',
+        component: () => import('@/views/pages/sign/FindId.vue')
+    },
+    {
+        path: '/sign/find-id-result',
+        name: 'findIdResult',
+        component: () => import('@/views/pages/sign/FindIdResult.vue')
+    },
+    {
+        path: '/sign/with-draw',
+        name: 'withDraw',
+        component: () => import('@/views/pages/sign/WithDraw.vue')
     }
 ];

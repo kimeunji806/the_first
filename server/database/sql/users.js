@@ -69,6 +69,13 @@ FROM institution
 WHERE institution_no = ?
 `;
 
+// 아이디 찾기
+const findUserIdByEmail = `
+SELECT user_id, email
+FROM user
+WHERE email = ?
+`;
+
 // 비밀번호 찾기
 const findUserByIdAndEmail = `
 SELECT user_id,email
@@ -84,6 +91,12 @@ SET user_pw = ?
 WHERE user_id = ?
 `;
 
+// 회원탈퇴
+const withdrawUser = `
+DELETE FROM user
+WHERE email = ?
+`;
+
 module.exports = {
   selectAllUser,
   loginUser,
@@ -95,6 +108,8 @@ module.exports = {
   signRefuse,
   signRefuse2,
   instelSelect,
+  findUserIdByEmail,
   findUserByIdAndEmail,
   updatePw,
+  withdrawUser,
 };
