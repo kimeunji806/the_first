@@ -1,5 +1,5 @@
 <script setup>
-import { ref,onBeforeMount } from 'vue';
+import { ref, onBeforeMount } from 'vue';
 import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { useUserStore } from '@/stores/user';
 
@@ -12,20 +12,16 @@ const logOut = () => {
 const userIns = userStore.institution;
 const institutionTel = ref('');
 
-
 const insTel = async (no) => {
-    const resp = await fetch(`/api/institution/${no}`)
-    const data = await resp.json()
-    console.log(data)
-    institutionTel.value = data.tel
-}
+    const resp = await fetch(`/api/institution/${no}`);
+    const data = await resp.json();
+    console.log(data);
+    institutionTel.value = data.tel;
+};
 
 onBeforeMount(() => {
     insTel(userIns);
-})
-
-
-
+});
 </script>
 
 <template>
@@ -41,17 +37,14 @@ onBeforeMount(() => {
                         <h1 class="text-surface-900 dark:text-surface-0 font-bold text-4xl lg:text-5xl mb-2">승인대기</h1>
                         <span class="text-muted-color mb-8">관리자의 승인을 기다리고 있습니다</span>
                         <img src="/demo/images/access/asset-access.svg" alt="Access denied" class="mb-8" width="80%" />
-                        <i class = "pi pi-exclamation-circle"> 문의사항은 기관으로 연락 바랍니다</i>
-                        <span class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm">
-                            기관대표 번호 : {{ institutionTel }}
-                        </span>
+                        <i class="pi pi-exclamation-circle"> 문의사항은 기관으로 연락 바랍니다</i>
+                        <span class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm"> 기관대표 번호 : {{ institutionTel }} </span>
                         <div class="col-span-12 mt-8 text-center">
-                            
                             <Button as="router-link" label="로그인페이지로 돌아가기" to="/sign/login" severity="warn" @click="logOut" />
                         </div>
                         <div class="col-span-12 mt-8 text-center">
                             <Button as="router-link" label="로그아웃" to="/sign/login" class="accessBtn" @click="logOut" />
-                            <Button as="router-link" label="회원탈퇴" to="/sign/login" class="accessBtn" />
+                            <Button as="router-link" label="회원탈퇴" to="/sign/with-draw" class="accessBtn" />
                         </div>
                     </div>
                 </div>

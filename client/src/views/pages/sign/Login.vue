@@ -37,6 +37,11 @@ const userLogin = async () => {
     }
 };
 
+// 아이디 찾기 이동
+const goToFindId = () => {
+    router.push('/sign/find-id');
+};
+
 // 비밀번호 찾기 이동
 const goToFindPassword = () => {
     router.push('/sign/find-password');
@@ -78,7 +83,7 @@ const goToFindPassword = () => {
                         <Password id="password1" v-model="userPassword" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
 
                         <div class="flex items-center justify-between mt-2 mb-8 gap-8">
-                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">아이디 찾기</span>
+                            <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="goToFindId">아이디 찾기</span>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary" @click="goToFindPassword">비밀번호 찾기</span>
                         </div>
                         <Button label="로그인" class="w-full" @click="userLogin"></Button>

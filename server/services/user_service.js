@@ -69,8 +69,20 @@ const insTelService = async (no) => {
   return result;
 };
 
+// 아이디 찾기
+const findUserIdByEmail = async (email) => {
+  const result = await userMapper.findUserIdByEmail(email);
+
+  return {
+    retCode: !!result,
+    user_id: result ? result.user_id : null,
+    target: result || null,
+    message: result ? "아이디 조회 성공" : "등록된 이메일이 없습니다.",
+  };
+};
+
 // 비밀번호 찾기
-const findUserByIdAndEmail = async (userId) => {
+const findUserByIdAndEmail = async (userId, email) => {
   const result = await userMapper.findUserByIdAndEmail(userId, email);
 
   return {
@@ -91,6 +103,16 @@ const resetUserPassword = async (userId, userObj) => {
   };
 };
 
+// 회원탈퇴
+const withdrawUser = async (email) => {
+  try {
+    const result = await userMapper.withdrawUser(email);
+    return result.affectedRows > 0;
+  } catch (err) {
+    console.log();
+  }
+};
+
 module.exports = {
   findAll,
   loginService,
@@ -99,6 +121,8 @@ module.exports = {
   signAccess,
   signRefuseService,
   insTelService,
+  findUserIdByEmail,
   findUserByIdAndEmail,
   resetUserPassword,
+  withdrawUser,
 };

@@ -4,6 +4,9 @@
 // onMounted: 화면 처음 들어올 때 실행
 import { computed, ref, onMounted } from 'vue';
 
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
 // 왼쪽 목록 / 오른쪽 상세 컴포넌트
 import TargetList from './TargetList.vue';
 import TargetDetail from './TargetDetail.vue';
@@ -138,6 +141,11 @@ const selectedTarget = computed(() => {
 onMounted(() => {
     loadTargets();
 });
+
+// 회원탈퇴 페이지 이동_은지
+function goToWithdraw() {
+    router.push('/sign/with-draw');
+}
 </script>
 
 <template>
@@ -169,6 +177,9 @@ onMounted(() => {
                     <div>
                         <TargetDetail :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
                     </div>
+                </div>
+                <div class="flex justify-between items-center mt-8 border-t border-surface-200 dark:border-surface-700 pt-4">
+                    <Button label="회원탈퇴" severity="danger" outlined @click="goToWithdraw" />
                 </div>
             </div>
         </div>

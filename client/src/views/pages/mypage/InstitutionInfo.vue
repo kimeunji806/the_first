@@ -44,6 +44,11 @@ function goEdit() {
     router.push('/institutioninfo/edit');
 }
 
+// 회원탈퇴 페이지 이동_은지
+function goToWithdraw() {
+    router.push('/sign/with-draw');
+}
+
 // 화면 처음 열릴 때 조회
 onMounted(() => {
     loadMyInfo();
@@ -96,7 +101,8 @@ onMounted(() => {
                     <div class="text-surface-900 dark:text-surface-0">{{ formatDate(info.created_at) }}</div>
                 </div>
 
-                <div class="flex justify-end pt-3">
+                <div class="flex justify-between pt-3">
+                    <Button label="회원탈퇴" severity="danger" outlined @click="goToWithdraw" />
                     <Button label="수정" @click="goEdit" />
                 </div>
             </div>

@@ -2,34 +2,22 @@
 import { ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import logoImage from '@/assets/logo/logo2.png';
+import { email } from '@vuelidate/validators';
 
 const router = useRouter();
 
 const findForm = ref({
-    user_id: '',
     email: '',
     auth_code: ''
 });
 
 const isVerified = ref(false);
-const isUserMatched = ref(false);
+const isCodeSent = ref(false);
 
 // 타이머
 const timer = ref(180);
 let interval = null;
 const isExpired = ref(false);
-
-// 값이 바뀌면 기존 인증 상태 초기화
-watch(
-    () => [findForm.value.user_id, findForm.value.email],
-    () => {
-        isVerified.value = false;
-        isUserMatched.value = false;
-        findForm.value.auth_code = '';
-        isExpired.value = false;
-        clearInterval(interval);
-    }
-);
 
 // 타이머 시작
 const startTimer = () => {
@@ -63,74 +51,58 @@ const formatTime = computed(() => {
     return `${min}:${sec}`;
 });
 
-// 아이디 및 이메일 DB 일치 확인 함수
-const checkUserMatch = async () => {
-    if (!findForm.value.user_id) {
-        alert('아이디를 입력해주세요.');
-        return false;
+// 값이 바뀌면 기존 인증 상태 초기화
+watch(
+    () => [findForm.value.email],
+    () => {
+        isVerified.value = false;
+        isCodeSent.value = false;
+        isExpired.value = false;
+        findForm.value.auth_code = '';
+        clearInterval(interval);
     }
+);
+
+// 이메일 인증번호 발송(이메일 인증)
+const sendCode = async () => {
     if (!findForm.value.email) {
         alert('이메일을 입력해주세요.');
-        return false;
+        return;
     }
     try {
-        const checkRes = await fetch('/api/user/check-user', {
+        // 이메일로 아이디 존재 여부 확인 + 아이디 조회
+        const checkRes = await fetch('/api/user/find-id', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                user_id: findForm.value.user_id,
                 email: findForm.value.email
             })
         });
 
         const checkData = await checkRes.json();
 
-        if (!checkRes.ok || !checkData.status) {
-            isUserMatched.value = false;
-            alert(checkData.message || '아이디 또는 이메일이 일치하지 않습니다.');
-            return false;
+        if (!checkData.retCode) {
+            alert(checkData.message || '등록된 이메일이 없습니다.');
+            return;
         }
 
-        isUserMatched.value = true;
-        return true;
-    } catch (err) {
-        console.error(err);
-        isUserMatched.value = false;
-        alert('사용자 확인 중 오류가 발생했습니다.');
-        return false;
-    }
-};
-
-// 이메일 인증번호 발송(이메일 인증)
-const sendCode = async (email) => {
-    if (!findForm.value.user_id) {
-        alert('아이디를 입력해주세요.');
-        return;
-    }
-    if (!email) {
-        alert('이메일을 입력해주세요.');
-        return;
-    }
-    try {
-        // 아이디 및 이메일 실제 회원인지 확인
-        const isValidUser = await checkUserMatch();
-        if (!isValidUser) return;
-
-        // 사용자 확인 성공 시에만 메일 발송
+        // 이메일 인증번호 발송
         const res = await fetch('/api/mail', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                email: email
+                email: findForm.value.email
             })
         });
 
         await res.json();
+
         isVerified.value = false;
+        isCodeSent.value = true;
         startTimer();
         alert('인증번호가 발송되었습니다.');
     } catch (err) {
@@ -140,21 +112,19 @@ const sendCode = async (email) => {
 
 // 인증 완료(인증하기)
 const verifyCode = async (code) => {
-    if (!code) {
+    if (!findForm.value.auth_code) {
         alert('인증번호를 입력해주세요.');
         return;
     }
+
     if (isExpired.value) {
         alert('인증시간이 만료되었습니다. 다시 인증해주세요.');
         return;
     }
-    // 인증 확인 전에 아이디+이메일 다시 일치 확인
-    const isValidUser = await checkUserMatch();
-    if (!isValidUser) return;
     try {
         const emailData = {
             user_email: findForm.value.email,
-            code: code
+            code: findForm.value.auth_code
         };
         const res = await fetch('/api/verify', {
             method: 'POST',
@@ -164,6 +134,7 @@ const verifyCode = async (code) => {
             body: JSON.stringify(emailData)
         });
         const data = await res.json();
+
         if (data.retCode === true) {
             isVerified.value = true;
             clearInterval(interval);
@@ -176,9 +147,19 @@ const verifyCode = async (code) => {
     }
 };
 
-// 아이디 찾기로 이동
-const goToFindId = () => {
-    router.push('/sign/find-Id');
+// 확인 버튼 → 아이디 확인 페이지 이동
+const goToResult = () => {
+    if (!isVerified.value) {
+        alert('이메일 인증을 완료해주세요.');
+        return;
+    }
+
+    router.push({
+        path: '/sign/find-id-result',
+        query: {
+            email: findForm.value.email
+        }
+    });
 };
 
 // 회원가입으로 이동
@@ -186,18 +167,16 @@ const goToRegister = () => {
     router.push('/sign/register');
 };
 
-// 비밀번호 재설정으로 이동
-const goToResetPassword = () => {
+// 비밀번호 찾기로 이동
+const goToFindPassword = () => {
     router.push({
-        path: '/sign/reset-password',
+        path: '/sign/find-password',
         query: {
-            user_id: findForm.value.user_id,
             email: findForm.value.email
         }
     });
 };
 </script>
-
 <template>
     <div class="flex h-screen m-0">
         <!-- 왼쪽 -->
@@ -208,18 +187,13 @@ const goToResetPassword = () => {
         <!-- 오른쪽 -->
         <div class="flex-1 flex items-center justify-center bg-white">
             <div class="w-96 xl:w-[480px] flex flex-col gap-5">
-                <h2 class="text-2xl font-bold text-center text-surface-800">비밀번호 찾기</h2>
-
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">아이디</label>
-                    <InputText v-model="findForm.user_id" placeholder="아이디를 입력하세요" size="large" fluid :disabled="isVerified" />
-                </div>
+                <h2 class="text-2xl font-bold text-center text-surface-800">아이디 찾기</h2>
 
                 <div class="flex flex-col gap-2">
                     <label class="font-semibold text-surface-700">이메일</label>
                     <InputGroup>
                         <InputText v-model="findForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
-                        <Button label="인증하기" severity="success" size="large" class="font-bold auth-btn" @click="sendCode(findForm.email)" :disabled="isVerified" />
+                        <Button label="인증하기" severity="success" size="large" class="font-bold auth-btn" @click="sendCode" :disabled="isVerified" />
                     </InputGroup>
                 </div>
 
@@ -239,12 +213,12 @@ const goToResetPassword = () => {
                 </div>
 
                 <div class="flex justify-end items-center gap-2 text-sm">
-                    <span class="link-text" @click="goToFindId">아이디 찾기</span>
-                    <Divider layout="vertical" class="!mx-0 !h-3" />
                     <span class="link-text" @click="goToRegister">회원가입</span>
+                    <Divider layout="vertical" class="!mx-0 !h-3" />
+                    <span class="link-text" @click="goToFindPassword">비밀번호 찾기</span>
                 </div>
 
-                <Button label="비밀번호 재설정" severity="success" size="large" fluid class="font-bold" :disabled="!isVerified" @click="goToResetPassword" />
+                <Button label="확인" severity="success" size="large" fluid class="font-bold" :disabled="!isVerified" @click="goToResult" />
             </div>
         </div>
     </div>
