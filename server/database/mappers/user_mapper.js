@@ -46,6 +46,19 @@ const approval = async (insNo) => {
   }
 };
 
+const approvalByAdmin = async () => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let rows = await conn.query(userSql.approvalByAdmin);
+    return rows;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
 const access = async (userId) => {
   let conn = null;
   const user = userId.userId;
@@ -176,6 +189,7 @@ module.exports = {
   insertUser,
   loginUser,
   approval,
+  approvalByAdmin,
   access,
   signX,
   insTel,

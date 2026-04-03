@@ -5,12 +5,14 @@ import SurveyHistoryModal from '@/components/dialog/Institution_dialog.vue';
 import router from '@/router';
 
 const selectedRole = ref('');
-import { reactive, ref, computed } from 'vue';
+import { reactive, ref, computed, watch, onUnmounted } from 'vue';
 const clickRole = async (role_name) => {
     selectedRole.value = role_name;
     info.role = role_name;
 };
 const isEmailVerified = ref(false);
+const isVerified = ref(false);
+const isUserMatched = ref(false);
 
 const isGeneralUser = computed(() => info.role === 'e1');
 const getMissingFields = () => {
@@ -72,12 +74,23 @@ const sendCode = async (email) => {
         .then((resp) => resp.json())
         .then((data) => {
             console.log(data);
+            startTimer();
             alert('메일 발송 성공');
         })
         .catch((err) => console.log(err));
 };
 
 const verifyCode = async (code) => {
+    if (!code) {
+        alert('인증번호를 입력해주세요.');
+        return;
+    }
+
+    if (isExpired.value) {
+        alert('인증시간이 만료되었습니다. 다시 인증번호를 받아주세요.');
+        return;
+    }
+
     let emailData = {
         user_email: info.user_email,
         code: code
@@ -95,6 +108,7 @@ const verifyCode = async (code) => {
 
     if (data.retCode === true) {
         isEmailVerified.value = true;
+        clearInterval(interval);
         alert('인증 성공');
     } else {
         isEmailVerified.value = false;
@@ -175,6 +189,54 @@ const openHistoryModal = () => {
     historyDialog.value = true;
 };
 
+// 타이머
+const timer = ref(180);
+let interval = null;
+const isExpired = ref(false);
+
+// 값이 바뀌면 기존 인증 상태 초기화
+watch(
+    () => info.user_email,
+    () => {
+        isEmailVerified.value = false;
+        info.user_account = '';
+        isExpired.value = false;
+        clearInterval(interval);
+    }
+);
+
+// 타이머 시작
+const startTimer = () => {
+    timer.value = 180;
+    isExpired.value = false;
+
+    clearInterval(interval);
+
+    interval = setInterval(() => {
+        if (timer.value > 0) {
+            timer.value--;
+        }
+
+        if (timer.value <= 0) {
+            clearInterval(interval);
+            isExpired.value = true;
+            alert('인증시간이 만료되었습니다.');
+        }
+    }, 1000);
+};
+
+// 컴포넌트 벗어나면 타이머 정리
+onUnmounted(() => {
+    clearInterval(interval);
+});
+
+// 타이머 포맷
+const formatTime = computed(() => {
+    const min = String(Math.floor(timer.value / 60)).padStart(2, '0');
+    const sec = String(timer.value % 60).padStart(2, '0');
+    return `${min}:${sec}`;
+});
+
 const checked = ref(false);
 </script>
 
@@ -224,12 +286,23 @@ const checked = ref(false);
                         <Password id="user_pwd" v-model="info.user_pwd" placeholder="비밀번호를 입력해주세요" :toggleMask="true" class="mb-4" fluid :feedback="false"></Password>
 
                         <label for="user_email" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">이메일</label>
-                        <InputText id="user_email" type="text" placeholder="이메일을 입력해주세요" class="w-full md:w-[22.8rem] mb-2" @input="isEmailVerified = false" v-model="info.user_email" />
-                        <Button label="인증번호전송" :fluid="false" v-on:click="sendCode(info.user_email)"></Button>
+                        <InputGroup class="mb-4">
+                            <InputText id="user_email" type="text" placeholder="이메일을 입력해주세요" v-model="info.user_email" :disabled="isEmailVerified" />
+                            <Button label="인증번호전송" class="font-bold auth-btn unified-btn" @click="sendCode(info.user_email)" :disabled="isEmailVerified" />
+                        </InputGroup>
 
-                        <label for="user_account"><br /></label>
-                        <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" class="w-full md:w-[26.5em] mb-8" @input="isEmailVerified = false" v-model="info.user_account" />
-                        <Button label="확인" :fluid="false" v-on:click="verifyCode(info.user_account)"></Button>
+                        <label for="user_account" class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">인증번호</label>
+                        <InputGroup class="mb-2">
+                            <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" v-model="info.user_account" class="pr-20" :disabled="isEmailVerified" />
+                            <InputGroupAddon class="timer-addon" v-if="!isEmailVerified">
+                                <span>{{ formatTime }}</span>
+                            </InputGroupAddon>
+
+                            <Button label="확인" class="font-bold auth-btn unified-btn" @click="verifyCode(info.user_account)" :disabled="isEmailVerified" />
+                        </InputGroup>
+
+                        <span class="text-red-500 text-sm block mb-8" v-if="!isEmailVerified"> * 이메일 인증을 진행해주세요. </span>
+                        <span class="text-blue-500 text-sm block mb-8" v-else> * 인증이 완료되었습니다. </span>
 
                         <label for="tel" class="block text-surface-900 dark:text-surface-0 font-medium text-xl mb-2">연락처</label>
                         <InputText id="tel" type="text" placeholder="전화번호를 입력해주세요" class="w-full md:w-[30rem] mb-8" v-model="info.tel" />
@@ -271,5 +344,26 @@ const checked = ref(false);
 .pi-eye-slash {
     transform: scale(1.6);
     margin-right: 1rem;
+}
+
+.auth-btn {
+    width: 110px !important;
+    flex-shrink: 0;
+}
+
+.timer-addon {
+    background: transparent !important;
+    border-left: none !important;
+    border-right: none !important;
+    color: #22c55e;
+    font-weight: 600;
+}
+
+.p-inputgroup .p-inputtext {
+    border-right: none !important;
+}
+
+.p-inputgroup .p-button {
+    border-left: none !important;
 }
 </style>

@@ -2,7 +2,7 @@
 import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/user';
-import logoImage from '@/assets/logo/logo2.png';
+import logoImage from '@/assets/logo/logo.png';
 
 const router = useRouter();
 const userStore = useUserStore();

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import logoImage from '@/assets/logo/logo2.png';
+import logoImage from '@/assets/logo/logo.png';
 
 const router = useRouter();
 
