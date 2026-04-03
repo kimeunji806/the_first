@@ -87,11 +87,6 @@ onMounted(() => {
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">주소</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.address || '-' }}</div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
                     <div class="font-semibold text-surface-700 dark:text-surface-200">소속 기관</div>
                     <div class="text-surface-900 dark:text-surface-0">{{ info.institution_name || '-' }}</div>
                 </div>

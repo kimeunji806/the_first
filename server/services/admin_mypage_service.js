@@ -25,13 +25,7 @@ const updateAdminMyPage = async (adminInfo) => {
   try {
     conn = await dao.pool.getConnection();
 
-    const params = [
-      adminInfo.user_name,
-      adminInfo.tel,
-      adminInfo.email,
-      adminInfo.address,
-      adminInfo.user_no,
-    ];
+    const params = [adminInfo.user_name, adminInfo.tel, adminInfo.user_no];
 
     const result = await conn.query(sql.updateAdminMyPage, params);
     return result;

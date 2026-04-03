@@ -1,10 +1,5 @@
 const userMapper = require("../database/mappers/user_mapper");
 
-const findAll = async () => {
-  let list = await userMapper.selectAllUser();
-  return list;
-};
-
 const createUser = async (userObj) => {
   const {
     role,
@@ -114,7 +109,6 @@ const withdrawUser = async (email) => {
 };
 
 module.exports = {
-  findAll,
   loginService,
   createUser,
   approvalAccess,

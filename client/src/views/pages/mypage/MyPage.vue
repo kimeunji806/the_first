@@ -149,36 +149,37 @@ function goToWithdraw() {
 </script>
 
 <template>
-    <div class="p-6">
-        <!-- 상단 타이틀 -->
-        <div class="flex items-center justify-between py-4 mb-2">
-            <div class="flex items-center gap-2">
-                <span class="font-medium text-2xl text-surface-900 dark:text-surface-0">마이페이지</span>
-                <span class="px-1.5 py-1 bg-primary text-primary-contrast rounded-md text-xs">Beta</span>
+    <div class="flex h-screen">
+        <!-- 왼쪽 패널 -->
+        <div class="w-64 bg-green-100 p-4 flex flex-col">
+            <!-- 상단 정보 -->
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <div class="text-sm text-gray-700">보호자</div>
+                </div>
+
+                <button type="button" class="text-sm text-gray-500 hover:text-gray-700" @click="goToMyInfo">정보보기</button>
+            </div>
+
+            <!-- 인사말 -->
+            <div class="mb-4">
+                <div class="text-xl font-semibold text-gray-800 mb-1">{{ loginUserName }}님 반갑습니다</div>
+            </div>
+
+            <!-- 왼쪽 목록 -->
+            <div class="flex-1 min-h-0">
+                <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
             </div>
         </div>
 
-        <!-- 로그인 사용자 인사말 -->
-        <div class="mb-5">
-            <div class="text-surface-900 dark:text-surface-0 text-xl font-medium mb-1">{{ loginUserName }}님 반갑습니다.</div>
-            <span class="text-muted-color"> 등록된 지원대상자를 조회하고 정보를 수정할 수 있습니다. </span>
-        </div>
-
-        <!-- 본문 -->
-        <div class="p-0 border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden bg-surface-0 dark:bg-surface-900">
-            <div class="p-4 lg:p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
-                    <!-- 왼쪽 목록 -->
-                    <div>
-                        <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
-                    </div>
-
-                    <!-- 오른쪽 상세 -->
-                    <div>
-                        <TargetDetail :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
-                    </div>
+        <!-- 오른쪽 상세 -->
+        <div class="flex-1 p-10 bg-gray-100">
+            <div class="bg-white p-8 rounded shadow h-full flex flex-col">
+                <div class="flex-1 min-h-0">
+                    <TargetDetail :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
                 </div>
-                <div class="flex justify-between items-center mt-8 border-t border-surface-200 dark:border-surface-700 pt-4">
+
+                <div class="mt-6 text-right">
                     <Button label="회원탈퇴" severity="danger" outlined @click="goToWithdraw" />
                 </div>
             </div>

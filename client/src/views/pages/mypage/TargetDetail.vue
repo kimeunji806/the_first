@@ -233,95 +233,94 @@ function saveUpdate() {
     mode.value = 'view';
 }
 </script>
-
 <template>
-    <div class="w-full bg-surface-0 dark:bg-surface-900">
+    <div class="bg-surface-0 dark:bg-surface-900">
         <!-- 제목 -->
-        <div class="flex items-center justify-between mb-5">
-            <div>
-                <div class="text-surface-900 dark:text-surface-0 text-xl font-medium mb-1">지원대상자 정보</div>
-                <span class="text-muted-color">
-                    {{ mode === 'view' ? '선택한 지원대상자 정보를 확인할 수 있습니다.' : '지원대상자 정보를 입력해주세요.' }}
-                </span>
-            </div>
+        <div class="mb-5">
+            <div class="flex items-start justify-between gap-3">
+                <div>
+                    <span class="text-muted-color">
+                        {{ mode === 'view' ? '선택한 지원대상자 정보를 확인할 수 있습니다.' : mode === 'create' ? '새로운 지원대상자 정보를 입력해주세요.' : '지원대상자 정보를 수정할 수 있습니다.' }}
+                    </span>
+                </div>
 
-            <!-- 보기 모드일 때만 수정 버튼 -->
-            <Button v-if="mode === 'view' && target" label="수정" severity="secondary" outlined @click="editMode" />
+                <Button v-if="mode === 'view' && target" label="수정" severity="secondary" outlined @click="editMode" />
+            </div>
         </div>
 
         <!-- 선택된 대상자가 없을 때 -->
-        <div v-if="!props.target && !props.isCreateMode" class="text-muted-color py-4">왼쪽에서 대상자를 선택하세요.</div>
+        <div v-if="!props.target && !props.isCreateMode" class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-5 text-muted-color">왼쪽에서 대상자를 선택하세요.</div>
 
         <!-- 보기 모드 -->
-        <div v-else-if="mode === 'view'">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                    <div class="text-muted-color text-sm mb-2">이름</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.name || '-' }}</div>
+        <div v-else-if="mode === 'view'" class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
+            <div class="grid gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">이름</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ form.name || '-' }}</div>
                 </div>
 
-                <div>
-                    <div class="text-muted-color text-sm mb-2">생년월일</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.birth || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">생년월일</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ form.birth || '-' }}</div>
                 </div>
 
-                <div>
-                    <div class="text-muted-color text-sm mb-2">전화번호</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.phone || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">전화번호</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ form.phone || '-' }}</div>
                 </div>
 
-                <div>
-                    <div class="text-muted-color text-sm mb-2">성별</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ getGenderLabel(form.gender) || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">성별</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ getGenderLabel(form.gender) || '-' }}</div>
                 </div>
 
-                <div class="md:col-span-2">
-                    <div class="text-muted-color text-sm mb-2">주소</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.address || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">주소</div>
+                    <div class="text-surface-900 dark:text-surface-0 break-all">{{ form.address || '-' }}</div>
                 </div>
 
-                <div>
-                    <div class="text-muted-color text-sm mb-2">장애유형</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.disability_type || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">장애유형</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ form.disability_type || '-' }}</div>
                 </div>
 
-                <div>
-                    <div class="text-muted-color text-sm mb-2">관계</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.relation || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">관계</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ form.relation || '-' }}</div>
                 </div>
 
-                <div class="md:col-span-2">
-                    <div class="text-muted-color text-sm mb-2">등록일</div>
-                    <div class="text-surface-900 dark:text-surface-0 font-medium">{{ form.created_at || '-' }}</div>
+                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2">
+                    <div class="font-semibold text-surface-700 dark:text-surface-200">등록일</div>
+                    <div class="text-surface-900 dark:text-surface-0">{{ form.created_at || '-' }}</div>
                 </div>
             </div>
         </div>
 
         <!-- 수정 / 등록 모드 -->
-        <div v-else>
+        <div v-else class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- 이름 -->
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">이름</label>
-                    <InputText v-model="form.name" class="w-full mb-4" placeholder="이름 입력" />
+                    <InputText v-model="form.name" class="w-full" placeholder="이름 입력" />
                 </div>
 
                 <!-- 생년월일 -->
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">생년월일</label>
-                    <InputText v-model="form.birth" type="date" class="w-full mb-4" />
+                    <InputText v-model="form.birth" type="date" class="w-full" />
                 </div>
 
                 <!-- 전화번호 -->
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">전화번호</label>
-                    <InputText v-model="form.phone" class="w-full mb-4" placeholder="010-0000-0000" />
+                    <InputText v-model="form.phone" class="w-full" placeholder="010-0000-0000" />
                 </div>
 
                 <!-- 성별 -->
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">성별</label>
-                    <select v-model="form.gender" class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-surface-0 dark:bg-surface-900 text-surface-900 dark:text-surface-0 mb-4">
+                    <select v-model="form.gender" class="w-full px-3 py-2 border border-surface-300 dark:border-surface-600 rounded-lg bg-surface-0 dark:bg-surface-900 text-surface-900 dark:text-surface-0">
                         <option value="">선택하세요</option>
                         <option value="c1">남자</option>
                         <option value="c2">여자</option>
@@ -339,30 +338,30 @@ function saveUpdate() {
 
                     <InputText v-model="form.roadAddress" placeholder="기본주소" readonly class="w-full mb-2" />
 
-                    <InputText id="detailAddress" v-model="form.detailAddress" placeholder="상세주소" class="w-full mb-4" />
+                    <InputText id="detailAddress" v-model="form.detailAddress" placeholder="상세주소" class="w-full" />
                 </div>
 
                 <!-- 장애유형 -->
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">장애유형</label>
-                    <InputText v-model="form.disability_type" class="w-full mb-4" placeholder="장애유형 입력" />
+                    <InputText v-model="form.disability_type" class="w-full" placeholder="장애유형 입력" />
                 </div>
 
                 <!-- 관계 -->
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">관계</label>
-                    <InputText v-model="form.relation" class="w-full mb-4" placeholder="관계 입력" />
+                    <InputText v-model="form.relation" class="w-full" placeholder="관계 입력" />
                 </div>
 
-                <!-- 등록일: 수정 모드에서만 표시 -->
+                <!-- 등록일 -->
                 <div v-if="mode !== 'create'" class="md:col-span-2">
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">등록일</label>
-                    <InputText :value="form.created_at" readonly class="w-full mb-4" />
+                    <InputText :value="form.created_at" readonly class="w-full" />
                 </div>
             </div>
 
             <!-- 버튼 -->
-            <div class="flex gap-2 justify-end mt-2">
+            <div class="flex gap-2 justify-end pt-5 mt-5 border-t border-surface-200 dark:border-surface-700">
                 <Button v-if="mode === 'create'" label="등록" @click="saveCreate" />
 
                 <template v-else>

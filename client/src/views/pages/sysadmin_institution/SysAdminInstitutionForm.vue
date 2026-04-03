@@ -204,7 +204,7 @@ onMounted(() => {
 
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">사업자번호</label>
-                    <InputText v-model="form.business_number" class="w-full" />
+                    <InputText :value="form.business_number" class="w-full readonly-field" readonly />
                 </div>
 
                 <div>
@@ -215,9 +215,9 @@ onMounted(() => {
                 <div class="md:col-span-2">
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">주소</label>
 
-                    <div class="flex gap-2 mb-2">
-                        <InputText v-model="form.zonecode" class="w-32" placeholder="우편번호" readonly />
-                        <Button label="주소찾기" type="button" severity="secondary" @click="searchAddress" />
+                    <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                        <InputText v-model="form.zonecode" placeholder="우편번호" readonly class="w-full sm:w-40" />
+                        <Button label="우편번호 찾기" type="button" @click="searchAddress" />
                     </div>
 
                     <div class="flex flex-col gap-2">
@@ -257,3 +257,12 @@ onMounted(() => {
         </div>
     </div>
 </template>
+
+<style scoped>
+:deep(.readonly-field) {
+    background-color: #f3f4f6 !important;
+    color: #6b7280 !important;
+    border-color: #d1d5db !important;
+    cursor: not-allowed;
+}
+</style>
