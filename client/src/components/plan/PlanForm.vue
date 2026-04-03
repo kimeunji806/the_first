@@ -620,7 +620,7 @@ watch(
 </script>
 
 <template>
-    <div class="card h-full flex flex-col gap-4">
+    <div class="card h-220 flex flex-col gap-4">
         <div class="max-h-[700px] overflow-y-auto pr-2">
             <div class="max-w-2xl mx-auto">
                 <!-- 화면 제목 -->
@@ -704,7 +704,7 @@ watch(
 
                             <Button
                                 type="button"
-                                :label="deleteExistingFileNos.includes(file.file_no) ? '삭제취소' : '삭제표시'"
+                                :label="deleteExistingFileNos.includes(file.file_no) ? '삭제취소' : '삭제'"
                                 class="p-button-sm"
                                 :severity="deleteExistingFileNos.includes(file.file_no) ? 'secondary' : 'danger'"
                                 @click="toggleDeleteExistingFile(file.file_no)"

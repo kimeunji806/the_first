@@ -47,26 +47,41 @@ router.post("/targets/:userNo", async (req, res) => {
     // 로그인 사용자 번호
     const userNo = Number(req.params.userNo);
 
-    // 프론트에서 넘어온 값 + 기본값 조합
+    // 보호자 기관번호 조회
+    const guardianInstitutionNo =
+      await service.findGuardianInstitutionNo(userNo);
+
+    if (!guardianInstitutionNo) {
+      return res.status(400).json({
+        retCode: "FAIL",
+        message: "보호자 기관 정보를 찾을 수 없습니다.",
+      });
+    }
+
+    // 프론트에서 넘어온 값 + 서버 조회값 조합
     const target = {
       userNo, // guardian_no
-      managerNo: Number(req.body.managerNo) || 2001, // 담당자 번호 (임시 기본값)
-      subManagerNo: Number(req.body.subManagerNo) || 2002, // 부담당자 번호 (임시 기본값)
-      institutionNo: Number(req.body.institutionNo) || 1, // 기관 번호 (임시 기본값)
+      managerNo: req.body.managerNo ? Number(req.body.managerNo) : null, //담당자
+      subManagerNo: req.body.subManagerNo
+        ? Number(req.body.subManagerNo)
+        : null, //부담당자
+      institutionNo: guardianInstitutionNo, // 보호자 기관번호로 고정
 
       name: req.body.name,
       birth: req.body.birth,
       phone: req.body.phone,
-      gender: req.body.gender, // 성별 코드
+      gender: req.body.gender,
       address: req.body.address,
-      disability_type: req.body.disability_type, // 장애유형
-      relation: req.body.relation, // 관계
+      disability_type: req.body.disability_type,
+      relation: req.body.relation,
     };
 
-    // service 호출해서 INSERT 실행
+    console.log("지원대상자 등록 userNo:", userNo);
+    console.log("보호자 기관번호:", guardianInstitutionNo);
+    console.log("등록 target:", target);
+
     const result = await service.createTarget(target);
 
-    // 등록 성공 응답
     res.json({
       retCode: "OK",
       message: "등록 완료",
@@ -125,19 +140,16 @@ router.put("/targets/:id/:userNo", async (req, res) => {
   }
 });
 
-
 router.get("/myPageInfo/:no", async (req, res) => {
-
   let uNo = req.params.no;
 
   try {
     let result = await service.myPageInfoService(uNo);
-    res.json(result)
+    res.json(result);
   } catch (err) {
-    res.status(500).json({ error: '서버 에러' });
+    res.status(500).json({ error: "서버 에러" });
   }
 });
-
 
 // router 내보내기
 module.exports = router;

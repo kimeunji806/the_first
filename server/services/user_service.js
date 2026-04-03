@@ -44,6 +44,11 @@ const approvalAccess = async (insNo) => {
   return result;
 };
 
+const approvalByAdminAccess = async () => {
+  let result = await userMapper.approvalByAdmin();
+  return result;
+};
+
 const signAccess = async (userId) => {
   let result = await userMapper.access(userId);
   return result;
@@ -107,6 +112,7 @@ module.exports = {
   loginService,
   createUser,
   approvalAccess,
+  approvalByAdminAccess,
   signAccess,
   signRefuseService,
   insTelService,

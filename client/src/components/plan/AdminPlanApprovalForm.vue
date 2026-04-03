@@ -190,8 +190,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="p-6 bg-slate-100 min-h-screen">
-        <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+    <div class="p-6 bg-slate-100 card h-220">
+        <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl">
             <h2 class="text-lg font-bold mb-4 border-b pb-2">지원계획 결재</h2>
 
             <!-- 선택 전 안내 -->

@@ -1,15 +1,11 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
 import { FilterMatchMode } from '@primevue/core/api';
-import { useUserStore } from '@/stores/user';
-
-const userStore = useUserStore();
-const ins_no = userStore.institution;
 
 const approvalList = ref([]);
 
-const approval = async (ins_no) => {
-    await fetch(`/api/approval/${ins_no}`)
+const approval = async () => {
+    await fetch(`/api/admin-approval`)
         .then((resp) => resp.json())
         .then((data) => {
             approvalList.value = Array.isArray(data) ? data : [data];
@@ -17,10 +13,10 @@ const approval = async (ins_no) => {
         .catch((err) => console.log(err));
 };
 
-const approvalAcess = async (e) => {
-    const tr = e.target.closest('tr');
-    const userId = tr.children[2].innerText;
-    const userName = tr.children[1].innerText;
+const approvalAcess = async (data) => {
+    const userId = data.id;
+    const userName = data.name;
+
     let result = await fetch('/api/access', {
         method: 'PUT',
         headers: {
@@ -33,18 +29,18 @@ const approvalAcess = async (e) => {
 
     if (result.update == 'success') {
         alert(`${userName}님의 회원가입 승인처리 완료`);
-        await approval(ins_no);
+        await approval();
     } else {
         alert('승인처리 중에 문제가 생겼습니다');
     }
 };
 
-const approvalRefuse = async (e) => {
-    const tr = e.target.closest('tr');
-    const userId = tr.children[2].innerText;
-    const userName = tr.children[1].innerText;
+const approvalRefuse = async (data) => {
+    const userId = data.id;
+    const userName = data.name;
+
     let result = await fetch('/api/access/refuse', {
-        method: 'delete',
+        method: 'DELETE',
         headers: {
             'Content-Type': 'application/json'
         },
@@ -55,14 +51,14 @@ const approvalRefuse = async (e) => {
 
     if (result.update == 'success') {
         alert(`${userName}님의 회원가입 반려처리 완료`);
-        await approval(ins_no);
+        await approval();
     } else {
         alert('반려처리 중에 문제가 생겼습니다');
     }
 };
 
 onBeforeMount(() => {
-    approval(ins_no);
+    approval();
 });
 
 const filters = ref({
@@ -76,9 +72,9 @@ const filters = ref({
             <div class="font-semibold text-xl">회원가입 승인요청</div>
 
             <div class="flex gap-2">
-                <InputText v-model="filters.global.value" placeholder="검색" class="w-72" />
-                <Button icon="pi pi-search" />
-                <Button icon="pi pi-refresh" severity="secondary" outlined @click="filters.global.value = null" />
+                <InputText v-model="keyword" placeholder="검색" class="w-72" @keydown="handleSearchEnter" />
+                <Button icon="pi pi-search" @click="searchNotice" />
+                <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
             </div>
         </div>
 
@@ -92,12 +88,12 @@ const filters = ref({
             <Column field="created_at" header="가입일"></Column>
             <Column field="approval" header="사용승인">
                 <template #body="slotProps">
-                    <Button label="승인" severity="success" size="small" @click="approvalAcess" />
+                    <Button label="승인" severity="success" size="small" @click="approvalAcess(slotProps.data)" />
                 </template>
             </Column>
             <Column field="refuse" header="반려">
                 <template #body="slotProps">
-                    <Button label="반려" severity="danger" size="small" @click="approvalRefuse" />
+                    <Button label="반려" severity="danger" size="small" @click="approvalRefuse(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>

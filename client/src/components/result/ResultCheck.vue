@@ -231,7 +231,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="card h-full flex flex-col gap-4">
+    <div class="card h-140 flex flex-col gap-4">
         <div class="font-bold text-lg mb-2 border-b pb-2">지원결과 조회</div>
 
         <div class="max-h-[400px] overflow-y-auto pr-2">

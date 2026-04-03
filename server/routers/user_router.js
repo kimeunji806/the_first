@@ -21,6 +21,11 @@ router.get("/approval/:no", async (req, res) => {
   res.send(result);
 });
 
+router.get("/admin-approval", async (req, res) => {
+  let result = await userService.approvalByAdminAccess();
+  res.send(result);
+});
+
 router.put("/access", async (req, res) => {
   const userId = req.body;
   let result = await userService.signAccess(userId);
