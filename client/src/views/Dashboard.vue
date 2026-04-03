@@ -1,5 +1,5 @@
 <script setup>
-import { onBeforeMount, reactive, ref } from 'vue';
+import { onBeforeMount, reactive, ref, computed } from 'vue';
 
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
@@ -21,7 +21,7 @@ onBeforeMount(async () => {
         .catch((err) => console.log(err));
 });
 const goToDetail_survey = (surveyNo) => {
-    router.push(`/common/${surveyNo}/counselCheck`);
+    router.push(`/common/${surveyNo}/surveyCheck`);
 };
 const goToDetail_counsel = (surveyNo) => {
     router.push(`/common/${surveyNo}/counselCheck`);
@@ -89,8 +89,8 @@ const goToDetail_result = (surveyNo) => {
                         <Column header="우선순위" style="min-width: 8rem">
                             <template #body="{ data }">
                                 <div class="flex items-center gap-2">
-                                    <span>{{ data.priority_name }}</span>
-                                    <span v-if="data.priority_name == null">미지정</span>
+                                    <span v-if="data.approval === 'a1'">{{ data.priority_name }}</span>
+                                    <span v-if="data.approval != 'a1'">미지정</span>
                                 </div>
                             </template>
                         </Column>

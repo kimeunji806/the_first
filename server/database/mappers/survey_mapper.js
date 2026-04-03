@@ -221,6 +221,11 @@ const saveAll = async (data) => {
       questionDeleted = [],
     } = data;
 
+    const mainIdMap = new Map();
+    const subIdMap = new Map();
+
+    console.log("payload:", data);
+
     // 1. 삭제는 자식부터
     for (const questionNo of questionDeleted) {
       await conn.query(surveySql.deleteQuestion, [questionNo]);
@@ -236,8 +241,19 @@ const saveAll = async (data) => {
 
     // 2. 메인 추가
     for (const item of mainCreated) {
-      await conn.query(surveySql.insertMain, [item.main_title]);
+      const result = await conn.query(surveySql.insertMain, [item.main_title]);
+      const insertId = result.insertId || result[0]?.insertId;
+
+      if (!insertId) {
+        throw new Error(`main insertId 없음: ${item.main_title}`);
+      }
+
+      if (item.temp_id) {
+        mainIdMap.set(item.temp_id, insertId);
+      }
     }
+
+    console.log("mainIdMap:", [...mainIdMap.entries()]);
 
     // 3. 메인 수정
     for (const item of mainUpdated) {
@@ -246,8 +262,40 @@ const saveAll = async (data) => {
 
     // 4. 서브 추가
     for (const item of subCreated) {
-      await conn.query(surveySql.insertSub, [item.main_no, item.sub_title]);
+      let resolvedMainNo = item.main_no;
+
+      if (!resolvedMainNo && item.parent_temp_id) {
+        resolvedMainNo = mainIdMap.get(item.parent_temp_id);
+      }
+
+      console.log("sub mapping:", {
+        sub_title: item.sub_title,
+        item_main_no: item.main_no,
+        parent_temp_id: item.parent_temp_id,
+        resolvedMainNo,
+      });
+
+      if (!resolvedMainNo) {
+        throw new Error(`sub main_no 매핑 실패: ${item.sub_title}`);
+      }
+
+      const result = await conn.query(surveySql.insertSub, [
+        resolvedMainNo,
+        item.sub_title,
+      ]);
+
+      const insertId = result.insertId || result[0]?.insertId;
+
+      if (!insertId) {
+        throw new Error(`sub insertId 없음: ${item.sub_title}`);
+      }
+
+      if (item.temp_id) {
+        subIdMap.set(item.temp_id, insertId);
+      }
     }
+
+    console.log("subIdMap:", [...subIdMap.entries()]);
 
     // 5. 서브 수정
     for (const item of subUpdated) {
@@ -256,8 +304,25 @@ const saveAll = async (data) => {
 
     // 6. 질문 추가
     for (const item of questionCreated) {
+      let resolvedSubNo = item.sub_no;
+
+      if (!resolvedSubNo && item.parent_temp_id) {
+        resolvedSubNo = subIdMap.get(item.parent_temp_id);
+      }
+
+      console.log("question mapping:", {
+        question_text: item.question_text,
+        item_sub_no: item.sub_no,
+        parent_temp_id: item.parent_temp_id,
+        resolvedSubNo,
+      });
+
+      if (!resolvedSubNo) {
+        throw new Error(`question sub_no 매핑 실패: ${item.question_text}`);
+      }
+
       await conn.query(surveySql.insertQuestion, [
-        item.sub_no,
+        resolvedSubNo,
         item.question_text,
       ]);
     }

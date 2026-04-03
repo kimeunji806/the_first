@@ -28,11 +28,6 @@ const createUser = async (userObj) => {
     institution,
   ];
   let result = await userMapper.insertUser(insertData);
-
-  // let resObj = {
-  //   status: result.insertId > 0 ? "success" : "fail",
-  //   user_no: result.insertId,
-  // };
   return result;
 };
 

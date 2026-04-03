@@ -3,21 +3,17 @@ import { ref, onBeforeMount, computed, reactive } from 'vue';
 const main = ref([]);
 const sub = ref([]);
 const question = ref([]);
-const sub_no = ref([]);
-const main_no = ref([]);
+const main_no = ref(null);
+const sub_no = ref(null);
 const historyDialog = ref(false);
 import SurveyHistoryModal from '@/components/dialog/surveyPreviewdialog.vue';
 const selectedMainNo = ref(null);
 const selectedSubNo = ref(null);
 
-const clickMain = (item) => {
-    selectedMainNo.value = item.main_no;
-    selectedSubNo.value = null;
-};
+const makeTempId = (prefix) => `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+const selectedMainItem = ref(null);
+const selectedSubItem = ref(null);
 
-const clickSub = (item) => {
-    selectedSubNo.value = item.sub_no;
-};
 const openHistoryModal = () => {
     historyDialog.value = true;
 };
@@ -38,12 +34,21 @@ const mainList = async () => {
 };
 
 // 세부항목 조회
-const subList = async (mainNo) => {
-    selectedMainNo.value = mainNo;
+const subList = async (item) => {
+    selectedMainItem.value = item;
+    selectedMainNo.value = item.main_no;
     selectedSubNo.value = null;
-    console.log(mainNo);
-    main_no.value = mainNo;
-    await fetch(`/api/sub/${mainNo}`)
+    selectedSubItem.value = null;
+
+    main_no.value = item.main_no;
+    sub_no.value = null;
+
+    if (!item.main_no) {
+        sub.value = [];
+        question.value = [];
+        return;
+    }
+    await fetch(`/api/sub/${item.main_no}`)
         .then((resp) => resp.json())
         .then((data) => {
             sub.value = data.map((item) => ({
@@ -58,11 +63,16 @@ const subList = async (mainNo) => {
 };
 
 // 질문항목 조회
-const questionList = async (subNo) => {
-    selectedSubNo.value = subNo;
-    console.log(subNo);
-    sub_no.value = subNo;
-    await fetch(`/api/question/${subNo}`)
+const questionList = async (item) => {
+    selectedSubItem.value = item;
+    selectedSubNo.value = item.sub_no;
+    sub_no.value = item.sub_no;
+
+    if (!item.sub_no) {
+        question.value = [];
+        return;
+    }
+    await fetch(`/api/question/${item.sub_no}`)
         .then((resp) => resp.json())
         .then((data) => {
             question.value = (Array.isArray(data) ? data : [data]).map((item) => ({
@@ -85,8 +95,10 @@ const content = reactive({
 const mainCreate = async () => {
     if (!content.main_title.trim()) return;
 
+    const tempId = makeTempId('main');
     main.value.push({
         main_no: null,
+        temp_id: tempId,
         main_title: content.main_title,
         isNew: true,
         isDirty: false,
@@ -104,7 +116,10 @@ const subCreate = async () => {
 
     sub.value.push({
         sub_no: null,
-        main_no: main_no.value,
+        temp_id: makeTempId('sub'),
+
+        main_no: selectedMainItem.value?.main_no || null,
+        parent_temp_id: selectedMainItem.value?.main_no ? null : selectedMainItem.value?.temp_id || null,
         sub_title: content.sub_title,
         isNew: true,
         isDirty: false,
@@ -122,7 +137,11 @@ const questionCreate = async () => {
 
     question.value.push({
         question_no: null,
-        sub_no: sub_no.value,
+
+        sub_no: selectedSubItem.value?.sub_no || null,
+
+        parent_temp_id: selectedSubItem.value?.sub_no ? null : selectedSubItem.value?.temp_id || null,
+
         question_text: content.question_text,
         isNew: true,
         isDirty: false,
@@ -249,8 +268,8 @@ const saveAll = async () => {
     alert('저장 완료');
 
     await mainList();
-    if (main_no.value) await subList(main_no.value);
-    if (sub_no.value) await questionList(sub_no.value);
+    if (selectedMainItem.value) await subList(selectedMainItem.value);
+    if (selectedSubItem.value) await questionList(selectedSubItem.value);
 };
 </script>
 
@@ -261,7 +280,7 @@ const saveAll = async () => {
                 <div class="font-semibold text-xl mb-4">지원서 항목</div>
                 <div class="overflow-y-auto">
                     <ul v-for="value in visibleMain">
-                        <li class="font-semibold text-xl mb-4" :class="selectedMainNo === value.main_no ? 'bg-gray-50 text-gray-700 border border-gray-200 rounded-md' : 'hover:bg-gray-100'" v-on:click="subList(value.main_no)">
+                        <li class="font-semibold text-xl mb-4" :class="selectedMainNo === value.main_no ? 'bg-gray-50 text-gray-700 border border-gray-200 rounded-md' : 'hover:bg-gray-100'" v-on:click="subList(value)">
                             <div class="flex items-center justify-between w-full">
                                 <div class="flex items-center gap-2">
                                     <!-- 수정 상태일 때 -->
@@ -293,7 +312,7 @@ const saveAll = async () => {
             <div class="card h-full flex flex-col gap-4">
                 <div class="font-semibold text-xl mb-4">세부 항목</div>
                 <ul class="overflow-y-auto" v-for="value in visibleSub">
-                    <li class="font-semibold text-l mb-4" :class="selectedSubNo === value.sub_no ? 'bg-gray-50 text-gray-700 border border-gray-200 rounded-md' : 'hover:bg-gray-100'" v-on:click="questionList(value.sub_no)">
+                    <li class="font-semibold text-l mb-4" :class="selectedSubNo === value.sub_no ? 'bg-gray-50 text-gray-700 border border-gray-200 rounded-md' : 'hover:bg-gray-100'" v-on:click="questionList(value)">
                         <div class="flex items-center justify-between w-full">
                             <div class="flex items-center gap-2">
                                 <!-- 수정 상태일 때 -->

@@ -8,6 +8,7 @@ SELECT MAX(b.beneficiaries_name) AS beneficiaries_name
      , MAX(g.user_name) AS guardian_name
      , MAX(DATE_FORMAT(s.created_at, '%Y-%m-%d')) AS created_at
      , MAX(p.priority_id) AS priority_id
+      , MAX(p.approval) AS approval
      , MAX(c.code_name) AS priority_name
      , MAX(u.user_name) AS manager_name
      , s.survey_no AS survey_no
@@ -45,6 +46,7 @@ JOIN beneficiaries b
      ON b.beneficiaries_no = s.beneficiaries_no
 LEFT JOIN user g
        ON b.guardian_no = g.user_no
+
 LEFT JOIN user h
        ON s.sub_manager_no = h.user_no
 LEFT JOIN priority p
@@ -105,12 +107,14 @@ LEFT JOIN (
            ) AS result_approve_cnt
 
          /* 종결 */
-         , SUM(
-             CASE
-               WHEN spr.finish = 1 THEN 1
-               ELSE 0
-             END
-           ) AS finish_cnt
+         SUM(
+              CASE
+                WHEN spr.finish = 1
+                AND spr.result_approval = 'a1'
+              THEN 1
+              ELSE 0
+            END
+            ) AS finish_cnt
 
     FROM support_plan sp
     LEFT JOIN support_plan_result spr
@@ -128,7 +132,8 @@ WHERE (
     OR (me.role = 'e2' AND me.user_no IN (s.manager_no, s.sub_manager_no))
 )
 
-GROUP BY s.survey_no;
+GROUP BY s.survey_no
+order by s.created_at DESC;
 `;
 
 const beneficiaries = `
