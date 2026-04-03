@@ -95,15 +95,7 @@ const addUSurveyInput = async () => {
             'content-type': 'application/json'
         },
         body: JSON.stringify(data)
-    })
-        // .then((res) => res.json())
-        .catch((err) => console.log(err));
-    // if (result.status == 'success') {
-    //     router.resolve('/sign/login');
-    // } else {
-    //     console.log('등록되지않았습니다.');
-    //     inPrinted.value = true;
-    // }
+    }).catch((err) => console.log(err));
     openHistoryModal(currentSurveyNo.value);
 };
 

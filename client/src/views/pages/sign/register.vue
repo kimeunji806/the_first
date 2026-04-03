@@ -156,14 +156,18 @@ const addUserInfo = async () => {
             },
             body: JSON.stringify(data)
         })
-            // .then((res) => res.json())
+            .then((res) => res.json())
             .catch((err) => console.log(err));
-        // if (result.status == 'success') {
-        //     router.resolve('/sign/login');
-        // } else {
-        //     console.log('등록되지않았습니다.');
-        //     inPrinted.value = true;
-        // }
+        console.log(result);
+        console.log(result.insertId);
+
+        if (result.insertId != null) {
+            console.log('회원가입완료');
+
+            router.push({ name: 'login' });
+        } else {
+            alert('등록되지않았습니다.');
+        }
     }
 };
 const historyDialog = ref(false);

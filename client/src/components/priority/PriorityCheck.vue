@@ -24,14 +24,14 @@ onBeforeMount(async () => {
 <template>
     <div class="card h-5/10 flex flex-col gap 4">
         <div class="overflow-y-auto">
-            <div v-if="priority.length === 0" class="text-center text-gray-500 py-10">등록된 상담기록이 없습니다.</div>
+            <div v-if="priority.length === 0" class="text-center text-gray-500 py-10">등록된 우선순위 요청이 없습니다.</div>
 
             <div v-for="data in priority" class="mb-6 border-b pb-4">
                 <div>
                     <div class="flex justify-between items-center mb-2">
-                        <Message v-if="data.approval === 'a0'" severity="warn">우선순위 승인 여부 : 대기</Message>
-                        <Message v-if="data.approval === 'a1'" severity="success">우선순위 승인 여부 : 승인</Message>
-                        <Message v-if="data.approval === 'a2'" severity="error">우선순위 승인 여부 : 반려</Message>
+                        <span v-if="data.approval === 'a0'">{{ data.priority_no }}. 우선순위 승인 여부 : 대기</span>
+                        <span v-if="data.approval === 'a1'">{{ data.priority_no }}. 우선순위 승인 여부 : 승인</span>
+                        <span v-if="data.approval === 'a2'">{{ data.priority_no }}. 우선순위 승인 여부 : 반려</span>
 
                         <Message v-if="data.priority_id === 'd1'" severity="secondary">계획</Message>
                         <Message v-if="data.priority_id === 'd2'" severity="success">중점</Message>
