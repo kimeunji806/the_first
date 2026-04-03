@@ -125,5 +125,19 @@ router.put("/targets/:id/:userNo", async (req, res) => {
   }
 });
 
+
+router.get("/myPageInfo/:no", async (req, res) => {
+
+  let uNo = req.params.no;
+
+  try {
+    let result = await service.myPageInfoService(uNo);
+    res.json(result)
+  } catch (err) {
+    res.status(500).json({ error: '서버 에러' });
+  }
+});
+
+
 // router 내보내기
 module.exports = router;

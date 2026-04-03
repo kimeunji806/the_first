@@ -9,6 +9,21 @@ const userStore = useUserStore();
 const notice = ref([]);
 const keyword = ref('');
 
+// 모든 항목(제목, 내용, 작성자, 날짜)을 포함하여 필터링
+const filteredNotice = computed(() => {
+    const trimmedKeyword = keyword.value.trim().toLowerCase();
+    if (!trimmedKeyword) return notice.value;
+
+    return notice.value.filter((item) => {
+        const title = (item.notice_title || '').toLowerCase();
+        const content = (item.notice_content || '').toLowerCase();
+        const userName = (item.user_name || '').toLowerCase();
+        const date = dateFormat(item.created_at).toLowerCase();
+
+        return title.includes(trimmedKeyword) || content.includes(trimmedKeyword) || userName.includes(trimmedKeyword) || date.includes(trimmedKeyword);
+    });
+});
+
 // 날짜포맷
 const dateFormat = (dateVal) => {
     let newDate = new Date(dateVal);
@@ -68,17 +83,10 @@ const resetSearch = async () => {
     await findAllNotice();
 };
 
-// 내용 검색일 떄만 내용 표시
+// 검색어가 입력된 상태라면 내용을 표시
 const shouldShowContent = (row) => {
-    const trimmedKeyword = keyword.value.trim().toLowerCase();
-
-    // 검색어 없으면 내용 숨김
-    if (!trimmedKeyword) return false;
-
-    const content = (row.notice_content || '').toLowerCase();
-
-    // notice_content에 검색어가 실제 포함될 때만 true
-    return content.includes(trimmedKeyword);
+    const trimmedKeyword = keyword.value.trim();
+    return trimmedKeyword.length > 0;
 };
 
 // 공지사항 등록 권한 체크
@@ -91,6 +99,16 @@ const goToWriteForm = () => {
     router.push({
         path: '/notice/add'
     });
+};
+
+// 검색어 하이라이트 처리 함수
+const highlightText = (text) => {
+    const trimmedKeyword = keyword.value.trim();
+    if (!trimmedKeyword || !text) return text;
+
+    // 대소문자 구분 없이 검색어를 찾기 위한 정규식
+    const regex = new RegExp(`(${trimmedKeyword})`, 'gi');
+    return text.replace(regex, '<mark class="search-match">$1</mark>');
 };
 
 onBeforeMount(() => {
@@ -109,7 +127,7 @@ onBeforeMount(() => {
             </div>
         </div>
         <DataTable
-            :value="notice"
+            :value="filteredNotice"
             class="w-full"
             :pt="{
                 headerRow: { class: 'text-center' },
@@ -120,36 +138,32 @@ onBeforeMount(() => {
             }"
             paginator
             :rows="10"
-            :totalRecords="notice.length"
+            scrollable
+            scrollHeight="600px"
         >
-            <Column header="번호" class="w-20 text-center">
+            <Column header="번호" class="w-16 text-center">
                 <template #body="slotProps">
-                    <div class="text-center">
-                        {{ slotProps.index + 1 }}
+                    <div class="text-center">{{ slotProps.index + 1 }}</div>
+                </template>
+            </Column>
+            <Column header="제목" class="flex-1">
+                <template #body="slotProps">
+                    <div class="text-left py-1" style="max-width: 1px; min-width: 100%">
+                        <div class="mb-1 truncate">
+                            <span class="cursor-pointer hover:underline text-900 font-medium" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)" v-html="highlightText(slotProps.data.notice_title)"> </span>
+                        </div>
+                        <div v-if="shouldShowContent(slotProps.data)" class="text-sm text-500 truncate" v-html="highlightText(slotProps.data.notice_content)"></div>
                     </div>
                 </template>
             </Column>
-            <Column header="제목" class="text-center">
+            <Column header="작성자" class="w-40 text-center whitespace-nowrap">
                 <template #body="slotProps">
-                    <div class="text-left">
-                        <div>
-                            <span class="cursor-pointer inline-block" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)">
-                                {{ slotProps.data.notice_title }}
-                            </span>
-                        </div>
-                        <div v-if="shouldShowContent(slotProps.data)" class="text-sm text-gray-500 mt-1 truncate">
-                            {{ slotProps.data.notice_content }}
-                        </div>
-                    </div>
+                    <div v-html="highlightText(slotProps.data.user_name)"></div>
                 </template>
             </Column>
-            <Column v-if="userStore.role === 'e4'" field="name" header="기관" class="w-57 text-center"></Column>
-            <Column field="user_name" header="작성자" class="w-32 text-center"></Column>
-            <Column header="작성일자" class="w-40 text-center">
+            <Column header="작성일자" class="w-48 text-center whitespace-nowrap">
                 <template #body="slotProps">
-                    <div class="text-center">
-                        {{ dateFormat(slotProps.data.created_at) }}
-                    </div>
+                    <div v-html="highlightText(dateFormat(slotProps.data.created_at))"></div>
                 </template>
             </Column>
         </DataTable>
@@ -158,3 +172,24 @@ onBeforeMount(() => {
         </div>
     </div>
 </template>
+<style scoped>
+.whitespace-nowrap {
+    white-space: nowrap !important;
+}
+.flex-1 {
+    flex: 1 1 0% !important;
+}
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+:deep(.search-match) {
+    background-color: rgba(var(--primary-color-rgb), 0.15); /* Sakai 테마 강조색 */
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+</style>

@@ -114,9 +114,30 @@ const createTarget = async (target) => {
   }
 };
 
+
+const myPageInfoService = async (uNo) => {
+  let conn = null;
+
+  try {
+
+    conn = await dao.pool.getConnection();
+    const [rows] = await conn.query(sql.mypageInfoSql, [uNo]);
+
+    return rows;
+  } catch (err) {
+
+    console.error("service - myPageInfoService 에러:", err);
+
+    throw err;
+  } finally {
+    if (conn) conn.release();
+  }
+}
+
 // 다른 파일에서 사용할 수 있도록 내보내기
 module.exports = {
   findAllTargets,
   modifyTarget,
   createTarget,
+  myPageInfoService,
 };

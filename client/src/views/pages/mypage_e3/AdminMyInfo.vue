@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import { getAdminMyPage } from '@/service/AdminMyPageService';
 
 const router = useRouter();
+const userStore = useUserStore();
 
 // 기관관리자 본인정보 저장 변수
 const info = ref(null);
@@ -33,6 +35,11 @@ async function loadMyInfo() {
 
         if (result.retCode === 'OK') {
             info.value = result.data;
+
+            userStore.updateUser({
+                user_name: result.data.user_name,
+                role: userStore.role
+            });
         } else {
             alert(result.message || '정보 조회 실패');
         }

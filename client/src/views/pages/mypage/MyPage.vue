@@ -10,6 +10,7 @@ const router = useRouter();
 // 왼쪽 목록 / 오른쪽 상세 컴포넌트
 import TargetList from './TargetList.vue';
 import TargetDetail from './TargetDetail.vue';
+import MyPageInfo from './MyPageInfo.vue';
 
 // API 함수
 import { getTargets, createTarget as createTargetApi, updateTarget as updateTargetApi } from '@/service/MyPageService';
@@ -22,6 +23,9 @@ const selectedId = ref(null);
 
 // 신규 등록 모드 여부
 const isCreateMode = ref(false);
+
+//정보 보기 모드 여부
+const isMyInfoMode = ref(false);
 
 // 로그인 사용자 정보
 const loginUser = JSON.parse(localStorage.getItem('user'));
@@ -62,12 +66,14 @@ async function loadTargets() {
 // 왼쪽 목록에서 대상 선택
 function selectTarget(id) {
     isCreateMode.value = false;
+    isMyInfoMode.value = false;
     selectedId.value = id;
 }
 
 // 신규 등록 버튼 클릭
 function addTarget() {
     isCreateMode.value = true;
+    isMyInfoMode.value = false;
     selectedId.value = null;
 }
 
@@ -137,6 +143,11 @@ const selectedTarget = computed(() => {
     return targets.value.find((item) => item.id === selectedId.value) || null;
 });
 
+const goToMyInfo = () => {
+    isMyInfoMode.value = true;
+    isCreateMode.value = false;
+};
+
 // 화면 처음 열릴 때 목록 조회
 onMounted(() => {
     loadTargets();
@@ -176,7 +187,15 @@ function goToWithdraw() {
         <div class="flex-1 p-10 bg-gray-100">
             <div class="bg-white p-8 rounded shadow h-full flex flex-col">
                 <div class="flex-1 min-h-0">
-                    <TargetDetail :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
+                   
+                <h2 class="mb-6 text-xl font-semibold text-gray-800">
+                    {{ isMyInfoMode ? '내 정보' : isCreateMode ? '지원대상자 등록' : selectedTarget?.name || '지원대상자 정보' }}
+                </h2>
+
+                <div class="flex-1 min-h-0">
+                    <MyPageInfo v-if="isMyInfoMode" />
+
+                    <TargetDetail v-else :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
                 </div>
 
                 <div class="mt-6 text-right">

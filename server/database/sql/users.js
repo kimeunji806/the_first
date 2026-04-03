@@ -87,10 +87,17 @@ SET user_pw = ?
 WHERE user_id = ?
 `;
 
-// 회원탈퇴
+// user_id로 이메일 조회
+const selectUserById = `
+SELECT user_id, email
+FROM user
+WHERE user_id = ?
+`;
+
+// user_id 기준 탈퇴
 const withdrawUser = `
 DELETE FROM user
-WHERE email = ?
+WHERE user_id = ?
 `;
 
 module.exports = {
@@ -106,5 +113,6 @@ module.exports = {
   findUserIdByEmail,
   findUserByIdAndEmail,
   updatePw,
+  selectUserById,
   withdrawUser,
 };

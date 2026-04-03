@@ -1,15 +1,20 @@
 <script setup>
-import { ref, computed, onUnmounted, watch } from 'vue';
+import { ref, computed, onUnmounted, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import logoImage from '@/assets/logo/logo2.png';
 
 const router = useRouter();
+const userStore = useUserStore();
 
+// 폼 데이터 초기화
 const withdrawForm = ref({
+    user_id: '',
     email: '',
     auth_code: ''
 });
 
+const dbEmail = ref('');
 const isVerified = ref(false);
 
 // 타이머 설정
@@ -17,17 +22,7 @@ const timer = ref(180);
 let interval = null;
 const isExpired = ref(false);
 
-// 이메일 변경 시 상태 초기화
-watch(
-    () => withdrawForm.value.email,
-    () => {
-        isVerified.value = false;
-        withdrawForm.value.auth_code = '';
-        isExpired.value = false;
-        clearInterval(interval);
-    }
-);
-
+// 타이머
 const startTimer = () => {
     timer.value = 180;
     isExpired.value = false;
@@ -50,10 +45,42 @@ const formatTime = computed(() => {
     return `${min}:${sec}`;
 });
 
-// 인증번호 발송
+// 컴포넌트 로드 시 데이터 가져오기
+onMounted(async () => {
+    if (userStore.user_id) {
+        withdrawForm.value.user_id = userStore.user_id;
+        await loadUserInfo();
+    } else {
+        console.error('로그인된 사용자 정보(ID)를 찾을 수 없습니다.');
+    }
+});
+
+// DB에서 이메일 조회
+const loadUserInfo = async () => {
+    try {
+        const res = await fetch('/api/user/get-info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_id: withdrawForm.value.user_id })
+        });
+
+        const data = await res.json();
+
+        if (data.retCode) {
+            dbEmail.value = data.email;
+            if (data.user_id) withdrawForm.value.user_id = data.user_id;
+        } else {
+            alert(data.message || '사용자 정보 조회 실패');
+        }
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+// 인증번호 발송 (DB 이메일 검증 포함)
 const sendCode = async () => {
-    if (!withdrawForm.value.email) {
-        alert('이메일을 입력해주세요.');
+    if (withdrawForm.value.email !== dbEmail.value) {
+        alert('입력한 이메일이 등록된 이메일과 다릅니다.');
         return;
     }
     try {
@@ -63,7 +90,6 @@ const sendCode = async () => {
             body: JSON.stringify({ email: withdrawForm.value.email })
         });
         if (res.ok) {
-            isVerified.value = false;
             startTimer();
             alert('인증번호가 발송되었습니다.');
         }
@@ -88,7 +114,7 @@ const verifyCode = async () => {
             })
         });
         const data = await res.json();
-        if (data.retCode === true) {
+        if (data.retCode) {
             isVerified.value = true;
             clearInterval(interval);
             alert('인증되었습니다.');
@@ -100,63 +126,82 @@ const verifyCode = async () => {
     }
 };
 
-// 회원 탈퇴 실행
+// 탈퇴 처리
 const handleWithdraw = async () => {
     if (!isVerified.value) {
         alert('이메일 인증을 완료해주세요.');
         return;
     }
-    if (confirm('정말로 탈퇴하시겠습니까? 탈퇴 후 데이터 복구는 불가능합니다.')) {
+    if (confirm('정말 탈퇴하시겠습니까? 탈퇴 후 데이터 복구는 불가능합니다.')) {
         try {
             const res = await fetch('/api/withdraw', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: withdrawForm.value.email })
+                body: JSON.stringify({ user_id: withdrawForm.value.user_id })
             });
-            if (res.ok) {
-                alert('탈퇴 처리가 완료되었습니다.');
+            const data = await res.json();
+            if (data.retCode) {
+                alert('탈퇴 완료');
                 router.push('/sign/login');
+            } else {
+                alert(data.message || '탈퇴 실패');
             }
         } catch (err) {
-            alert('탈퇴 처리 중 오류가 발생했습니다.');
+            console.log(err);
         }
     }
+};
+
+// 승인대기로 돌아가기
+const goToBack = () => {
+    router.push('/sign/access');
 };
 </script>
 <template>
     <div class="flex h-screen m-0">
-        <!-- 왼쪽 로고 영역 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-yellow-50">
-            <img :src="logoImage" alt="Logo" class="w-72 max-w-4/5 object-contain" />
+        <!-- 왼쪽 로고 -->
+        <div class="flex-1 flex flex-col items-center justify-center bg-yellow-50 gap-4">
+            <img :src="logoImage" alt="로고" class="w-72 max-w-4/5 object-contain" />
         </div>
 
-        <!-- 오른쪽 회원탈퇴 폼 -->
+        <!-- 오른쪽 폼 -->
         <div class="flex-1 flex items-center justify-center bg-white">
-            <div class="w-96 xl:w-[480px] flex flex-col gap-6 p-8 rounded-lg">
-                <div class="text-center">
-                    <h2 class="text-3xl font-bold text-surface-800 mb-2">회원탈퇴</h2>
-                    <p class="text-red-500 text-lg font-medium">회원탈퇴시 지원건에 대한 책임은 개인에게 있습니다.</p>
-                </div>
+            <div class="w-96 xl:w-[480px] flex flex-col gap-5">
+                <h2 class="text-2xl font-bold text-center text-surface-800">회원 탈퇴</h2>
+
                 <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">이메일</label>
+                    <label class="font-semibold text-surface-700">아이디</label>
+                    <InputText v-model="withdrawForm.user_id" size="large" fluid disabled />
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <label class="font-semibold text-surface-700">이메일 인증</label>
                     <InputGroup>
-                        <InputText v-model="withdrawForm.email" placeholder="이메일을 입력하세요" :disabled="isVerified" />
-                        <Button :label="isExpired ? '재발송' : '인증하기'" severity="success" class="auth-btn" @click="sendCode" :disabled="isVerified" />
+                        <InputText v-model="withdrawForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
+                        <Button label="인증하기" severity="success" size="large" class="font-bold auth-btn" @click="sendCode(withdrawForm.email)" :disabled="isVerified" />
                     </InputGroup>
                 </div>
-                <div class="flex flex-col gap-2">
+
+                <div class="flex flex-col gap-1">
                     <label class="font-semibold text-surface-700">인증번호</label>
                     <InputGroup>
-                        <InputText v-model="withdrawForm.auth_code" placeholder="인증번호 입력" :disabled="isVerified" />
-                        <InputGroupAddon v-if="!isVerified" class="timer-text">
-                            {{ formatTime }}
+                        <InputText v-model="withdrawForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
+                        <!-- 타이머 표시 영역 -->
+                        <InputGroupAddon class="timer-addon" v-if="!isVerified">
+                            <span>{{ formatTime }}</span>
                         </InputGroupAddon>
-                        <Button label="확인" severity="success" class="auth-btn" @click="verifyCode" :disabled="isVerified" />
+                        <Button label="확인하기" severity="success" size="large" class="font-bold auth-btn" @click="verifyCode(withdrawForm.auth_code)" :disabled="isVerified" />
                     </InputGroup>
-                    <p v-if="isVerified" class="text-blue-500 text-xs mt-1">* 인증이 완료되었습니다.</p>
-                    <p v-else class="text-red-500 text-xs mt-1">* 이메일 인증을 진행해주세요.</p>
+
+                    <span class="text-red-500 text-sm" v-if="!isVerified"> * 본인 확인을 위해 이메일 인증을 진행해주세요. </span>
+                    <span class="text-blue-500 text-sm" v-else> * 인증이 완료되었습니다. </span>
                 </div>
-                <Button label="확인" severity="success" size="large" fluid class="font-bold mt-4" :disabled="!isVerified" @click="handleWithdraw" />
+
+                <div class="flex justify-end items-center gap-2 text-sm">
+                    <span class="link-text" @click="goToBack">취소하고 돌아가기</span>
+                </div>
+
+                <Button label="회원 탈퇴하기" severity="danger" size="large" fluid class="font-bold" :disabled="!isVerified" @click="handleWithdraw" />
             </div>
         </div>
     </div>
@@ -164,21 +209,34 @@ const handleWithdraw = async () => {
 
 <style scoped>
 .auth-btn {
-    width: 90px !important;
-    font-size: 0.9rem;
+    width: 100px !important;
+    flex-shrink: 0;
 }
-.timer-text {
+
+.timer-addon {
     background: transparent !important;
+    border-left: none !important;
+    border-right: none !important;
     color: #22c55e;
-    font-weight: bold;
-    min-width: 60px;
+    font-weight: 600;
 }
-/* PrimeVue InputGroup 스타일 미세 조정 */
-:deep(.p-inputgroup .p-inputtext) {
-    border-right: none;
+
+.p-inputgroup .p-inputtext {
+    border-right: none !important;
 }
-:deep(.p-inputgroup .p-button) {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
+
+.p-inputgroup .p-button {
+    border-left: none !important;
+}
+
+.link-text {
+    cursor: pointer;
+    color: var(--p-text-muted-color);
+    font-weight: 500;
+}
+
+.link-text:hover {
+    color: var(--p-green-500);
+    text-decoration: underline;
 }
 </style>

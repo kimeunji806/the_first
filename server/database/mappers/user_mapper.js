@@ -5,20 +5,18 @@ const insertUser = async (userInfo) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let [result] = await conn.query(userSql.insertUser, userInfo);
-
+    await conn.beginTransaction();
+    let result = await conn.query(userSql.insertUser, userInfo);
+    console.log(result.insertId);
+    await conn.query(userSql.signApproval, [userInfo[2]]);
+    await conn.commit();
     return result;
   } catch (err) {
     if (conn) await conn.rollback();
-  }
-
-  try {
-    conn = await pool.getConnection();
-    let result2 = await conn.query(userSql.signApproval, userInfo[2]);
-
-    return result2;
-  } catch (err) {
-    if (conn) await conn.rollback();
+    console.error(err);
+    throw err;
+  } finally {
+    if (conn) conn.release();
   }
 };
 
@@ -146,15 +144,29 @@ const updatePw = async (userId, userPw) => {
   }
 };
 
-// 회원탈퇴
-const withdrawUser = async (email) => {
+// user_id로 이메일 조회
+const selectUserById = async (userId) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    const result = await conn.query(userSql.withdrawUser, [email]);
+    const rows = await conn.query(userSql.selectUserById, [userId]);
+    return rows[0];
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+// 2. user_id 기준 탈퇴
+const withdrawUser = async (userId) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(userSql.withdrawUser, [userId]);
     return result;
   } catch (err) {
-    console.log();
+    console.log(err);
   } finally {
     if (conn) conn.release();
   }
@@ -170,5 +182,6 @@ module.exports = {
   findUserIdByEmail,
   findUserByIdAndEmail,
   updatePw,
+  selectUserById,
   withdrawUser,
 };

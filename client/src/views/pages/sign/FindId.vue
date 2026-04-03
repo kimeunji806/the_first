@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import logoImage from '@/assets/logo/logo2.png';
+import logoImage from '@/assets/logo/logo.png';
 import { email } from '@vuelidate/validators';
 
 const router = useRouter();
@@ -180,7 +180,7 @@ const goToFindPassword = () => {
 <template>
     <div class="flex h-screen m-0">
         <!-- 왼쪽 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-yellow-50 gap-4">
+        <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
             <img :src="logoImage" alt="The_first 로고" class="w-72 max-w-4/5 object-contain" />
         </div>
 

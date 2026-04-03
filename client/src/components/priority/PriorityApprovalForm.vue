@@ -14,6 +14,7 @@ const selectNo = Number(route.params.no);
 const priorityNo = computed(() => dropdownValue.value?.priority_no);
 const dropdownValue = ref(null);
 const priority = ref([]);
+const priorityAlert = ref([]);
 
 const filteredPriority = computed(() => {
     return priority.value.filter((item) => item.approval === 'a0');
@@ -42,15 +43,13 @@ const addPriorityInfo = async (approval, reason_rejection) => {
             'content-type': 'application/json'
         },
         body: JSON.stringify(data)
-    })
-        // .then((res) => res.json())
-        .catch((err) => console.log(err));
-    // if (result.status == 'success') {
-    //     router.resolve('/sign/login');
-    // } else {
-    //     console.log('등록되지않았습니다.');
-    //     inPrinted.value = true;
-    // }
+    }).catch((err) => console.log(err));
+    if (result.ok == true) {
+        alert(`요청 하였습니다.`);
+        window.location.reload(true);
+    } else {
+        alert('요청 실패하였습니다.');
+    }
 };
 
 onBeforeMount(async () => {

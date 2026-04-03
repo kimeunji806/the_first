@@ -23,13 +23,14 @@ const form = reactive({
     ins_no: ''
 });
 
+// 담당자 리스트 조회
 const managerFetch = async (ins_no) => {
     try {
         const resp = await fetch(`/api/managerList/${ins_no}`);
         const data = await resp.json();
         managerList.value = data;
 
-        if (data.length > 0) {
+        if (!selectedUser.value && data.length > 0) {
             selectedUser.value = data[0];
             loadForm(selectedUser.value);
         }
@@ -38,6 +39,7 @@ const managerFetch = async (ins_no) => {
     }
 };
 
+//기관정보 조회
 const fetchInsList = async () => {
     try {
         const resp = await fetch('/api/institutionList');
@@ -48,6 +50,7 @@ const fetchInsList = async () => {
     }
 };
 
+//담당자 선택시 조회 모드 전환
 const selectUser = (user) => {
     selectedUser.value = user;
     loadForm(user);
@@ -55,15 +58,17 @@ const selectUser = (user) => {
     isCreateMode.value = false;
 };
 
+//상세정보 불러옴
 const loadForm = (user) => {
     if (!user) return;
-
+    form.user_id = user.user_id || '';
     form.name = user.name || '';
     form.tel = user.tel || '';
     form.email = user.email || '';
     form.ins_no = user.ins_no ? String(user.ins_no) : '';
 };
 
+//등록 모드 전환
 const createUser = () => {
     isCreateMode.value = true;
     isEditMode.value = false;
@@ -77,11 +82,13 @@ const createUser = () => {
     // form.ins_no = '';
 };
 
+//수정 모드 전환
 const editUser = () => {
     isEditMode.value = true;
     isCreateMode.value = false;
 };
 
+//담당자 등록
 const insertUser = async () => {
     try {
         const payload = {
@@ -118,6 +125,7 @@ const insertUser = async () => {
     }
 };
 
+//수정후 저장
 const saveUser = async () => {
     if (!selectedUser.value) return;
 
@@ -125,6 +133,7 @@ const saveUser = async () => {
 
     try {
         const payload = {
+            user_id: form.user_id,
             name: form.name,
             tel: form.tel,
             email: form.email,
@@ -139,15 +148,19 @@ const saveUser = async () => {
 
         if (!resp.ok) throw new Error('저장 실패');
 
-        const updatedData = await resp.json();
+        await resp.json();
 
         alert('저장 완료');
 
         await managerFetch(ins_no);
 
-        selectedUser.value = managerList.value.find((u) => u.user_no === updatedData.user_no);
+        const updatedUser = managerList.value.find((u) => String(u.user_no) === String(mNo)); //담당자 리스트중 최근에 선택된 번호랑 같은 값 찾음
 
-        loadForm(selectedUser.value);
+        if (updatedUser) {
+            // 수정 끝난후 찾은 번호로 다시 조회
+            selectedUser.value = updatedUser;
+            loadForm(updatedUser);
+        }
 
         isEditMode.value = false;
     } catch (err) {
@@ -226,6 +239,11 @@ onBeforeMount(() => {
                 <template v-else-if="isEditMode">
                     <div class="space-y-4">
                         <div class="flex flex-col">
+                            <label class="text-gray-500 text-sm mb-1">아이디</label>
+                            <input v-model="form.user_id" :disabled="true" class="border bg-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
+                        </div>
+
+                        <div class="flex flex-col">
                             <label class="text-gray-500 text-sm mb-1">이름</label>
                             <input v-model="form.name" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
                         </div>
@@ -237,12 +255,12 @@ onBeforeMount(() => {
 
                         <div class="flex flex-col">
                             <label class="text-gray-500 text-sm mb-1">이메일</label>
-                            <input v-model="form.email" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
+                            <input v-model="form.email" :disabled="true" class="border rounded bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
                         </div>
 
                         <div class="flex flex-col">
                             <label class="text-gray-500 text-sm mb-1">기관</label>
-                            <select v-model="form.ins_no" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300">
+                            <select v-model="form.ins_no" :disabled="true" class="border rounded bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300">
                                 <option disabled value="">기관 선택</option>
                                 <option v-for="ins in insList" :key="ins.ins_no" :value="String(ins.ins_no)">
                                     {{ ins.ins_name }}

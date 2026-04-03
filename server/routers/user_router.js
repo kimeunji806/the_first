@@ -86,62 +86,33 @@ router.put("/userpw/:userId", async (req, res) => {
   }
 });
 
-// 회원탈퇴
-router.post("/withdraw", async (req, res) => {
+// 회원탈퇴 : user_id로 이메일 조회
+router.post("/user/get-info", async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) return res.json({ retCode: false, message: "아이디 누락" });
+
   try {
-    const { email } = req.body;
-
-    // 로그인 여부 체크
-    if (!req.session.user) {
-      return res.status(401).json({
-        retCode: false,
-        message: "로그인이 필요합니다.",
-      });
-    }
-
-    const loginUserEmail = req.session.user.email;
-
-    if (!email) {
-      return res.status(400).json({
-        retCode: false,
-        message: "이메일이 없습니다.",
-      });
-    }
-
-    // 입력 이메일과 로그인 사용자 이메일 비교
-    if (email !== loginUserEmail) {
-      return res.status(403).json({
-        retCode: false,
-        message: "본인 이메일이 아닙니다.",
-      });
-    }
-
-    const result = await userService.withdrawUser(email);
-
-    if (result) {
-      // 탈퇴 성공 시 세션 삭제
-      req.session.destroy((err) => {
-        if (err) {
-          return res.status(500).json({
-            retCode: false,
-            message: "세션 종료 중 오류가 발생했습니다.",
-          });
-        }
-
-        res.clearCookie("connect.sid");
-        return res.json({
-          retCode: true,
-          message: "회원탈퇴가 완료되었습니다.",
-        });
-      });
-    } else {
-      res.status(400).json({
-        retCode: false,
-        message: "회원정보를 찾을 수 없습니다.",
-      });
-    }
+    const user = await userService.getUserById(user_id);
+    if (user) res.json({ retCode: true, email: user.email });
+    else res.json({ retCode: false, message: "사용자를 찾을 수 없습니다." });
   } catch (err) {
     console.log(err);
+    res.status(500).json({ retCode: false, message: "조회 실패" });
+  }
+});
+
+// 회원탈퇴
+router.post("/withdraw", async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) return res.json({ retCode: false, message: "아이디 누락" });
+
+  try {
+    const result = await userService.withdrawUser(user_id);
+    if (result.affectedRows > 0) res.json({ retCode: true });
+    else res.json({ retCode: false, message: "탈퇴 처리 실패" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ retCode: false, message: "서버 오류" });
   }
 });
 
