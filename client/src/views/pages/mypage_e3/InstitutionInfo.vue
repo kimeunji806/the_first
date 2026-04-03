@@ -72,8 +72,7 @@ onBeforeMount(() => {
                             { label: '사업자번호', value: institution.business_number },
                             { label: '대표번호', value: institution.tel },
                             { label: '주소', value: institution.institution_address },
-                            { label: '이메일', value: institution.institution_email },
-                            { label: '운영여부', value: institution.operation === 1 ? '여' : '부' }
+                            { label: '이메일', value: institution.institution_email }
                         ]"
                     >
                         <Column field="label" header="" class="w-3xs" />

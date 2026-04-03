@@ -159,15 +159,29 @@ const updatePw = async (userId, userPw) => {
   }
 };
 
-// 회원탈퇴
-const withdrawUser = async (email) => {
+// user_id로 이메일 조회
+const selectUserById = async (userId) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    const result = await conn.query(userSql.withdrawUser, [email]);
+    const rows = await conn.query(userSql.selectUserById, [userId]);
+    return rows[0];
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+// 2. user_id 기준 탈퇴
+const withdrawUser = async (userId) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    const result = await conn.query(userSql.withdrawUser, [userId]);
     return result;
   } catch (err) {
-    console.log();
+    console.log(err);
   } finally {
     if (conn) conn.release();
   }
@@ -184,5 +198,6 @@ module.exports = {
   findUserIdByEmail,
   findUserByIdAndEmail,
   updatePw,
+  selectUserById,
   withdrawUser,
 };

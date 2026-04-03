@@ -136,24 +136,14 @@ onBeforeMount(findAllInfo);
                             { label: '사업자번호', field: 'business_number' },
                             { label: '대표번호', field: 'tel' },
                             { label: '주소', field: 'institution_address' },
-                            { label: '이메일', field: 'institution_email' },
-                            { label: '운영여부', field: 'operation' }
+                            { label: '이메일', field: 'institution_email' }
                         ]"
                     >
                         <Column field="label" header="" class="w-3xs"></Column>
                         <Column field="field" header="">
                             <template #body="slotProps">
                                 <span v-if="slotProps.data.field === 'business_number'">{{ institution.business_number }}</span>
-                                <div v-else-if="slotProps.data.field === 'operation'" class="flex gap-4">
-                                    <div class="flex items-center">
-                                        <RadioButton id="option1" name="operation" :value="1" v-model="institution.operation" />
-                                        <label for="option1" class="ml-2">여</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <RadioButton id="option2" name="operation" :value="0" v-model="institution.operation" />
-                                        <label for="option2" class="ml-2">부</label>
-                                    </div>
-                                </div>
+
                                 <div v-else-if="slotProps.data.field === 'institution_address'" class="flex flex-col gap-2 w-full">
                                     <div class="flex gap-2">
                                         <InputText v-model="institution.zonecode" class="w-32" readonly />

@@ -103,14 +103,14 @@ const resetUserPassword = async (userId, userObj) => {
   };
 };
 
-// 회원탈퇴
-const withdrawUser = async (email) => {
-  try {
-    const result = await userMapper.withdrawUser(email);
-    return result.affectedRows > 0;
-  } catch (err) {
-    console.log();
-  }
+// DB에서 user_id로 이메일 조회
+const getUserById = async (userId) => {
+  return await userMapper.selectUserById(userId);
+};
+
+// DB에서 user_id로 탈퇴
+const withdrawUser = async (userId) => {
+  return await userMapper.withdrawUser(userId);
 };
 
 module.exports = {
@@ -124,5 +124,6 @@ module.exports = {
   findUserIdByEmail,
   findUserByIdAndEmail,
   resetUserPassword,
+  getUserById,
   withdrawUser,
 };
