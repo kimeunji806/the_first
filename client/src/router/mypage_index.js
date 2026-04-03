@@ -18,5 +18,10 @@ export default [
         path: '/admin/mypage/edit',
         name: 'admin-mypage-edit',
         component: () => import('@/views/pages/mypage_e3/AdminMyInfoEdit.vue')
+    },
+    {
+        path: '/pages/myuserinfo',
+        name: 'user-mypage',
+        component: () => import('@/views/pages/mypage/MyPageInfo.vue')
     }
 ];

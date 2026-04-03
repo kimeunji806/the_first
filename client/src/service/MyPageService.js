@@ -45,4 +45,14 @@ async function updateTarget(target, userNo) {
     return await resp.json();
 }
 
-export { getTargets, createTarget, updateTarget };
+const myInfo = async (no) => {
+    try {
+        const result = await fetch(`${BASE_URL}/myPageInfo/${no}`)
+        const data = await result.json();
+        return data;
+    } catch (err) {
+        console.error('내 정보 조회 실패:', err);
+    }
+};
+
+export { getTargets, createTarget, updateTarget ,myInfo };
