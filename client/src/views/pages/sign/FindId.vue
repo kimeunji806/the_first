@@ -193,7 +193,7 @@ const goToFindPassword = () => {
                     <label class="font-semibold text-surface-700">이메일</label>
                     <InputGroup>
                         <InputText v-model="findForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
-                        <Button label="인증하기" severity="success" size="large" class="font-bold auth-btn" @click="sendCode" :disabled="isVerified" />
+                        <Button label="인증하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="sendCode" :disabled="isVerified" />
                     </InputGroup>
                 </div>
 
@@ -202,14 +202,13 @@ const goToFindPassword = () => {
                     <InputGroup>
                         <InputText v-model="findForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
                         <InputGroupAddon class="timer-addon" v-if="!isVerified">
-                            <span>{{ formatTime }}</span>
+                            <span class="timer-text">{{ formatTime }}</span>
                         </InputGroupAddon>
-
-                        <Button label="확인하기" severity="success" size="large" class="font-bold auth-btn" @click="verifyCode(findForm.auth_code)" :disabled="isVerified" />
+                        <Button label="확인하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="verifyCode(findForm.auth_code)" :disabled="isVerified" />
                     </InputGroup>
 
                     <span class="text-red-500 text-sm" v-if="!isVerified"> * 이메일 인증을 진행해주세요. </span>
-                    <span class="text-blue-500 text-sm" v-else> * 인증이 완료되었습니다. </span>
+                    <span class="text-primary-color text-sm" v-else> * 인증이 완료되었습니다. </span>
                 </div>
 
                 <div class="flex justify-end items-center gap-2 text-sm">
@@ -218,24 +217,49 @@ const goToFindPassword = () => {
                     <span class="link-text" @click="goToFindPassword">비밀번호 찾기</span>
                 </div>
 
-                <Button label="확인" severity="success" size="large" fluid class="font-bold" :disabled="!isVerified" @click="goToResult" />
+                <Button label="확인" size="large" fluid class="font-bold custom-primary-btn" :disabled="!isVerified" @click="goToResult" />
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.custom-primary-btn {
+    background-color: #034487 !important;
+    border-color: #034487 !important;
+    color: #ffffff !important;
+}
+
+.custom-primary-btn:hover {
+    background-color: #033d7a !important; /* Primary 600 */
+}
+
+.custom-primary-btn:disabled {
+    background-color: #adc9e3 !important; /* Primary 200 */
+    border-color: #adc9e3 !important;
+    opacity: 0.6;
+}
+
 .auth-btn {
     width: 100px !important;
     flex-shrink: 0;
+}
+
+.timer-text {
+    color: #034487 !important;
+    font-variant-numeric: tabular-nums;
 }
 
 .timer-addon {
     background: transparent !important;
     border-left: none !important;
     border-right: none !important;
-    color: #22c55e;
     font-weight: 600;
+}
+
+.text-primary-color {
+    color: #034487 !important;
+    font-weight: 500;
 }
 
 .p-inputgroup .p-inputtext {
@@ -250,10 +274,11 @@ const goToFindPassword = () => {
     cursor: pointer;
     color: var(--p-text-muted-color);
     font-weight: 500;
+    transition: color 0.2s;
 }
 
 .link-text:hover {
-    color: var(--p-green-500);
+    color: #034487 !important;
     text-decoration: underline;
 }
 </style>

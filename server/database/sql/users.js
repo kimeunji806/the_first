@@ -37,6 +37,23 @@ JOIN institution i ON u.institution_no = i.institution_no
 WHERE sa.approval = 0 AND u.institution_no = ?
 `;
 
+const approvalByAdmin = `
+SELECT 
+    sa.approval_no AS no,       
+    u.user_name AS name,
+    u.user_id AS id,
+    i.name AS ins,            
+    u.tel,
+    u.email,
+    DATE_FORMAT(u.created_at, '%Y-%m-%d') AS created_at
+FROM user u
+JOIN sign_approval sa ON u.user_id = sa.user_id 
+LEFT JOIN institution i ON u.institution_no = i.institution_no
+WHERE u.approval = '0'       
+  AND u.role = 'e3'
+ORDER BY sa.approval_no DESC;
+`;
+
 const access = `
 UPDATE user
 SET approval = 1
@@ -103,6 +120,7 @@ WHERE user_id = ?
 module.exports = {
   loginUser,
   approval,
+  approvalByAdmin,
   insertUser,
   signApproval,
   access,

@@ -1,9 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, reactive, computed, onMounted } from 'vue';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 const uNo = userStore.user_no;
+const uName = userStore.user_name;
 
 import { myInfo } from '@/service/MyPageService';
 
@@ -18,6 +19,33 @@ const editForm = ref({
     tel: ''
 });
 
+const form = reactive({
+    zonecode: '',
+    roadAddress: '',
+    detailAddress: ''
+});
+
+const formdata = computed(() => {
+    return form.zonecode + ' ' + form.roadAddress + ' ' + form.detailAddress;
+});
+
+function searchAddress() {
+    if (!window.kakao || !window.kakao.Postcode) {
+        alert('주소 검색 서비스를 불러오지 못했습니다.');
+        return;
+    }
+
+    new window.kakao.Postcode({
+        oncomplete(data) {
+            form.zonecode = data.zonecode || '';
+            form.roadAddress = data.roadAddress || data.address || '';
+
+            const detailInput = document.getElementById('detailAddress');
+            if (detailInput) detailInput.focus();
+        }
+    }).open();
+}
+
 // 데이터 불러오기
 async function loadInfo(uNo) {
     const data = await myInfo(uNo);
@@ -28,28 +56,32 @@ async function loadInfo(uNo) {
 function handleEdit() {
     isEditMode.value = true;
 
-    // 기존 값 세팅
     editForm.value.user_name = myInfoList.value[0].user_name;
     editForm.value.tel = myInfoList.value[0].tel;
 }
 
 // 저장 버튼 클릭
 async function handleSave() {
+    console.log('수정값 : ', editForm.value.user_name, editForm.value.tel, formdata.value);
     // try {
-    // await fetch('/api/updateUser', {
-    //     method: 'PUT',
-    //     headers: {
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify({
-    //         user_no: uNo,
-    //         user_name: editForm.value.user_name,
-    //         tel: editForm.value.tel
-    //     })
+    //     await fetch('/api/myPageUserInfoUpdate', {
+    //         method: 'PUT',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             user_no: uNo,
+    //             user_name: editForm.value.user_name,
+    //             tel: editForm.value.tel,
+    //             address: formdata.value
+    //         })
     //     });
+
     //     // 화면 반영
     //     myInfoList.value[0].user_name = editForm.value.user_name;
     //     myInfoList.value[0].tel = editForm.value.tel;
+    //     myInfoList.value[0].address = formdata.value;
+
     //     isEditMode.value = false;
     //     alert('수정 완료');
     // } catch (err) {
@@ -65,7 +97,7 @@ onMounted(async () => {
 
 <template>
     <div class="p-6 rounded">
-        <div class="text-lg font-semibold mb-4 border-b pb-2">보호자 정보</div>
+        <div class="text-lg font-semibold mb-4 border-b pb-2">보호자 {{ uName }} 정보</div>
 
         <div v-if="myInfoList[0]" class="divide-y">
             <!-- 아이디 -->
@@ -101,9 +133,24 @@ onMounted(async () => {
             <!-- 주소 -->
             <div class="grid grid-cols-4 py-4">
                 <div>주소</div>
-                <div class="col-span-3">{{ myInfoList[0].address }}</div>
-            </div>
+                <div class="col-span-3">
+                    <!-- 수정모드 -->
+                    <div v-if="isEditMode">
+                        <div class="flex gap-2 mb-2">
+                            <input v-model="form.zonecode" placeholder="우편번호" readonly class="border px-2 py-1 w-32" />
+                            <button @click="searchAddress" class="bg-gray-300 px-2 rounded">검색</button>
+                        </div>
 
+                        <input v-model="form.roadAddress" placeholder="기본주소" readonly class="border px-2 py-1 w-full mb-2" />
+                        <input id="detailAddress" v-model="form.detailAddress" placeholder="상세주소" class="border px-2 py-1 w-full" />
+                    </div>
+
+                    <!-- 일반모드 -->
+                    <span v-else>
+                        {{ myInfoList[0].address }}
+                    </span>
+                </div>
+            </div>
             <!-- 기관 -->
             <div class="grid grid-cols-4 py-4">
                 <div>기관</div>
@@ -119,8 +166,6 @@ onMounted(async () => {
 
         <!-- 버튼 -->
         <div class="flex justify-end mt-6 gap-3">
-            <button class="bg-gray-300 px-4 py-2 rounded">회원탈퇴</button>
-
             <button v-if="!isEditMode" @click="handleEdit" class="bg-green-500 text-white px-4 py-2 rounded">수정</button>
 
             <button v-else @click="handleSave" class="bg-blue-500 text-white px-4 py-2 rounded">저장</button>

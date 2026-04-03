@@ -620,7 +620,7 @@ watch(
 </script>
 
 <template>
-    <div class="card h-full flex flex-col gap-4">
+    <div class="card h-220 flex flex-col gap-4">
         <div class="max-h-[700px] overflow-y-auto pr-2">
             <div class="max-w-2xl mx-auto">
                 <!-- 화면 제목 -->

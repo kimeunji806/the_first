@@ -5,10 +5,9 @@ import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import SurveyHistoryModal from '@/components/dialog/survey_dialog.vue';
 
+const keyword = ref('');
 const router = useRouter();
-
 const historyDialog = ref(false);
-
 const userStore = useUserStore();
 const user_no = userStore.user_no;
 const selectedSurveyNo = ref(null);
@@ -82,14 +81,61 @@ const filteredApprovalForm_re = computed(() => {
     return resultList.value.filter((item) => item.approval === 'a1');
 });
 
-onBeforeMount(async () => {
-    await fetch(`/api/lists/${user_no}`)
-        .then((resp) => resp.json())
-        .then((data) => {
-            users.value = data;
-        })
-        .catch((err) => console.log(err));
+const findAllUsers = async () => {
+    try {
+        const searchQuery = keyword.value.trim() ? `?keyword=${encodeURIComponent(keyword.value.trim())}` : '';
+        const resp = await fetch(`/api/lists/${user_no}${searchQuery}`);
+
+        const text = await resp.text();
+        if (text) {
+            users.value = JSON.parse(text);
+        } else {
+            users.value = [];
+        }
+    } catch (err) {
+        console.error('조회 에러:', err);
+        users.value = [];
+    }
+};
+
+// 검색 실행 (버튼 클릭용)
+const searchUsers = () => {
+    findAllUsers();
+};
+
+// 엔터키 검색
+const handleSearchEnter = (e) => {
+    if (e.key === 'Enter') {
+        findAllUsers();
+    }
+};
+
+// 검색 초기화
+const resetSearch = async () => {
+    keyword.value = '';
+    await findAllUsers();
+};
+
+// 검색어 하이라이트
+const highlightText = (text) => {
+    const trimmedKeyword = keyword.value.trim();
+    if (!trimmedKeyword || !text) return text;
+    const regex = new RegExp(`(${trimmedKeyword})`, 'gi');
+    return String(text).replace(regex, '<mark class="search-match">$1</mark>');
+};
+
+onBeforeMount(() => {
+    findAllUsers();
 });
+
+// onBeforeMount(async () => {
+//     await fetch(`/api/lists/${user_no}`)
+//         .then((resp) => resp.json())
+//         .then((data) => {
+//             users.value = data;
+//         })
+//         .catch((err) => console.log(err));
+// });
 </script>
 
 <template>
@@ -102,10 +148,18 @@ onBeforeMount(async () => {
         <div class="md:w-6/7">
             <div class="h-9/10">
                 <div class="card">
-                    <div class="font-semibold text-xl mb-4">지원신청내역</div>
-                    <DataTable :value="users" :paginator="true" :rows="5" dataKey="id" :rowHover="true" showGridlines>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="font-semibold text-xl">지원신청내역</div>
+
+                        <div class="flex gap-2">
+                            <InputText v-model="keyword" placeholder="지원자 / 보호자 / 담당자 검색" class="w-72" @keydown="handleSearchEnter" />
+                            <Button icon="pi pi-search" @click="searchUsers" />
+                            <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
+                        </div>
+                    </div>
+                    <DataTable :value="users" :paginator="true" :rows="10" dataKey="id" :rowHover="true" showGridlines>
                         <!-- 못찾았을떄 -->
-                        <template #empty> No customers found. </template>
+                        <template #empty> 검색 결과가 없습니다. </template>
 
                         <Column header="지원자명" style="min-width: 8rem">
                             <template #body="{ data }">
@@ -303,3 +357,16 @@ onBeforeMount(async () => {
         </div>
     </Dialog>
 </template>
+<style scoped>
+:deep(.search-match) {
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+    text-align: center;
+}
+</style>
