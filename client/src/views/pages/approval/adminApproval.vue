@@ -8,7 +8,6 @@ const approval = async () => {
     await fetch(`/api/admin-approval`)
         .then((resp) => resp.json())
         .then((data) => {
-            console.log('admin approval data:', data);
             approvalList.value = Array.isArray(data) ? data : [data];
         })
         .catch((err) => console.log(err));
@@ -69,11 +68,14 @@ const filters = ref({
 
 <template>
     <div class="card">
-        <div class="font-semibold text-xl mb-4">회원가입 승인요청</div>
+        <div class="flex justify-between items-center mb-4">
+            <div class="font-semibold text-xl">회원가입 승인요청</div>
 
-        <!-- 검색 -->
-        <div class="flex justify-between mb-3">
-            <InputText v-model="filters.global.value" placeholder="검색" />
+            <div class="flex gap-2">
+                <InputText v-model="keyword" placeholder="검색" class="w-72" @keydown="handleSearchEnter" />
+                <Button icon="pi pi-search" @click="searchNotice" />
+                <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
+            </div>
         </div>
 
         <DataTable :value="approvalList" :paginator="true" :rows="10" v-model:filters="filters" :filters="filters" :globalFilterFields="['no', 'name', 'id', 'ins', 'tel', 'email', 'created_at', 'approval', 'refuse']">
