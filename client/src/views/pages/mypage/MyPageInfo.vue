@@ -166,9 +166,14 @@ onMounted(async () => {
 
         <!-- 버튼 -->
         <div class="flex justify-end mt-6 gap-3">
+            <Button v-if="!isEditMode" @click="handleEdit" label="수정" class="w-24" />
+            <Button v-else @click="handleSave" label="저장" class="w-24" />
+
+            <!-- <button class="bg-gray-300 px-4 py-2 rounded">회원탈퇴</button>
+
             <button v-if="!isEditMode" @click="handleEdit" class="bg-green-500 text-white px-4 py-2 rounded">수정</button>
 
-            <button v-else @click="handleSave" class="bg-blue-500 text-white px-4 py-2 rounded">저장</button>
+            <button v-else @click="handleSave" class="bg-blue-500 text-white px-4 py-2 rounded">저장</button> -->
         </div>
     </div>
 </template>

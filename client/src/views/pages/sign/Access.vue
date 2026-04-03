@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onBeforeMount } from 'vue';
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();

@@ -20,12 +20,21 @@ const user_role = userStore.role;
 import ManagerAssignForm from '@/components/common/ManagerAssignForm.vue';
 
 // 오른쪽에서 담당자 지정 완료 후 사용할 셀렉 목록
-const dropdownValues = [
-    { name: '상담기록', code: 'A', component: counselForm },
+// const dropdownValues = computed(
+//     [
+//         ...(user_role !== 'e3' ? [{ name: '상담기록', code: 'A', component: counselForm }] : []),
+//         { name: '우선순위', code: 'B', component: user_role === 'e3' ? priorityApprovalForm : priorityForm },
+//         { name: '지원계획', code: 'C', component: loginRole === 'e3' ? AdminPlanApprovalForm : planForm },
+//         { name: '지원결과', code: 'D', component: loginRole === 'e3' ? AdminResultApprovalForm : resultForm }
+//     ].filter(Boolean)
+// );
+
+const dropdownValues = computed(() => [
+    ...(user_role !== 'e3' ? [{ name: '상담기록', code: 'A', component: counselForm }] : []),
     { name: '우선순위', code: 'B', component: user_role === 'e3' ? priorityApprovalForm : priorityForm },
     { name: '지원계획', code: 'C', component: loginRole === 'e3' ? AdminPlanApprovalForm : planForm },
     { name: '지원결과', code: 'D', component: loginRole === 'e3' ? AdminResultApprovalForm : resultForm }
-];
+]);
 // 셀렉트에서 선택한 값
 const dropdownValue = shallowRef(null);
 //확인버튼으로 불러오게 했음
@@ -33,7 +42,7 @@ const selectedForm = shallowRef(null);
 // 코드값으로 오른쪽 폼을 여는 공통 함수
 // A: 상담기록, B: 우선순위, C: 지원계획, D: 지원결과
 const openFormByCode = (code) => {
-    const target = dropdownValues.find((item) => item.code === code);
+    const target = dropdownValues.value.find((item) => item.code === code);
 
     if (!target) {
         return;
@@ -137,6 +146,7 @@ onBeforeMount(async () => {
         isLoading.value = false;
     }
 });
+
 onMounted(() => {
     // 기관관리자일 때만 자동 오픈 이벤트 연결
     if (loginRole === 'e3') {

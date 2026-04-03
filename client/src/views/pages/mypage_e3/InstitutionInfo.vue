@@ -62,28 +62,31 @@ onBeforeMount(() => {
 
             <div v-else-if="activeTab === 1" class="mt-4">
                 <div v-if="institution">
-                    <div class="mb-5">
-                        <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
-                        <span class="text-muted-color"> 기관관리자 기관 정보를 확인할 수 있습니다. </span>
-                    </div>
-                    <DataTable
-                        :value="[
-                            { label: '기관', value: institution.name },
-                            { label: '사업자번호', value: institution.business_number },
-                            { label: '대표번호', value: institution.tel },
-                            { label: '주소', value: institution.institution_address },
-                            { label: '이메일', value: institution.institution_email }
-                        ]"
-                    >
-                        <Column field="label" header="" class="w-3xs" />
-                        <Column field="value" header="" />
-                    </DataTable>
+                    <div class="p-6">
+                        <div class="mb-5">
+                            <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
+                            <span class="text-muted-color"> 기관관리자 기관 정보를 확인할 수 있습니다. </span>
+                        </div>
+                        <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
+                            <DataTable
+                                :value="[
+                                    { label: '기관', value: institution.name },
+                                    { label: '사업자번호', value: institution.business_number },
+                                    { label: '대표번호', value: institution.tel },
+                                    { label: '주소', value: institution.institution_address },
+                                    { label: '이메일', value: institution.institution_email }
+                                ]"
+                            >
+                                <Column field="label" header="" class="w-3xs" />
+                                <Column field="value" header="" />
+                            </DataTable>
 
-                    <div class="flex justify-end mt-4">
-                        <Button label="수정" @click="goToEditForm" />
+                            <div class="flex justify-end mt-4">
+                                <Button label="수정" @click="goToEditForm" />
+                            </div>
+                        </div>
                     </div>
                 </div>
-
                 <div v-else>로딩중...</div>
             </div>
         </div>

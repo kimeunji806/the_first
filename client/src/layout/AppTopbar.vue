@@ -1,12 +1,11 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import AppConfigurator from './AppConfigurator.vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import { computed } from 'vue';
 import logoImage from '@/assets/logo/logo1.png';
 
-const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+const { toggleMenu } = useLayout();
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -45,19 +44,6 @@ const userName = computed(() => userStore.user_name || '');
             <div class="layout-config-menu flex items-center gap-3">
                 <div class="text-sm font-medium whitespace-nowrap">{{ userName }}({{ roleName }})님 반갑습니다.</div>
                 <Button label="로그아웃" raised @click="logOut" />
-                <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
-                    <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
-                </button>
-                <div class="relative">
-                    <button
-                        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'p-anchored-overlay-enter-active', leaveToClass: 'hidden', leaveActiveClass: 'p-anchored-overlay-leave-active', hideOnOutsideClick: true }"
-                        type="button"
-                        class="layout-topbar-action layout-topbar-action-highlight"
-                    >
-                        <i class="pi pi-palette"></i>
-                    </button>
-                    <AppConfigurator />
-                </div>
             </div>
 
             <button
@@ -66,23 +52,6 @@ const userName = computed(() => userStore.user_name || '');
             >
                 <i class="pi pi-ellipsis-v"></i>
             </button>
-
-            <!-- <div class="layout-topbar-menu hidden lg:block">
-                <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-user"></i>
-                        <span>Profile</span>
-                    </button>
-                </div>
-            </div> -->
         </div>
     </div>
 </template>

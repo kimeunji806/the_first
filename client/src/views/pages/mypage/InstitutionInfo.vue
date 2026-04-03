@@ -97,7 +97,7 @@ onMounted(() => {
                 </div>
 
                 <div class="flex justify-between pt-3">
-                    <Button label="회원탈퇴" severity="danger" outlined @click="goToWithdraw" />
+                    <Button label="회원탈퇴" severity="danger" @click="goToWithdraw" />
                     <Button label="수정" @click="goEdit" />
                 </div>
             </div>

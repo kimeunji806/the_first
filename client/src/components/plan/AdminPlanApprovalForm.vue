@@ -261,9 +261,11 @@ onBeforeUnmount(() => {
 
                 <!-- 버튼 -->
                 <div class="text-right flex justify-end gap-2">
-                    <button type="button" @click="approvePlan" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-300 cursor-not-allowed'">승인</button>
+                    <!-- <button type="button" @click="approvePlan" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? '' : 'bg-gray-300 cursor-not-allowed'">승인</button> -->
+                    <Button label="승인" type="button" @click="approvePlan" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? '' : 'bg-gray-300 cursor-not-allowed'" />
 
-                    <button type="button" @click="rejectPlan" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'">반려</button>
+                    <Button type="button" label="반려" severity="danger" @click="rejectPlan" :disabled="!canProcess" class="px-6 py-2text-white" :class="canProcess ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'" />
+                    <!-- <button type="button" @click="rejectPlan" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'">반려</button> -->
                 </div>
 
                 <!-- 안내 -->

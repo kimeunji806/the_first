@@ -136,6 +136,7 @@ onMounted(() => {
                     <tr>
                         <th class="py-3 text-center">운영여부</th>
                         <td class="py-3 px-4">
+                            <!-- <Tag :value="Number(detail.operation) === 1 ? '운영' : '종료'" :severity="Number(detail.operation) === 1 ? 'success' : 'secondary'" rounded /> -->
                             <Tag :value="Number(detail.operation) === 1 ? '운영' : '종료'" :severity="Number(detail.operation) === 1 ? 'success' : 'secondary'" rounded />
                         </td>
                     </tr>

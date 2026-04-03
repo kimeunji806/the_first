@@ -40,7 +40,7 @@ function onAdd() {
         <div class="max-h-[420px] overflow-y-auto">
             <div v-if="targets.length === 0" class="text-gray-500 py-4 border-b">지원대상자가 없습니다.</div>
 
-            <div v-for="target in targets" :key="target.id" class="p-3 border-b cursor-pointer transition-colors" :class="selected == target.id ? 'bg-green-300' : 'hover:bg-green-200'" @click="onItemClick(target)">
+            <div v-for="target in targets" :key="target.id" class="p-3 border-b cursor-pointer transition-colors" :class="selected == target.id ? 'bg-gray-300' : 'hover:bg-gray-200'" @click="onItemClick(target)">
                 <div class="text-gray-800 font-medium mb-1">
                     {{ target.name }}
                 </div>
@@ -52,6 +52,7 @@ function onAdd() {
         </div>
 
         <!-- 등록 버튼 -->
-        <button type="button" class="mt-4 w-full bg-green-400 hover:bg-green-500 text-white py-2 rounded-lg font-medium" @click="onAdd">지원대상자 등록</button>
+        <!-- <button type="button" class="mt-4 w-full bg-green-400 hover:bg-green-500 text-white py-2 rounded-lg font-medium" @click="onAdd">지원대상자 등록</button> -->
+        <Button type="button" class="w-full" label="지원대상자 등록" v-on:click="onAdd" />
     </div>
 </template>

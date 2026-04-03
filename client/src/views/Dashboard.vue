@@ -45,7 +45,7 @@ const goToDetail_result = (surveyNo) => {
             <div class="h-9/10">
                 <div class="card">
                     <div class="font-semibold text-xl mb-4">지원신청내역</div>
-                    <DataTable :value="users" :paginator="true" :rows="5" dataKey="id" :rowHover="true" showGridlines>
+                    <DataTable :value="users" :paginator="true" :rows="12" dataKey="id" :rowHover="true" showGridlines>
                         <!-- 못찾았을떄 -->
                         <template #empty> No customers found. </template>
 
