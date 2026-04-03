@@ -187,10 +187,6 @@ function goToWithdraw() {
         <div class="flex-1 p-10 bg-gray-100">
             <div class="bg-white p-8 rounded shadow h-full flex flex-col">
                 <div class="flex-1 min-h-0">
-                    <h2 class="mb-6 text-xl font-semibold text-gray-800">
-                        {{ isMyInfoMode ? '내 정보' : isCreateMode ? '지원대상자 등록' : selectedTarget?.name || '지원대상자 정보' }}
-                    </h2>
-
                     <div class="flex-1 min-h-0">
                         <MyPageInfo v-if="isMyInfoMode" />
 

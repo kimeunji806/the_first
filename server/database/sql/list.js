@@ -6,6 +6,7 @@ SELECT MAX(b.beneficiaries_name) AS beneficiaries_name
      , MAX(u.user_no) AS manager_no
      , MAX(h.user_no) AS sub_manager_no
      , MAX(g.user_name) AS guardian_name
+     , MAX(g.institution_no) AS institution_no
      , MAX(DATE_FORMAT(s.created_at, '%Y-%m-%d')) AS created_at
      , MAX(p.priority_id) AS priority_id
       , MAX(p.approval) AS approval
@@ -107,7 +108,7 @@ LEFT JOIN (
            ) AS result_approve_cnt
 
          /* 종결 */
-         SUM(
+         ,SUM(
               CASE
                 WHEN spr.finish = 1
                 AND spr.result_approval = 'a1'
