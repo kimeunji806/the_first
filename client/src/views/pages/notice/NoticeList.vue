@@ -116,80 +116,63 @@ onBeforeMount(() => {
 });
 </script>
 <template>
-    <div class="w-full mt-4">
-        <div class="flex justify-between items-center mb-3">
-            <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium">공지사항</div>
+    <div class="md:w-full">
+        <div class="h-9/10">
+            <div class="card">
+                <div class="flex justify-between items-center mb-3">
+                    <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium">공지사항</div>
 
-            <div class="flex gap-2">
-                <InputText v-model="keyword" placeholder="제목 / 내용 / 작성자 / 작성일자 검색" class="w-72" @keydown="handleSearchEnter" />
-                <Button icon="pi pi-search" @click="searchNotice" />
-                <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
-            </div>
-        </div>
-        <DataTable
-            :value="filteredNotice"
-            class="w-full"
-            :pt="{
-                headerRow: { class: 'text-center' },
-                column: {
-                    headerContent: { class: 'justify-center' },
-                    bodyCell: { class: 'text-center' }
-                }
-            }"
-            paginator
-            :rows="10"
-            scrollable
-            scrollHeight="600px"
-        >
-            <Column header="번호" class="w-16 text-center">
-                <template #body="slotProps">
-                    <div class="text-center">{{ slotProps.index + 1 }}</div>
-                </template>
-            </Column>
-            <Column header="제목" class="flex-1">
-                <template #body="slotProps">
-                    <div class="text-left py-1" style="max-width: 1px; min-width: 100%">
-                        <div class="mb-1 truncate">
-                            <span class="cursor-pointer hover:underline text-900 font-medium" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)" v-html="highlightText(slotProps.data.notice_title)"> </span>
-                        </div>
-                        <div v-if="shouldShowContent(slotProps.data)" class="text-sm text-500 truncate" v-html="highlightText(slotProps.data.notice_content)"></div>
+                    <div class="flex gap-2">
+                        <InputText v-model="keyword" placeholder="제목 / 내용 / 작성자 / 작성일자 검색" class="w-72" @keydown="handleSearchEnter" />
+                        <Button icon="pi pi-search" @click="searchNotice" />
+                        <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
                     </div>
-                </template>
-            </Column>
-            <Column header="작성자" class="w-40 text-center whitespace-nowrap">
-                <template #body="slotProps">
-                    <div v-html="highlightText(slotProps.data.user_name)"></div>
-                </template>
-            </Column>
-            <Column header="작성일자" class="w-48 text-center whitespace-nowrap">
-                <template #body="slotProps">
-                    <div v-html="highlightText(dateFormat(slotProps.data.created_at))"></div>
-                </template>
-            </Column>
-        </DataTable>
-        <div class="flex justify-end mt-4">
-            <Button v-if="canManageNotice" label="글등록" @click="goToWriteForm" />
+                </div>
+                <DataTable
+                    :value="filteredNotice"
+                    class="w-full"
+                    :pt="{
+                        headerRow: { class: 'text-center' },
+                        column: {
+                            headerContent: { class: 'justify-center' },
+                            bodyCell: { class: 'text-center' }
+                        }
+                    }"
+                    paginator
+                    :rows="10"
+                    scrollable
+                    scrollHeight="600px"
+                >
+                    <Column header="번호" class="w-16 text-center">
+                        <template #body="slotProps">
+                            <div class="text-center">{{ slotProps.index + 1 }}</div>
+                        </template>
+                    </Column>
+                    <Column header="제목" class="flex-1">
+                        <template #body="slotProps">
+                            <div class="text-left py-1" style="max-width: 1px; min-width: 100%">
+                                <div class="mb-1 truncate">
+                                    <span class="cursor-pointer hover:underline text-900 font-medium" @click="router.push(`/notice/info/${slotProps.data.notice_no}`)" v-html="highlightText(slotProps.data.notice_title)"> </span>
+                                </div>
+                                <div v-if="shouldShowContent(slotProps.data)" class="text-sm text-500 truncate" v-html="highlightText(slotProps.data.notice_content)"></div>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="작성자" class="w-40 text-center whitespace-nowrap">
+                        <template #body="slotProps">
+                            <div v-html="highlightText(slotProps.data.user_name)"></div>
+                        </template>
+                    </Column>
+                    <Column header="작성일자" class="w-48 text-center whitespace-nowrap">
+                        <template #body="slotProps">
+                            <div v-html="highlightText(dateFormat(slotProps.data.created_at))"></div>
+                        </template>
+                    </Column>
+                </DataTable>
+                <div class="flex justify-end mt-4">
+                    <Button v-if="canManageNotice" label="글등록" @click="goToWriteForm" />
+                </div>
+            </div>
         </div>
     </div>
 </template>
-<style scoped>
-.whitespace-nowrap {
-    white-space: nowrap !important;
-}
-.flex-1 {
-    flex: 1 1 0% !important;
-}
-.truncate {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-:deep(.search-match) {
-    background-color: rgba(var(--primary-color-rgb), 0.15); /* Sakai 테마 강조색 */
-    color: var(--primary-color);
-    font-weight: bold;
-    padding: 2px 4px;
-    border-radius: 4px;
-}
-</style>

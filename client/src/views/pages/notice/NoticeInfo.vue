@@ -105,43 +105,47 @@ onBeforeMount(() => {
 });
 </script>
 <template>
-    <div class="w-full mt-4">
-        <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-6">공지사항</div>
+    <div class="md:w-full">
+        <div class="h-9/10">
+            <div class="card">
+                <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-6">공지사항</div>
 
-        <div class="border rounded-lg p-6 bg-white shadow-sm">
-            <div class="mb-4">
-                <div class="text-sm text-gray-500 mb-1"></div>
-                <div class="text-xl font-semibold">{{ notice.notice_title }}</div>
-            </div>
-            <div class="flex gap-8 border-b pb-4 mb-6 text-sm text-gray-600">
-                <div>
-                    <span class="font-medium">작성자 :</span>
-                    {{ notice.user_name }}
-                </div>
-                <div>
-                    <span class="font-medium">작성일 :</span>
-                    {{ dateFormat(notice.created_at) }}
-                </div>
-            </div>
-            <div class="mb-6">
-                <div class="text-sm text-gray-500 mb-2"></div>
-                <div class="whitespace-pre-wrap leading-7 min-h-[200px]">
-                    {{ notice.notice_content }}
-                </div>
-            </div>
-            <div class="mb-6">
-                <div class="text-sm text-gray-500 mb-2">첨부파일</div>
+                <div class="border rounded-lg p-6 bg-white shadow-sm">
+                    <div class="mb-4">
+                        <div class="text-sm text-gray-500 mb-1"></div>
+                        <div class="text-xl font-semibold">{{ notice.notice_title }}</div>
+                    </div>
+                    <div class="flex gap-8 border-b pb-4 mb-6 text-sm text-gray-600">
+                        <div>
+                            <span class="font-medium">작성자 :</span>
+                            {{ notice.user_name }}
+                        </div>
+                        <div>
+                            <span class="font-medium">작성일 :</span>
+                            {{ dateFormat(notice.created_at) }}
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <div class="text-sm text-gray-500 mb-2"></div>
+                        <div class="whitespace-pre-wrap leading-7 min-h-[200px]">
+                            {{ notice.notice_content }}
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <div class="text-sm text-gray-500 mb-2">첨부파일</div>
 
-                <div v-if="notice.files.length > 0" class="space-y-2">
-                    <div v-for="file in notice.files" :key="file.file_no" class="border rounded px-3 py-2 text-sm cursor-pointer" @click="downloadFile(file.file_no)">
-                        {{ file.file_name }}
+                        <div v-if="notice.files.length > 0" class="space-y-2">
+                            <div v-for="file in notice.files" :key="file.file_no" class="border rounded px-3 py-2 text-sm cursor-pointer" @click="downloadFile(file.file_no)">
+                                {{ file.file_name }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-2 mt-6">
+                        <Button label="목록" @click="goToList" />
+                        <Button v-if="canManageNotice" label="글수정" @click="goToEditForm" />
+                        <Button v-if="canManageNotice" label="글삭제" @click="deleteNotice" />
                     </div>
                 </div>
-            </div>
-            <div class="flex justify-end gap-2 mt-6">
-                <Button label="목록" @click="goToList" />
-                <Button v-if="canManageNotice" label="글수정" @click="goToEditForm" />
-                <Button v-if="canManageNotice" label="글삭제" @click="deleteNotice" />
             </div>
         </div>
     </div>

@@ -244,7 +244,7 @@ function saveUpdate() {
                     </span>
                 </div>
 
-                <Button v-if="mode === 'view' && target" label="수정" severity="secondary" outlined @click="editMode" />
+                <Button v-if="mode === 'view' && target" label="수정" severity="secondary" @click="editMode" />
             </div>
         </div>
 

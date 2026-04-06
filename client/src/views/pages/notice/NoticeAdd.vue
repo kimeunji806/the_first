@@ -121,7 +121,7 @@ onBeforeMount(() => {
             </div>
         </div>
         <div class="flex justify-end mt-3">
-            <Button label="글등록" class="p-button-success px-5 py-2 font-bold" @click="createNotice" />
+            <Button label="글등록" @click="createNotice" />
         </div>
     </div>
 </template>

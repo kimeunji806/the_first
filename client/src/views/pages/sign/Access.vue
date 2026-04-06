@@ -37,13 +37,13 @@ onBeforeMount(() => {
                         <span class="text-muted-color mb-8">본 서비스는 가입하시는 기관의 관리자 승인 처리 후 이용 가능합니다.</span>
                         <img src="/demo/images/access/asset-access.svg" alt="Access denied" class="mb-8" width="80%" />
                         <i class="pi pi-exclamation-circle"> 문의사항은 기관으로 연락 바랍니다</i>
-                        <span class="bg-green-500 text-white px-3 py-1 rounded-lg text-sm"> 기관대표 번호 : {{ institutionTel }} </span>
+                        <span class="bg-gray-500 text-white px-3 py-1 rounded-lg text-sm"> 기관대표 번호 : {{ institutionTel }} </span>
                         <div class="col-span-12 mt-8 text-center">
-                            <Button as="router-link" label="로그인페이지로 돌아가기" to="/sign/login" severity="warn" @click="logOut" />
+                            <Button as="router-link" label="로그인페이지로 돌아가기" to="/sign/login" @click="logOut" />
                         </div>
                         <div class="col-span-12 mt-8 text-center">
                             <Button as="router-link" label="로그아웃" to="/sign/login" class="accessBtn" @click="logOut" />
-                            <Button as="router-link" label="회원탈퇴" to="/sign/with-draw" class="accessBtn" />
+                            <Button as="router-link" label="회원탈퇴" to="/sign/with-draw" severity="danger" class="accessBtn" />
                         </div>
                     </div>
                 </div>

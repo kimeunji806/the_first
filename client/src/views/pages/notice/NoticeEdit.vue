@@ -210,7 +210,7 @@ onMounted(async () => {
 
         <div class="flex justify-end mt-3 gap-2">
             <Button label="취소" class="p-button-secondary px-5 py-2 font-bold" @click="goToDetail" />
-            <Button label="수정완료" class="p-button-success px-5 py-2 font-bold" @click="updateNotice" />
+            <Button label="수정완료" @click="updateNotice" />
         </div>
     </div>
 </template>

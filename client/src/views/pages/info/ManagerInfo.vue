@@ -65,7 +65,8 @@ const loadForm = (user) => {
     form.name = user.name || '';
     form.tel = user.tel || '';
     form.email = user.email || '';
-    form.ins_no = user.ins_no ? String(user.ins_no) : '';
+    // form.ins_no = user.ins_no ? String(user.ins_no) : '';
+    form.ins_no = user.ins_no || null;
 };
 
 //등록 모드 전환
@@ -169,6 +170,14 @@ const saveUser = async () => {
     }
 };
 
+const cancelEdit = () => {
+    isEditMode.value = false;
+
+    if (selectedUser.value) {
+        loadForm(selectedUser.value);
+    }
+};
+
 onBeforeMount(() => {
     managerFetch(ins_no);
     fetchInsList();
@@ -178,94 +187,91 @@ onBeforeMount(() => {
 <template>
     <div class="flex h-screen">
         <div class="w-64 bg-green-100 p-4">
-            <div class="flex justify-between mb-4">
-                <h3>담당자 목록</h3>
-                <span>{{ managerList.length }}명</span>
+            <div class="mb-4 flex items-center gap-2">
+                <h3 class="font-semibold text-lg">담당자 목록</h3>
+                <span class="text-sl text-500">({{ managerList.length }}명)</span>
             </div>
 
-            <div v-for="user in managerList" :key="user.user_id" class="p-3 border-b cursor-pointer hover:bg-green-200" @click="selectUser(user)">
-                {{ user.name }}
-            </div>
+                <div v-for="user in managerList" :key="user.user_id" class="p-3 border-b cursor-pointer hover:bg-green-200" @click="selectUser(user)">
+                    {{ user.name }}
+                </div>
 
-            <button class="mt-4 w-full bg-green-400 text-white py-2 rounded" @click="createUser">기관담당자 등록</button>
+                <!-- <button class="mt-4 w-full bg-green-400 text-white py-2 rounded" @click="createUser">기관담당자 등록</button> -->
+                <Button @click="createUser" class="w-full" label="기관담당자 등록" />
+            </div>
         </div>
 
-        <div class="flex-1 p-10 bg-gray-100">
-            <div class="bg-white p-8 rounded shadow">
+        <div class="md:w-6/8 h-full">
+            <div class="card h-full flex flex-col gap-4">
                 <h2 class="mb-6 text-xl">
-                    {{ isCreateMode ? '담당자 등록' : isEditMode ? '담당자 수정' : selectedUser?.name || '담당자 정보' }}
+                    {{ isCreateMode ? '담당자 등록' : isEditMode ? '담당자 정보 수정' : selectedUser?.name || '담당자 정보' }}
                 </h2>
 
                 <!-- 조회 -->
                 <template v-if="!isEditMode && !isCreateMode">
-                    <div class="space-y-3">
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-500">아이디</span>
-                            <span class="font-medium text-gray-800">
+                    <div class="grid gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200">
+                            <div class="font-semibold text-surface-700">아이디</div>
+                            <div class="text-surface-900">
                                 {{ selectedUser?.user_id }}
-                            </span>
+                            </div>
                         </div>
 
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-500">이름</span>
-                            <span class="font-medium text-gray-800">
+                        <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200">
+                            <div class="font-semibold text-surface-700">이름</div>
+                            <div class="text-surface-900">
                                 {{ selectedUser?.name }}
-                            </span>
+                            </div>
                         </div>
 
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-500">전화번호</span>
-                            <span class="font-medium text-gray-800">
-                                {{ selectedUser?.tel }}
-                            </span>
+                        <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200">
+                            <div class="font-semibold text-surface-700">전화번호</div>
+                            <div class="text-surface-900">
+                                {{ selectedUser?.tel || '-' }}
+                            </div>
                         </div>
 
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-500">이메일</span>
-                            <span class="font-medium text-gray-800">
-                                {{ selectedUser?.email }}
-                            </span>
+                        <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200">
+                            <div class="font-semibold text-surface-700">이메일</div>
+                            <div class="text-surface-900">
+                                {{ selectedUser?.email || '-' }}
+                            </div>
                         </div>
 
-                        <div class="flex justify-between border-b pb-2">
-                            <span class="text-gray-500">기관</span>
-                            <span class="font-medium text-gray-800">
+                        <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2">
+                            <div class="font-semibold text-surface-700">기관</div>
+                            <div class="text-surface-900">
                                 {{ insList.find((i) => String(i.ins_no) === String(selectedUser?.ins_no))?.ins_name }}
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </template>
                 <!-- 수정 -->
                 <template v-else-if="isEditMode">
-                    <div class="space-y-4">
-                        <div class="flex flex-col">
-                            <label class="text-gray-500 text-sm mb-1">아이디</label>
-                            <input v-model="form.user_id" :disabled="true" class="border bg-gray-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
+                    <div class="grid gap-4">
+                        <div>
+                            <label class="block text-sm text-surface-600 mb-1">아이디</label>
+                            <InputText v-model="form.user_id" :disabled="isEditMode" class="w-full" />
                         </div>
 
-                        <div class="flex flex-col">
-                            <label class="text-gray-500 text-sm mb-1">이름</label>
-                            <input v-model="form.name" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
+                        <div>
+                            <label class="block text-sm text-surface-600 mb-1">이름</label>
+                            <InputText v-model="form.name" class="w-full" />
                         </div>
 
-                        <div class="flex flex-col">
-                            <label class="text-gray-500 text-sm mb-1">전화번호</label>
-                            <input v-model="form.tel" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
+                        <div>
+                            <label class="block text-sm text-surface-600 mb-1">전화번호</label>
+                            <InputText v-model="form.tel" class="w-full" />
                         </div>
 
-                        <div class="flex flex-col">
-                            <label class="text-gray-500 text-sm mb-1">이메일</label>
-                            <input v-model="form.email" :disabled="true" class="border rounded bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300" />
+                        <div>
+                            <label class="block text-sm text-surface-600 mb-1">이메일</label>
+                            <InputText v-model="form.email" disabled class="w-full" />
                         </div>
 
-                        <div class="flex flex-col">
-                            <label class="text-gray-500 text-sm mb-1">기관</label>
-                            <select v-model="form.ins_no" :disabled="true" class="border rounded bg-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-300">
-                                <option disabled value="">기관 선택</option>
-                                <option v-for="ins in insList" :key="ins.ins_no" :value="String(ins.ins_no)">
-                                    {{ ins.ins_name }}
-                                </option>
-                            </select>
+                        <div>
+                            <label class="block text-sm text-surface-600 mb-1">기관</label>
+                            <InputText :value="insList.find((i) => String(i.ins_no) === String(isCreateMode ? ins_no : form.ins_no))?.ins_name" disabled class="w-full grayscale-input" />
                         </div>
                     </div>
                 </template>
@@ -311,14 +317,22 @@ onBeforeMount(() => {
                 </template>
 
                 <!-- 버튼 -->
-                <div class="mt-6 text-right space-x-2">
-                    <button v-if="!isEditMode && !isCreateMode" @click="editUser" class="bg-green-400 hover:bg-green-500 text-white px-5 py-2 rounded-lg">수정</button>
-
-                    <button v-else-if="isEditMode" @click="saveUser" class="bg-blue-400 hover:bg-blue-500 text-white px-5 py-2 rounded-lg">저장</button>
-
-                    <button v-else @click="insertUser" class="bg-purple-400 hover:bg-purple-500 text-white px-5 py-2 rounded-lg">등록</button>
+                <div class="flex justify-end gap-2 mt-6">
+                    <Button v-if="!isEditMode && !isCreateMode" label="수정" @click="editUser" />
+                    <template v-if="isEditMode">
+                        <Button label="취소" severity="secondary" outlined @click="cancelEdit" />
+                        <Button label="저장" @click="saveUser" />
+                    </template>
+                    <Button v-if="isCreateMode" label="등록" @click="insertUser" />
                 </div>
             </div>
         </div>
     </div>
 </template>
+<style scoped>
+:deep(.p-inputtext:disabled) {
+    background-color: #f3f4f6 !important;
+    color: #6b7280 !important;
+    cursor: default !important;
+}
+</style>

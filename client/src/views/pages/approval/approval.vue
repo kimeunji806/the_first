@@ -72,34 +72,91 @@ const filters = ref({
 
 <template>
     <div class="card">
-        <div class="flex justify-between items-center mb-4">
-            <div class="font-semibold text-xl">회원가입 승인요청</div>
-
-            <div class="flex gap-2">
+        <div class="mb-5">
+            <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">회원가입 승인요청</div>
+        </div>
+        <div class="flex justify-end items-center mb-3">
+            <div class="flex gap-2 items-center">
                 <InputText v-model="filters.global.value" placeholder="검색" class="w-72" />
                 <Button icon="pi pi-search" />
                 <Button icon="pi pi-refresh" severity="secondary" outlined @click="filters.global.value = null" />
             </div>
         </div>
-
-        <DataTable :value="approvalList" :paginator="true" :rows="10" v-model:filters="filters" :filters="filters" :globalFilterFields="['no', 'name', 'id', 'ins', 'tel', 'email', 'created_at', 'approval', 'refuse']">
-            <Column field="no" header="번호"></Column>
-            <Column field="name" header="이름"></Column>
-            <Column field="id" header="아이디"></Column>
-            <Column field="ins" header="기관명"></Column>
-            <Column field="tel" header="연락처"></Column>
-            <Column field="email" header="이메일"></Column>
-            <Column field="created_at" header="가입일"></Column>
-            <Column field="approval" header="사용승인">
-                <template #body="slotProps">
-                    <Button label="승인" severity="success" size="small" @click="approvalAcess" />
+        <DataTable :value="approvalList" class="w-full institution-table" paginator :rows="10" v-model:filters="filters" :filters="filters" :globalFilterFields="['no', 'name', 'id', 'ins', 'tel', 'email', 'created_at']">
+            <Column field="no">
+                <template #header>
+                    <div class="w-full text-center font-bold">번호</div>
                 </template>
             </Column>
-            <Column field="refuse" header="반려">
+            <Column field="name">
+                <template #header>
+                    <div class="w-full text-center font-bold">이름</div>
+                </template>
+            </Column>
+            <Column field="id">
+                <template #header>
+                    <div class="w-full text-center font-bold">아이디</div>
+                </template>
+            </Column>
+            <Column field="ins">
+                <template #header>
+                    <div class="w-full text-center font-bold">기관명</div>
+                </template>
+            </Column>
+            <Column field="tel">
+                <template #header>
+                    <div class="w-full text-center font-bold">연락처</div>
+                </template>
+            </Column>
+            <Column field="email">
+                <template #header>
+                    <div class="w-full text-center font-bold">이메일</div>
+                </template>
+            </Column>
+            <Column field="created_at">
+                <template #header>
+                    <div class="w-full text-center font-bold">가입일</div>
+                </template>
+            </Column>
+            <Column>
+                <template #header>
+                    <div class="w-full text-center font-bold">사용승인</div>
+                </template>
+                <template #body="slotProps">
+                    <Button label="승인" size="small" @click="approvalAcess" />
+                </template>
+            </Column>
+            <Column>
+                <template #header>
+                    <div class="w-full text-center font-bold">반려</div>
+                </template>
                 <template #body="slotProps">
                     <Button label="반려" severity="danger" size="small" @click="approvalRefuse" />
                 </template>
             </Column>
+            <template #empty>
+                <div class="py-6 text-center text-muted-color">조회된 승인 요청이 없습니다.</div>
+            </template>
         </DataTable>
     </div>
 </template>
+<style scoped>
+:deep(.institution-table .p-datatable-tbody > tr > td) {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.9rem 0.75rem;
+    border-bottom: 1px solid var(--p-content-border-color);
+}
+
+:deep(.institution-table .p-datatable-tbody > tr) {
+    transition: background-color 0.2s ease;
+}
+
+:deep(.institution-table .p-datatable-tbody > tr:hover > td) {
+    background-color: var(--p-surface-100);
+}
+
+:deep(.institution-table .p-paginator) {
+    justify-content: center;
+}
+</style>
