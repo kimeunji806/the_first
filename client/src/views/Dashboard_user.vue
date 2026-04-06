@@ -4,8 +4,8 @@ import { onBeforeMount, reactive, ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 import SurveyHistoryModal from '@/components/dialog/survey_dialog.vue';
+import { FilterMatchMode } from '@primevue/core/api';
 
-const keyword = ref('');
 const router = useRouter();
 const historyDialog = ref(false);
 const userStore = useUserStore();
@@ -83,59 +83,25 @@ const filteredApprovalForm_re = computed(() => {
 
 const findAllUsers = async () => {
     try {
-        const searchQuery = keyword.value.trim() ? `?keyword=${encodeURIComponent(keyword.value.trim())}` : '';
-        const resp = await fetch(`/api/lists/${user_no}${searchQuery}`);
+        const resp = await fetch(`/api/lists/${user_no}`); // ❗ keyword 제거
 
-        const text = await resp.text();
-        if (text) {
-            users.value = JSON.parse(text);
-        } else {
-            users.value = [];
-        }
+        if (!resp.ok) throw new Error('Network response was not ok');
+
+        const data = await resp.json();
+        users.value = Array.isArray(data) ? data : [];
     } catch (err) {
         console.error('조회 에러:', err);
         users.value = [];
     }
 };
 
-// 검색 실행 (버튼 클릭용)
-const searchUsers = () => {
-    findAllUsers();
-};
-
-// 엔터키 검색
-const handleSearchEnter = (e) => {
-    if (e.key === 'Enter') {
-        findAllUsers();
-    }
-};
-
-// 검색 초기화
-const resetSearch = async () => {
-    keyword.value = '';
-    await findAllUsers();
-};
-
-// 검색어 하이라이트
-const highlightText = (text) => {
-    const trimmedKeyword = keyword.value.trim();
-    if (!trimmedKeyword || !text) return text;
-    const regex = new RegExp(`(${trimmedKeyword})`, 'gi');
-    return String(text).replace(regex, '<mark class="search-match">$1</mark>');
-};
-
 onBeforeMount(() => {
     findAllUsers();
 });
 
-// onBeforeMount(async () => {
-//     await fetch(`/api/lists/${user_no}`)
-//         .then((resp) => resp.json())
-//         .then((data) => {
-//             users.value = data;
-//         })
-//         .catch((err) => console.log(err));
-// });
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
+});
 </script>
 
 <template>

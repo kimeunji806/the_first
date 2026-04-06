@@ -97,57 +97,37 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="p-6">
-        <!-- 제목 -->
-        <div class="mb-5">
-            <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">내 정보 수정</div>
-            <span class="text-muted-color"> 이름과 전화번호를 수정할 수 있습니다. </span>
-        </div>
-
-        <!-- 수정 폼 -->
-        <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- 아이디 -->
-                <div>
-                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">아이디</label>
-                    <InputText :value="form.user_id" class="w-full mb-4 readonly-field" readonly />
-                </div>
-
-                <!-- 이름 -->
-                <div>
-                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">이름</label>
-                    <InputText v-model="form.user_name" class="w-full mb-4" />
-                </div>
-
-                <!-- 전화번호 -->
-                <div>
-                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">전화번호</label>
-                    <InputText v-model="form.tel" class="w-full mb-4" placeholder="010-0000-0000" />
-                </div>
-
-                <!-- 이메일 -->
-                <div>
-                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">이메일</label>
-                    <InputText :value="form.email" class="w-full mb-4 readonly-field" readonly />
-                </div>
-
-                <!-- 기관명 -->
-                <div>
-                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">소속 기관</label>
-                    <InputText :value="form.institution_name" class="w-full mb-4 readonly-field" readonly />
-                </div>
-
-                <!-- 가입일 -->
-                <div>
-                    <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">가입일</label>
-                    <InputText :value="formatDate(form.created_at)" class="w-full mb-4 readonly-field" readonly />
-                </div>
+    <div class="w-full p-6">
+        <div class="card p-8 lg:p-10">
+            <div class="mb-8">
+                <div class="text-surface-900 dark:text-surface-0 text-3xl font-bold mb-2">마이페이지</div>
+                <span class="text-muted-color text-lg"> 기관담당자 본인 정보를 수정할 수 있습니다. </span>
             </div>
 
-            <!-- 버튼 -->
-            <div class="flex gap-2 justify-end mt-2">
-                <Button label="취소" severity="secondary" outlined @click="cancelEdit" />
-                <Button label="저장" @click="saveInfo" />
+            <DataTable
+                :value="[
+                    { label: '아이디', field: 'user_id', readonly: true },
+                    { label: '이름', field: 'user_name' },
+                    { label: '전화번호', field: 'tel' },
+                    { label: '이메일', field: 'email', readonly: true },
+                    { label: '소속 기관', field: 'institution_name', readonly: true },
+                    { label: '가입일', field: 'created_at', readonly: true }
+                ]"
+                class="institution-table"
+            >
+                <Column field="label" class="w-48 font-bold text-lg text-surface-700"></Column>
+                <Column field="field">
+                    <template #body="slotProps">
+                        <InputText v-if="slotProps.data.field === 'created_at'" :value="formatDate(form.created_at)" class="w-full readonly-field" readonly />
+                        <InputText v-else-if="slotProps.data.readonly" v-model="form[slotProps.data.field]" class="w-full readonly-field" readonly />
+                        <InputText v-else v-model="form[slotProps.data.field]" class="w-full" />
+                    </template>
+                </Column>
+            </DataTable>
+
+            <div class="flex gap-2 justify-end mt-10 pt-4 border-t border-surface-100">
+                <Button label="취소" severity="secondary" outlined @click="cancelEdit" class="px-6"></Button>
+                <Button label="저장" @click="saveInfo" class="px-8 bg-blue-900 border-none"></Button>
             </div>
         </div>
     </div>
@@ -157,7 +137,11 @@ onMounted(() => {
 :deep(.readonly-field) {
     background-color: #f3f4f6 !important;
     color: #6b7280 !important;
-    border-color: #d1d5db !important;
-    cursor: not-allowed;
+    border-color: #e5e7eb !important;
+    cursor: default !important;
+}
+
+:deep(.p-datatable-tbody > tr > td) {
+    padding: 1rem 0.75rem !important;
 }
 </style>
