@@ -188,9 +188,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="p-6 bg-slate-100 min-h-screen">
-        <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
-            <h2 class="text-lg font-bold mb-4 border-b pb-2">지원결과 결재</h2>
+    <div class="p-6 bg-slate-100 card h-220">
+        <div class="max-w-2xl mx-auto bg-white p-6 rounded-xl h-full flex flex-col">
+            <h2 class="text-lg font-bold mb-4 border-b pb-2 shrink-0">지원결과 결재</h2>
 
             <!-- 선택 전 안내 -->
             <div v-if="!selectedResult" class="border rounded-lg p-6 bg-gray-50 text-center text-gray-500">
@@ -199,88 +199,89 @@ onBeforeUnmount(() => {
             </div>
 
             <!-- 선택 후 상세/처리 -->
-            <div v-else>
-                <!-- 현재 처리 대상 -->
-                <div class="mb-4 border rounded-lg p-4 bg-blue-50">
-                    <div class="font-semibold text-lg mb-4">현재 처리 대상</div>
-                    <div class="font-semibold">지원결과 {{ selectedResult.support_result_no }}</div>
-                    <div class="text-sm text-gray-500 mb-1">작성자 {{ selectedResult.name }} / 작성일 {{ selectedResult.created_at }}</div>
-                </div>
+            <template v-else>
+                <!-- 본문 스크롤 영역 -->
+                <div class="flex-1 min-h-0 overflow-y-auto pr-1">
+                    <!-- 현재 처리 대상 -->
+                    <div class="mb-4 border rounded-lg p-4 bg-blue-50">
+                        <div class="font-semibold text-lg mb-4">현재 처리 대상</div>
+                        <div class="font-semibold">지원결과 {{ selectedResult.support_result_no }}</div>
+                        <div class="text-sm text-gray-500 mb-1">작성자 {{ selectedResult.name }} / 작성일 {{ selectedResult.created_at }}</div>
+                    </div>
 
-                <!-- 상태 / 종결 여부 -->
-                <div class="mb-4 flex gap-2">
-                    <span
-                        class="text-xs px-2 py-1 rounded"
-                        :class="{
-                            'bg-yellow-100 text-yellow-700': selectedResult.approval === 'a0',
-                            'bg-green-100 text-green-700': selectedResult.approval === 'a1',
-                            'bg-red-100 text-red-700': selectedResult.approval === 'a2'
-                        }"
-                    >
-                        {{ selectedResult.approval_name }}
-                    </span>
+                    <!-- 상태 / 종결 여부 -->
+                    <div class="mb-4 flex gap-2">
+                        <span
+                            class="text-xs px-2 py-1 rounded"
+                            :class="{
+                                'bg-yellow-100 text-yellow-700': selectedResult.approval === 'a0',
+                                'bg-green-100 text-green-700': selectedResult.approval === 'a1',
+                                'bg-red-100 text-red-700': selectedResult.approval === 'a2'
+                            }"
+                        >
+                            {{ selectedResult.approval_name }}
+                        </span>
 
-                    <span class="text-xs px-2 py-1 rounded" :class="Number(selectedResult.finish) === 1 ? 'bg-purple-100 text-purple-700' : 'bg-gray-200 text-gray-700'">
-                        {{ Number(selectedResult.finish) === 1 ? '종결' : '미종결' }}
-                    </span>
-                </div>
+                        <span class="text-xs px-2 py-1 rounded" :class="Number(selectedResult.finish) === 1 ? 'bg-purple-100 text-purple-700' : 'bg-gray-200 text-gray-700'">
+                            {{ Number(selectedResult.finish) === 1 ? '종결' : '미종결' }}
+                        </span>
+                    </div>
 
-                <!-- 연결된 계획서 -->
-                <div class="mb-4">
-                    <label class="block mb-1 text-sm font-medium">지원계획 번호</label>
-                    <div class="w-full border rounded px-3 py-2 bg-gray-100">지원계획 {{ selectedResult.support_plan_no }}</div>
-                </div>
+                    <!-- 연결된 계획서 -->
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium">지원계획 번호</label>
+                        <div class="w-full border rounded px-3 py-2 bg-gray-100">지원계획 {{ selectedResult.support_plan_no }}</div>
+                    </div>
 
-                <!-- 제목 -->
-                <div class="mb-4">
-                    <label class="block mb-1 text-sm font-medium">제목</label>
-                    <div class="w-full border rounded px-3 py-2 bg-gray-100">
-                        {{ selectedResult.title }}
+                    <!-- 제목 -->
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium">제목</label>
+                        <div class="w-full border rounded px-3 py-2 bg-gray-100">
+                            {{ selectedResult.title }}
+                        </div>
+                    </div>
+
+                    <!-- 내용 -->
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium">내용</label>
+                        <div class="w-full border rounded px-3 py-2 bg-gray-100 min-h-28 whitespace-pre-line">
+                            {{ selectedResult.content }}
+                        </div>
+                    </div>
+
+                    <!-- 첨부파일 -->
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium">첨부파일</label>
+                        <div class="w-full border rounded px-3 py-2 bg-gray-100">
+                            <ResultFileList :support-result-no="selectedResult.support_result_no" />
+                        </div>
+                    </div>
+
+                    <!-- 반려사유 -->
+                    <div class="mb-4">
+                        <label class="block mb-1 text-sm font-medium">반려사유</label>
+                        <textarea
+                            v-model="rejectionReason"
+                            :disabled="!canProcess"
+                            class="w-full border rounded px-3 py-2 h-28"
+                            :class="canProcess ? 'bg-gray-50' : 'bg-gray-100 text-gray-500 cursor-not-allowed'"
+                            placeholder="반려 시 반려사유를 입력해주세요."
+                        ></textarea>
                     </div>
                 </div>
 
-                <!-- 내용 -->
-                <div class="mb-4">
-                    <label class="block mb-1 text-sm font-medium">내용</label>
-                    <div class="w-full border rounded px-3 py-2 bg-gray-100 min-h-28 whitespace-pre-line">
-                        {{ selectedResult.content }}
+                <!-- 버튼 영역 -->
+                <div class="shrink-0 pt-4 mt-4 border-t">
+                    <div class="text-right flex justify-end gap-2">
+                        <Button label="승인" type="button" @click="approveResult" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? '' : 'bg-gray-300 cursor-not-allowed'" />
+
+                        <Button type="button" label="반려" severity="danger" @click="rejectResult" :disabled="!canProcess" class="px-6 py-2 text-white" :class="canProcess ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'" />
                     </div>
+
+                    <!-- 안내 -->
+                    <p v-if="!canProcess" class="text-xs text-gray-500 text-right mt-2">검토중인 지원결과만 승인 또는 반려 처리할 수 있습니다.</p>
                 </div>
-
-                <!-- 첨부파일 -->
-                <div class="mb-4">
-                    <label class="block mb-1 text-sm font-medium">첨부파일</label>
-                    <div class="w-full border rounded px-3 py-2 bg-gray-100">
-                        <ResultFileList :support-result-no="selectedResult.support_result_no" />
-                    </div>
-                </div>
-
-                <!-- 반려사유 -->
-                <div class="mb-6">
-                    <label class="block mb-1 text-sm font-medium">반려사유</label>
-                    <textarea
-                        v-model="rejectionReason"
-                        :disabled="!canProcess"
-                        class="w-full border rounded px-3 py-2 h-28"
-                        :class="canProcess ? 'bg-gray-50' : 'bg-gray-100 text-gray-500 cursor-not-allowed'"
-                        placeholder="반려 시 반려사유를 입력해주세요."
-                    ></textarea>
-                </div>
-
-                <!-- 버튼 -->
-                <div class="text-right flex justify-end gap-2">
-                    <!-- <button type="button" @click="approveResult" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? 'bg-green-500 hover:bg-green-600' : 'bg-gray-300 cursor-not-allowed'">승인</button>
-
-                    <button type="button" @click="rejectResult" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'">반려</button> -->
-
-                    <Button label="승인" type="button" @click="approveResult" :disabled="!canProcess" class="px-6 py-2 rounded-full text-white" :class="canProcess ? '' : 'bg-gray-300 cursor-not-allowed'" />
-
-                    <Button type="button" label="반려" severity="danger" @click="rejectResult" :disabled="!canProcess" class="px-6 py-2text-white" :class="canProcess ? 'bg-red-500 hover:bg-red-600' : 'bg-gray-300 cursor-not-allowed'" />
-                </div>
-
-                <!-- 안내 -->
-                <p v-if="!canProcess" class="text-xs text-gray-500 text-right mt-2">검토중인 지원결과만 승인 또는 반려 처리할 수 있습니다.</p>
-            </div>
+            </template>
         </div>
     </div>
 </template>
