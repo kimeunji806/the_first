@@ -32,7 +32,7 @@ router.beforeEach((to, from, next) => {
     const userStore = useUserStore();
 
     //로그인 없이 접근 가능한 페이지
-    const publicPages = ['/sign/login', '/sign/register', '/sign/find-password', '/sign/reset-password'];
+    const publicPages = ['/sign/login', '/sign/register', '/sign/find-password', '/sign/reset-password', '/sign/find-id', '/sign/find-id-result'];
 
     // 로그인 안됨
     if (!userStore.user_no) {
@@ -45,7 +45,7 @@ router.beforeEach((to, from, next) => {
     // 승인 안됨
     if (userStore.approval === 0) {
         if (to.path !== '/sign/access') {
-            if (to.path == '/sign/login' || to.path == '/sign/register') {
+            if ((to.path == '/sign/login' || to.path == '/sign/register', '/sign/with-draw')) {
                 return next();
             }
             return next('/sign/access');

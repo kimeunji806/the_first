@@ -117,7 +117,8 @@ const saveAssign = async () => {
         </div>
 
         <div class="flex justify-end mt-6">
-            <button class="bg-green-400 text-white px-6 py-2 rounded-full" @click="saveAssign">저장</button>
+            <!-- <button class="bg-green-400 text-white px-6 py-2 rounded-full" @click="saveAssign">저장</button> -->
+            <Button type="submit" label="저장" @click="saveAssign" />
         </div>
     </div>
 </template>

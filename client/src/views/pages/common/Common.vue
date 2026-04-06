@@ -15,16 +15,26 @@ import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 const user_role = userStore.role;
+
 // 오른쪽에서 담당자 지정할 때 쓸 컴포넌트
 import ManagerAssignForm from '@/components/common/ManagerAssignForm.vue';
 
 // 오른쪽에서 담당자 지정 완료 후 사용할 셀렉 목록
-const dropdownValues = [
-    { name: '상담기록', code: 'A', component: counselForm },
+// const dropdownValues = computed(
+//     [
+//         ...(user_role !== 'e3' ? [{ name: '상담기록', code: 'A', component: counselForm }] : []),
+//         { name: '우선순위', code: 'B', component: user_role === 'e3' ? priorityApprovalForm : priorityForm },
+//         { name: '지원계획', code: 'C', component: loginRole === 'e3' ? AdminPlanApprovalForm : planForm },
+//         { name: '지원결과', code: 'D', component: loginRole === 'e3' ? AdminResultApprovalForm : resultForm }
+//     ].filter(Boolean)
+// );
+
+const dropdownValues = computed(() => [
+    ...(user_role !== 'e3' ? [{ name: '상담기록', code: 'A', component: counselForm }] : []),
     { name: '우선순위', code: 'B', component: user_role === 'e3' ? priorityApprovalForm : priorityForm },
     { name: '지원계획', code: 'C', component: loginRole === 'e3' ? AdminPlanApprovalForm : planForm },
     { name: '지원결과', code: 'D', component: loginRole === 'e3' ? AdminResultApprovalForm : resultForm }
-];
+]);
 // 셀렉트에서 선택한 값
 const dropdownValue = shallowRef(null);
 //확인버튼으로 불러오게 했음
@@ -32,7 +42,7 @@ const selectedForm = shallowRef(null);
 // 코드값으로 오른쪽 폼을 여는 공통 함수
 // A: 상담기록, B: 우선순위, C: 지원계획, D: 지원결과
 const openFormByCode = (code) => {
-    const target = dropdownValues.find((item) => item.code === code);
+    const target = dropdownValues.value.find((item) => item.code === code);
 
     if (!target) {
         return;
@@ -46,16 +56,36 @@ const openFormByCode = (code) => {
 };
 
 // 확인 버튼 클릭 시 선택한 폼 열기
+// const confirmForm = () => {
+//     if (!dropdownValue.value) {
+//         return;
+//     }
+
+//     openFormByCode(dropdownValue.value.code);
+// };
 const confirmForm = () => {
     if (!dropdownValue.value) {
         return;
     }
 
-    openFormByCode(dropdownValue.value.code);
+    const selectedCode = dropdownValue.value.code;
+    const approval = user.value[0]?.approval;
+
+    // 지원계획(C), 지원결과(D)는 승인된 신청내역만 작성 가능
+    if (selectedCode === 'C' || selectedCode === 'D') {
+        if (approval == null) {
+            alert('우선순위가 지정되지 않아 지원계획/지원결과를 작성할 수 없습니다.');
+            return;
+        }
+
+        if (approval !== 'a1') {
+            alert('승인된 신청내역만 지원계획/지원결과를 작성할 수 있습니다.');
+            return;
+        }
+    }
+
+    openFormByCode(selectedCode);
 };
-// const confirmForm = () => {
-//     selectedForm.value = dropdownValue.value;
-// };
 
 import { useRoute } from 'vue-router';
 const route = useRoute();
@@ -94,6 +124,10 @@ const handlePlanEditModeForOpen = () => {
 const handleResultEditModeForOpen = () => {
     openFormByCode('D');
 };
+const handleCounselEditModeForOpen = () => {
+    openFormByCode('A'); // 상담기록
+};
+
 onBeforeMount(async () => {
     try {
         const resp = await fetch(`/api/beneficiaries/${selectNo}`);
@@ -105,12 +139,14 @@ onBeforeMount(async () => {
 
         console.log('Common user:', user.value);
         console.log('Common survey_no:', user.value[0]?.survey_no);
+        console.log('approval 확인:', user.value[0]?.approval);
     } catch (err) {
         console.log(err);
     } finally {
         isLoading.value = false;
     }
 });
+
 onMounted(() => {
     // 기관관리자일 때만 자동 오픈 이벤트 연결
     if (loginRole === 'e3') {
@@ -119,6 +155,7 @@ onMounted(() => {
     }
     window.addEventListener('plan-edit-mode', handlePlanEditModeForOpen);
     window.addEventListener('result-edit-mode', handleResultEditModeForOpen);
+    window.addEventListener('counsel-edit-mode', handleCounselEditModeForOpen);
 });
 
 onBeforeUnmount(() => {
@@ -128,6 +165,7 @@ onBeforeUnmount(() => {
     }
     window.removeEventListener('plan-edit-mode', handlePlanEditModeForOpen);
     window.removeEventListener('result-edit-mode', handleResultEditModeForOpen);
+    window.removeEventListener('counsel-edit-mode', handleCounselEditModeForOpen);
 });
 // 임시 데이터
 // 나중에는 선택된 대상자/조사지 상세 조회값으로 교체

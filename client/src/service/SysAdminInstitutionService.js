@@ -1,11 +1,12 @@
 /* =========================
    기관 목록 조회
 ========================= */
-async function getInstitutionList() {
-    const res = await fetch('/api/sysadmin/institutions');
+async function getInstitutionList(keyword = '') {
+    const searchQuery = keyword.trim() ? `?keyword=${encodeURIComponent(keyword.trim())}` : '';
+
+    const res = await fetch(`/api/sysadmin/institutions${searchQuery}`);
     return await res.json();
 }
-
 /* =========================
    기관 상세 조회
 ========================= */
@@ -41,5 +42,17 @@ async function updateInstitution(institutionNo, payload) {
     });
     return await res.json();
 }
+// 기관 삭제
+async function deleteInstitutions(institutionNos) {
+    const res = await fetch('/api/sysadmin/institutions', {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ institutionNos })
+    });
 
-export { getInstitutionList, getInstitutionDetail, createInstitution, updateInstitution };
+    return await res.json();
+}
+
+export { getInstitutionList, getInstitutionDetail, createInstitution, updateInstitution, deleteInstitutions };

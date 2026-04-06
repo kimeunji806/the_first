@@ -14,10 +14,6 @@ const createPriorityService = async (priorityObj) => {
   let insertData = [priority_id, survey_no, writer_no];
   let result = await priorityMapper.insertPriority(insertData);
 
-  // let resObj = {
-  //   status: result.insertId > 0 ? "success" : "fail",
-  //   user_no: result.insertId,
-  // };
   return result;
 };
 
@@ -30,13 +26,7 @@ const updatePriorityService = async (surveyNo, priorityObj) => {
     reason_rejection,
   };
   let result = await priorityMapper.updatePriority(surveyNo, insertData);
-  // let resObj = {
-  //   // 성공여부
-  //   status: result.changedRows > 0,
-  //   // 성공여부
-  //   target: mainObj,
-  // };
-  // return resObj;
+  return result;
 };
 
 module.exports = {

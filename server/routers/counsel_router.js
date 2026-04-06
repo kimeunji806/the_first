@@ -20,12 +20,14 @@ router.post("/counselUpload", upload.array('file'), async (req, res) => {
 });
 
 router.put("/counselUpdate",upload.array("files"),async (req, res) => {
-    let { no, title, content, name, role } = req.body;
+    let { no, title, content, date,name, role } = req.body;
     let deleteFiles = JSON.parse(req.body.deleteFiles || "[]");
-    let result = await counselService.counselUpdateService(no,title,content,name,role,req.files,deleteFiles);
+    let result = await counselService.counselUpdateService(no,title,content,date,name,role,req.files,deleteFiles);
     res.send(result);
   }
 );
+
+
 
 router.get("/counselHistory/:no", async (req, res) => {
   let no = req.params.no;
@@ -58,6 +60,13 @@ router.delete("/counselSaveDelete/:no", async (req, res) => {
   let result = await counselService.counselSaveDeleteService(sNo);
   res.send(result);
 })
+
+router.get("/counselBene/:no", async (req, res) => {
+  let beneNo = req.params.no
+  let result = await counselService.counselBeneInfoService(beneNo);
+  res.send(result);
+});
+
 
 
 module.exports = router;

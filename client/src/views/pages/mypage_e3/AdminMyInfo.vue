@@ -1,9 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import { getAdminMyPage } from '@/service/AdminMyPageService';
 
 const router = useRouter();
+const userStore = useUserStore();
 
 // 기관관리자 본인정보 저장 변수
 const info = ref(null);
@@ -33,6 +35,11 @@ async function loadMyInfo() {
 
         if (result.retCode === 'OK') {
             info.value = result.data;
+
+            userStore.updateUser({
+                user_name: result.data.user_name,
+                role: userStore.role
+            });
         } else {
             alert(result.message || '정보 조회 실패');
         }
@@ -45,6 +52,11 @@ async function loadMyInfo() {
 // 수정 페이지로 이동
 function goEdit() {
     router.push('/admin/mypage/edit');
+}
+
+// 회원탈퇴 페이지 이동_은지
+function goToWithdraw() {
+    router.push('/sign/with-draw');
 }
 
 // 화면 처음 열릴 때 조회
@@ -83,11 +95,6 @@ onMounted(() => {
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">주소</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.address || '-' }}</div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
                     <div class="font-semibold text-surface-700 dark:text-surface-200">소속 기관</div>
                     <div class="text-surface-900 dark:text-surface-0">{{ info.institution_name || '-' }}</div>
                 </div>
@@ -97,7 +104,8 @@ onMounted(() => {
                     <div class="text-surface-900 dark:text-surface-0">{{ formatDate(info.created_at) }}</div>
                 </div>
 
-                <div class="flex justify-end pt-3">
+                <div class="flex justify-between pt-3">
+                    <Button label="회원탈퇴" severity="danger" @click="goToWithdraw" />
                     <Button label="수정" @click="goEdit" />
                 </div>
             </div>

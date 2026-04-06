@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import logoImage from '@/assets/logo/logo2.png';
+import logoImage from '@/assets/logo/logo.png';
 
 const route = useRoute();
 const router = useRouter();
@@ -84,8 +84,8 @@ const goToRegister = () => {
 <template>
     <div class="flex h-screen m-0">
         <!-- 왼쪽 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-yellow-50 gap-4">
-            <img :src="logoImage" alt="The_first 로고" class="w-72 max-w-4/5 object-contain" />
+        <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
+            <img :src="logoImage" alt="로고" class="w-72 max-w-4/5 object-contain" />
         </div>
 
         <!-- 오른쪽 -->
@@ -97,6 +97,7 @@ const goToRegister = () => {
                     <label class="font-semibold text-surface-700">아이디</label>
                     <InputText v-model="resetForm.user_id" size="large" fluid disabled />
                 </div>
+
                 <div class="flex flex-col gap-2">
                     <label class="font-semibold text-surface-700">비밀번호</label>
                     <InputGroup>
@@ -105,6 +106,7 @@ const goToRegister = () => {
                     </InputGroup>
                     <span class="text-sm text-gray-500"> * 비밀번호는 8자 이상 입력해주세요. </span>
                 </div>
+
                 <div class="flex flex-col gap-2">
                     <label class="font-semibold text-surface-700">비밀번호 확인</label>
                     <InputGroup>
@@ -112,28 +114,60 @@ const goToRegister = () => {
                         <Button :icon="showPasswordCheck ? 'pi pi-eye-slash' : 'pi pi-eye'" severity="secondary" outlined type="button" @click="showPasswordCheck = !showPasswordCheck" />
                     </InputGroup>
                     <span v-if="resetForm.new_pw_check && !isPasswordMatched" class="text-red-500 text-sm"> * 비밀번호가 일치하지 않습니다. </span>
-                    <span v-if="resetForm.new_pw_check && isPasswordMatched" class="text-green-500 text-sm"> ✔ 비밀번호가 일치합니다. </span>
+                    <!-- 일치 시 텍스트 색상 변경 -->
+                    <span v-if="resetForm.new_pw_check && isPasswordMatched" class="text-primary-color text-sm"> ✔ 비밀번호가 일치합니다. </span>
                 </div>
+
                 <div class="flex justify-end items-center gap-2 text-sm">
                     <span class="link-text" @click="goToLogin">로그인으로 이동</span>
                     <Divider layout="vertical" class="!mx-0 !h-3" />
                     <span class="link-text" @click="goToRegister">회원가입</span>
                 </div>
-                <Button label="비밀번호 변경" severity="success" size="large" fluid class="font-bold" type="submit" />
+
+                <Button label="비밀번호 변경" size="large" fluid class="font-bold custom-primary-btn" type="submit" />
             </form>
         </div>
     </div>
 </template>
 
 <style scoped>
+.custom-primary-btn {
+    background-color: #034487 !important;
+    border-color: #034487 !important;
+    color: #ffffff !important;
+}
+
+.custom-primary-btn:hover {
+    background-color: #033d7a !important;
+}
+
+.text-primary-color {
+    color: #034487 !important;
+    font-weight: 600;
+}
+
 .link-text {
     cursor: pointer;
     color: var(--p-text-muted-color);
     font-weight: 500;
+    transition: color 0.2s;
 }
 
 .link-text:hover {
-    color: var(--p-green-500);
+    color: #034487 !important;
     text-decoration: underline;
+}
+
+:deep(.p-inputtext:enabled:focus) {
+    border-color: #034487 !important;
+    box-shadow: 0 0 0 0.2rem rgba(3, 68, 135, 0.2) !important;
+}
+
+:deep(.p-button.p-button-outlined.p-button-secondary:enabled:focus) {
+    box-shadow: 0 0 0 0.2rem rgba(3, 68, 135, 0.1) !important;
+}
+
+.bg-yellow-50 {
+    background-color: #ffffff !important;
 }
 </style>

@@ -4,9 +4,13 @@
 // onMounted: 화면 처음 들어올 때 실행
 import { computed, ref, onMounted } from 'vue';
 
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
 // 왼쪽 목록 / 오른쪽 상세 컴포넌트
 import TargetList from './TargetList.vue';
 import TargetDetail from './TargetDetail.vue';
+import MyPageInfo from './MyPageInfo.vue';
 
 // API 함수
 import { getTargets, createTarget as createTargetApi, updateTarget as updateTargetApi } from '@/service/MyPageService';
@@ -19,6 +23,9 @@ const selectedId = ref(null);
 
 // 신규 등록 모드 여부
 const isCreateMode = ref(false);
+
+//정보 보기 모드 여부
+const isMyInfoMode = ref(false);
 
 // 로그인 사용자 정보
 const loginUser = JSON.parse(localStorage.getItem('user'));
@@ -59,12 +66,14 @@ async function loadTargets() {
 // 왼쪽 목록에서 대상 선택
 function selectTarget(id) {
     isCreateMode.value = false;
+    isMyInfoMode.value = false;
     selectedId.value = id;
 }
 
 // 신규 등록 버튼 클릭
 function addTarget() {
     isCreateMode.value = true;
+    isMyInfoMode.value = false;
     selectedId.value = null;
 }
 
@@ -134,54 +143,56 @@ const selectedTarget = computed(() => {
     return targets.value.find((item) => item.id === selectedId.value) || null;
 });
 
+const goToMyInfo = () => {
+    isMyInfoMode.value = true;
+    isCreateMode.value = false;
+};
+
 // 화면 처음 열릴 때 목록 조회
 onMounted(() => {
     loadTargets();
 });
+
+// 회원탈퇴 페이지 이동_은지
+function goToWithdraw() {
+    router.push('/sign/with-draw');
+}
 </script>
 
 <template>
-    <div class="p-6">
-        <!-- 상단 타이틀 -->
-        <div class="flex items-center justify-between py-4 mb-2">
-            <div class="flex items-center gap-2">
-                <span class="font-medium text-2xl text-surface-900 dark:text-surface-0">마이페이지</span>
-                <span class="px-1.5 py-1 bg-primary text-primary-contrast rounded-md text-xs">Beta</span>
+    <div class="flex flex-col md:flex-row gap-8 h-full">
+        <div class="md:w-2/8 h-full">
+            <div class="card h-full flex flex-col p-0 overflow-hidden shadow-sm">
+                <div class="flex justify-between items-center p-5 bg-white border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-user text-blue-500 text-sm"></i>
+                        <div class="text-sm font-semibold text-gray-800">
+                            보호자 : <span class="text-blue-600">{{ loginUserName }}</span>
+                        </div>
+                    </div>
+                    <button type="button" class="text-[11px] px-2.5 py-1 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 transition-all font-medium" @click="goToMyInfo">보호자 정보</button>
+                </div>
+
+                <div class="flex-1 min-h-0 p-5 pt-6">
+                    <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
+                </div>
+
+                <div class="px-5 pb-5">
+                    <Button label="회원탈퇴" class="w-full" severity="danger" @click="goToWithdraw" />
+                </div>
             </div>
         </div>
 
-        <!-- 로그인 사용자 인사말 -->
-        <div class="mb-5">
-            <div class="text-surface-900 dark:text-surface-0 text-xl font-medium mb-1">{{ loginUserName }}님 반갑습니다.</div>
-            <span class="text-muted-color"> 등록된 지원대상자를 조회하고 정보를 수정할 수 있습니다. </span>
-        </div>
+        <!-- 오른쪽 상세 -->
 
-        <!-- 본문 -->
-        <div class="p-0 border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden bg-surface-0 dark:bg-surface-900">
-            <div class="p-4 lg:p-6">
-                <div class="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
-                    <!-- 왼쪽 목록 -->
-                    <div>
-                        <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
-                    </div>
+        <div class="md:w-6/8 h-full">
+            <div class="card h-full flex flex-col gap-4">
+                <div class="flex-1 min-h-0">
+                    <MyPageInfo v-if="isMyInfoMode" />
 
-                    <!-- 오른쪽 상세 -->
-                    <div>
-                        <TargetDetail :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
-                    </div>
+                    <TargetDetail v-else :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
                 </div>
             </div>
         </div>
     </div>
 </template>
-
-<style scoped lang="scss">
-:deep(.p-datatable) {
-    border: 0 none;
-}
-
-.bg-primary\! {
-    background-color: var(--p-primary-color) !important;
-    color: var(--p-primary-contrast-color) !important;
-}
-</style>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onBeforeMount } from 'vue';
 import { useUserStore } from '@/stores/user';
+import SurveyHistoryModal from '@/components/dialog/survey_dialog.vue';
 
 const userStore = useUserStore();
 const user_no = userStore.user_no;
@@ -65,6 +66,13 @@ const surveyForm = async () => {
 
     questionList();
 };
+const historyDialog = ref(false);
+const selectedSurveyNo = ref(null);
+
+const openHistoryModal = (surveyNo) => {
+    selectedSurveyNo.value = surveyNo;
+    historyDialog.value = true;
+};
 
 const addUSurveyInput = async () => {
     const data = question.value.flatMap((main) =>
@@ -87,15 +95,8 @@ const addUSurveyInput = async () => {
             'content-type': 'application/json'
         },
         body: JSON.stringify(data)
-    })
-        // .then((res) => res.json())
-        .catch((err) => console.log(err));
-    // if (result.status == 'success') {
-    //     router.resolve('/sign/login');
-    // } else {
-    //     console.log('등록되지않았습니다.');
-    //     inPrinted.value = true;
-    // }
+    }).catch((err) => console.log(err));
+    openHistoryModal(currentSurveyNo.value);
 };
 
 console.log(user_no);
@@ -134,14 +135,14 @@ onBeforeMount(() => {
                         <InputText id="birth" class="w-full mb-8" v-model="info[0].birth" disabled />
                     </div>
                 </div>
-                <Button label="지원신청하기" class="w-full md:w-[8.5rem] mb-8" v-on:click="surveyForm()"></Button>
+                <Button label="지원신청하기" class="w-full md:w-[8.5rem] mb-8" v-on:click="surveyForm()" :disabled="info[0]?.is_finish == 'N'"></Button>
             </div>
         </div>
-        <div v-if="info[0].is_finish == 'N'" class="font-semibold text-xl mb-4">종결이 안된 지원신청내역이 있습니다.</div>
-        <div v-if="info[0].is_finish == 'Y'" class="md:w-4/5">
+        <div class="md:w-4/5">
             <div class="h-9/10">
                 <div class="font-semibold text-xl mb-4">지원신청하기</div>
-                <div class="card h-full flex flex-col gap-4 overflow-y-auto">
+                <div v-if="info[0].is_finish == 'N'" class="font-semibold text-xl mb-4">종결이 안된 지원신청내역이 있습니다.</div>
+                <div v-if="info[0].is_finish != 'N'" class="card h-full flex flex-col gap-4 overflow-y-auto">
                     <div v-for="mainItem in question" :key="mainItem.main_no">
                         <div v-for="subItem in mainItem.subs" :key="subItem.sub_no">
                             <span class="text-xl font-bold text-surface-900 dark:text-surface-0">
@@ -180,7 +181,8 @@ onBeforeMount(() => {
                         </div>
                     </div>
                     <div class="mt-auto flex justify-end gap-2">
-                        <Button type="button" label="저장" class="w-24" @click="addUSurveyInput" />
+                        <Button type="button" label="저장후 미리보기" class="w-24" @click="addUSurveyInput" />
+                        <SurveyHistoryModal v-model:visible="historyDialog" :surveyNo="selectedSurveyNo" />
                     </div>
                 </div>
             </div>

@@ -38,23 +38,20 @@ const addPriorityInfo = async () => {
         writer_no: user_no
     };
 
-    console.log(data);
-
     let result = await fetch(`/api/priority`, {
         method: 'POST',
         headers: {
             'content-type': 'application/json'
         },
         body: JSON.stringify(data)
-    })
-        // .then((res) => res.json())
-        .catch((err) => console.log(err));
-    // if (result.status == 'success') {
-    //     router.resolve('/sign/login');
-    // } else {
-    //     console.log('등록되지않았습니다.');
-    //     inPrinted.value = true;
-    // }
+    }).catch((err) => console.log(err));
+    console.log(result);
+    if (result.ok == true) {
+        alert('승인요청을 보냈습니다.');
+        window.location.reload(true);
+    } else {
+        alert('승인요청 실패하였습니다.');
+    }
 };
 const priorityList = ref([]);
 const filteredApprovalForm = computed(() => {

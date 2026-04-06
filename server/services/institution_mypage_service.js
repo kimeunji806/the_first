@@ -23,14 +23,9 @@ async function getInstitutionMyPage(userNo) {
 
 // 기관담당자 본인정보 수정
 async function updateInstitutionMyPage(userNo, payload) {
-  const { user_name, tel, address } = payload;
+  const { user_name, tel } = payload;
 
-  await dao.pool.query(sql.updateInstitutionMyPage, [
-    user_name,
-    tel,
-    address,
-    userNo,
-  ]);
+  await dao.pool.query(sql.updateInstitutionMyPage, [user_name, tel, userNo]);
 
   return {
     retCode: "OK",

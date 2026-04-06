@@ -2,14 +2,13 @@ import { createApp } from 'vue';
 import App from './App.vue';
 import router from './router/index';
 
-
-import Aura from '@primeuix/themes/aura';
+import MyPreset from '@/layout/custom';
 import PrimeVue from 'primevue/config';
 import ConfirmationService from 'primevue/confirmationservice';
 import ToastService from 'primevue/toastservice';
 
-import { createPinia } from 'pinia'
-import { useUserStore } from '@/stores/user'
+import { createPinia } from 'pinia';
+import { useUserStore } from '@/stores/user';
 
 import '@/assets/tailwind.css';
 import '@/assets/styles.scss';
@@ -21,10 +20,7 @@ app.use(router);
 app.use(pinia);
 app.use(PrimeVue, {
     theme: {
-        preset: Aura,
-        options: {
-            darkModeSelector: '.app-dark'
-        }
+        preset: MyPreset
     }
 });
 app.use(ToastService);

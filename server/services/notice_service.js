@@ -1,14 +1,15 @@
 const noticeMapper = require("../database/mappers/notice.mapper");
 const { pool } = require("../database/DAO");
+const fs = require("fs");
 
 // 공지사항 조회(기관별)
-const findAll = async (institutionNo) => {
-  return await noticeMapper.selectAllNotice(institutionNo);
+const findAll = async (institutionNo, keyword = "") => {
+  return await noticeMapper.selectAllNotice(institutionNo, keyword);
 };
 
 // 공지사항 조회(전체 : 시스템관리자)
-const findAllAdmin = async () => {
-  return await noticeMapper.selectAllNoticeAdmin();
+const findAllAdmin = async (keyword = "") => {
+  return await noticeMapper.selectAllNoticeAdmin(keyword);
 };
 
 // 공지사항 상세조회
@@ -74,22 +75,80 @@ const findFileByNo = async (fileNo) => {
 };
 
 // 공지사항 수정
-const modifyInfo = async (noticeInfo, loginUserNo) => {
-  const noticeNo = noticeInfo.notice_no;
-  const writer = await noticeMapper.selectNoticeWriter(noticeNo);
-  if (String(writer.user_no) !== String(loginUserNo)) {
-    return { status: false, message: "본인이 작성한 글만 수정할 수 있습니다." };
+const modifyInfo = async (
+  noticeInfo,
+  loginUserNo,
+  deleteFileNos = [],
+  newFiles = [],
+) => {
+  let conn = null;
+  try {
+    const noticeNo = noticeInfo.notice_no;
+
+    // 작성자 본인 체크
+    const writer = await noticeMapper.selectNoticeWriter(noticeNo);
+    if (!writer || String(writer.user_no) !== String(loginUserNo)) {
+      return {
+        status: false,
+        message: "본인이 작성한 글만 수정할 수 있습니다.",
+      };
+    }
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+    const updateData = {
+      notice_title: noticeInfo.notice_title,
+      notice_content: noticeInfo.notice_content,
+    };
+    // 시스템관리자(e4)일 경우에만 프론트에서 institution_no 보냄
+    if (noticeInfo.institution_no) {
+      updateData.institution_no = noticeInfo.institution_no;
+    }
+    const result = await conn.query(`UPDATE notice SET ? WHERE notice_no = ?`, [
+      updateData,
+      noticeNo,
+    ]);
+    // 기존 파일 삭제
+    if (deleteFileNos.length > 0) {
+      for (const fileNo of deleteFileNos) {
+        const file = await noticeMapper.selectFileByFileNo(fileNo);
+
+        if (file) {
+          if (fs.existsSync(file.file_path)) {
+            fs.unlinkSync(file.file_path);
+          }
+          await noticeMapper.deleteNoticeFile(conn, fileNo);
+        }
+      }
+    }
+    // 새 파일 추가
+    if (newFiles.length > 0) {
+      for (const file of newFiles) {
+        await noticeMapper.insertNoticeFile(conn, {
+          notice_no: noticeNo,
+          file_name: file.originalname,
+          file_path: file.path,
+          file_size: file.size,
+        });
+      }
+    }
+    await conn.commit();
+    return {
+      status: result.affectedRows > 0,
+      target: {
+        notice_no: noticeNo,
+        ...updateData,
+      },
+    };
+  } catch (err) {
+    console.log(err);
+    if (conn) await conn.rollback();
+    return {
+      status: false,
+      message: "공지사항 수정 중 오류 발생",
+    };
+  } finally {
+    if (conn) conn.release();
   }
-
-  const result = await noticeMapper.updateNotice(noticeInfo);
-
-  let resObj = {
-    status: result.changedRows > 0 || result.affectedRows > 0,
-    target: {
-      ...noticeInfo,
-    },
-  };
-  return resObj;
 };
 
 // 공지사항 삭제

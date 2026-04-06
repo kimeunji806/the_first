@@ -6,6 +6,12 @@ const findAll = async (institutionNo) => {
   return info || {};
 };
 
+// 기관 목록 전체조회(셀렉박스용)
+const findInstitutionList = async () => {
+  let list = await institutionMapper.selectInstitutionList();
+  return list || [];
+};
+
 // 기관정보 수정
 const modifyInfo = async (institutioninfo) => {
   let result = await institutionMapper.updateInstitution(institutioninfo);
@@ -18,4 +24,4 @@ const modifyInfo = async (institutioninfo) => {
   return resObj;
 };
 
-module.exports = { findAll, modifyInfo };
+module.exports = { findAll, findInstitutionList, modifyInfo };

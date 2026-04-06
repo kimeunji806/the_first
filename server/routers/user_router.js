@@ -3,11 +3,6 @@ const router = express.Router();
 
 const userService = require("../services/user_service");
 
-router.get("/users", async (req, res) => {
-  let result = await userService.findAll();
-  res.send(result);
-});
-
 router.post("/users", async (req, res) => {
   let target = req.body;
   let result = await userService.createUser(target);
@@ -23,6 +18,10 @@ router.post("/login", async (req, res) => {
 router.get("/approval/:no", async (req, res) => {
   let insNo = req.params.no;
   let result = await userService.approvalAccess(insNo);
+  res.send(result);
+});
+router.get("/admin-approval", async (req, res) => {
+  let result = await userService.approvalByAdminAccess();
   res.send(result);
 });
 
@@ -51,12 +50,25 @@ router.get("/institution/:no", async (req, res) => {
   res.send(result);
 });
 
+// 아이디 찾기
+router.post("/user/find-id", async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const result = await userService.findUserIdByEmail(email);
+
+    res.send(result);
+  } catch (err) {
+    console.log(err);
+  }
+});
+
 // 비밀번호 찾기
 router.post("/user/check-user", async (req, res) => {
   try {
-    const { user_id } = req.body;
+    const { user_id, email } = req.body;
 
-    const result = await userService.findUserById(user_id);
+    const result = await userService.findUserByIdAndEmail(user_id, email);
 
     res.send(result);
   } catch (err) {
@@ -75,6 +87,36 @@ router.put("/userpw/:userId", async (req, res) => {
     res.send(result);
   } catch (err) {
     console.log(err);
+  }
+});
+
+// 회원탈퇴 : user_id로 이메일 조회
+router.post("/user/get-info", async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) return res.json({ retCode: false, message: "아이디 누락" });
+
+  try {
+    const user = await userService.getUserById(user_id);
+    if (user) res.json({ retCode: true, email: user.email });
+    else res.json({ retCode: false, message: "사용자를 찾을 수 없습니다." });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ retCode: false, message: "조회 실패" });
+  }
+});
+
+// 회원탈퇴
+router.post("/withdraw", async (req, res) => {
+  const { user_id } = req.body;
+  if (!user_id) return res.json({ retCode: false, message: "아이디 누락" });
+
+  try {
+    const result = await userService.withdrawUser(user_id);
+    if (result.affectedRows > 0) res.json({ retCode: true });
+    else res.json({ retCode: false, message: "탈퇴 처리 실패" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ retCode: false, message: "서버 오류" });
   }
 });
 

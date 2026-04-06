@@ -7,7 +7,9 @@ const service = require("../services/sysadmin_institution_service");
 ========================= */
 router.get("/", async (req, res) => {
   try {
-    const list = await service.getInstitutionList();
+    const keyword = req.query.keyword || "";
+    const list = await service.getInstitutionList(keyword);
+
     res.json({
       retCode: "OK",
       data: list,
@@ -79,6 +81,26 @@ router.put("/:institutionNo", async (req, res) => {
     res.status(500).json({
       retCode: "FAIL",
       message: "기관 수정 실패",
+    });
+  }
+});
+/* =========================
+   기관 선택삭제
+========================= */
+router.delete("/", async (req, res) => {
+  try {
+    const { institutionNos } = req.body;
+    const result = await service.deleteInstitutionList(institutionNos);
+
+    res.json({
+      retCode: "OK",
+      data: result,
+    });
+  } catch (err) {
+    console.error("기관 삭제 오류:", err);
+    res.status(500).json({
+      retCode: "FAIL",
+      message: err.message || "기관 삭제 실패",
     });
   }
 });

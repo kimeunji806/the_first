@@ -3,17 +3,19 @@ import { onBeforeMount, reactive, ref, computed } from 'vue';
 
 import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
+import SurveyHistoryModal from '@/components/dialog/survey_dialog.vue';
+import { FilterMatchMode } from '@primevue/core/api';
 
 const router = useRouter();
-
+const historyDialog = ref(false);
 const userStore = useUserStore();
 const user_no = userStore.user_no;
 const selectedSurveyNo = ref(null);
 
-// const openModal = (surveyNo) => {
-//     selectedSurveyNo.value = surveyNo;
-//     visible.value = true;
-// };
+const openHistoryModal = (surveyNo) => {
+    selectedSurveyNo.value = surveyNo;
+    historyDialog.value = true;
+};
 
 const planDialog = ref(false);
 const resultDialog = ref(false);
@@ -63,10 +65,12 @@ const loadResultList = async (row) => {
         const text = await resp.text();
         const data = text ? JSON.parse(text) : [];
 
-        resultList.value = (Array.isArray(data) ? data : []).map((item) => ({
-            ...item,
-            files: item.filename ? item.filename.split(',').map((f) => f.trim()) : []
-        }));
+        resultList.value = (Array.isArray(data) ? data : [])
+            .filter((item) => item.finish === 1) //종결건만 조회
+            .map((item) => ({
+                ...item,
+                files: item.filename ? item.filename.split(',').map((f) => f.trim()) : []
+            }));
     } catch (err) {
         console.error('지원결과 조회 에러:', err);
         resultList.value = [];
@@ -77,113 +81,126 @@ const filteredApprovalForm_re = computed(() => {
     return resultList.value.filter((item) => item.approval === 'a1');
 });
 
-onBeforeMount(async () => {
-    await fetch(`/api/lists/${user_no}`)
-        .then((resp) => resp.json())
-        .then((data) => {
-            users.value = data;
-        })
-        .catch((err) => console.log(err));
+const findAllUsers = async () => {
+    try {
+        const resp = await fetch(`/api/lists/${user_no}`); // ❗ keyword 제거
+
+        if (!resp.ok) throw new Error('Network response was not ok');
+
+        const data = await resp.json();
+        users.value = Array.isArray(data) ? data : [];
+    } catch (err) {
+        console.error('조회 에러:', err);
+        users.value = [];
+    }
+};
+
+onBeforeMount(() => {
+    findAllUsers();
+});
+
+const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-8 mt-6 h-full">
-        <div class="md:w-1/7">
-            <div class="h-9/10">
-                <div class="font-semibold text-xl mb-4">상세검색</div>
-            </div>
-        </div>
-        <div class="md:w-6/7">
-            <div class="h-9/10">
-                <div class="card">
-                    <div class="font-semibold text-xl mb-4">지원신청내역</div>
-                    <DataTable :value="users" :paginator="true" :rows="5" dataKey="id" :rowHover="true" showGridlines>
-                        <!-- 못찾았을떄 -->
-                        <template #empty> No customers found. </template>
+    <div class="md:w-full">
+        <div class="h-9/10">
+            <div class="card">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="font-semibold text-xl">지원신청내역</div>
 
-                        <Column header="지원자명" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <span>{{ data.beneficiaries_name }}</span>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column header="보호자명" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                {{ data.guardian_name }}
-                            </template>
-                        </Column>
-                        <Column header="지원신청일" style="min-width: 10rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <span>{{ data.created_at }}</span>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column header="지원신청서" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <Button type="submit" label="보기" v-on:click="" />
-                                <!-- openModal(data.survey_no) -->
-                                <!-- <PriorityModal v-model:visible="visible" :surveyNo="selectedSurveyNo" /> -->
-                            </template>
-                        </Column>
-                        <Column header="담당자" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <span>{{ data.manager_name }}</span>
-                                    <span v-if="data.manager_name == null">미지정</span>
-                                </div>
-                            </template>
-                        </Column>
-
-                        <Column header="우선순위" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <span>{{ data.priority_name }}</span>
-                                    <span v-if="data.priority_name == null">미지정</span>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column header="계획/결과 진행" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <span v-if="data.finish_cnt == 0">진행중 {{ data.progress_cnt }}건</span>
-                                    <span v-if="data.finish_cnt == 0">결과 {{ data.e1_result_cnt }}건</span>
-                                    <span v-if="data.finish_cnt > 0">종결 {{ data.finish_cnt }}건</span>
-                                </div>
-                            </template>
-                        </Column>
-                        <Column header="지원계획" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <Button
-                                        type="button"
-                                        label="보기"
-                                        @click="
-                                            planModalBtn(data);
-                                            planDialog = true;
-                                        "
-                                    />
-                                </div>
-                            </template>
-                        </Column>
-                        <Column header="지원결과" style="min-width: 8rem">
-                            <template #body="{ data }">
-                                <div class="flex items-center gap-2">
-                                    <Button
-                                        type="button"
-                                        label="보기"
-                                        @click="
-                                            loadResultList(data);
-                                            resultDialog = true;
-                                        "
-                                    />
-                                </div>
-                            </template>
-                        </Column>
-                    </DataTable>
+                    <div class="flex gap-2">
+                        <InputText v-model="keyword" placeholder="지원자 / 보호자 / 담당자 검색" class="w-72" @keydown="handleSearchEnter" />
+                        <Button icon="pi pi-search" @click="searchUsers" />
+                        <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
+                    </div>
                 </div>
+                <DataTable :value="users" :paginator="true" :rows="10" dataKey="id" :rowHover="true" showGridlines>
+                    <!-- 못찾았을떄 -->
+                    <template #empty> 검색 결과가 없습니다. </template>
+
+                    <Column header="지원자명" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <span>{{ data.beneficiaries_name }}</span>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="보호자명" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            {{ data.guardian_name }}
+                        </template>
+                    </Column>
+                    <Column header="지원신청일" style="min-width: 10rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <span>{{ data.created_at }}</span>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="지원신청서" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <Button type="submit" label="보기" v-on:click="openHistoryModal(data.survey_no)" />
+                            <SurveyHistoryModal v-model:visible="historyDialog" :surveyNo="selectedSurveyNo" />
+                        </template>
+                    </Column>
+                    <Column header="담당자" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <span>{{ data.manager_name }}</span>
+                                <span v-if="data.manager_name == null">미지정</span>
+                            </div>
+                        </template>
+                    </Column>
+
+                    <Column header="우선순위" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <span>{{ data.priority_name }}</span>
+                                <span v-if="data.priority_name == null">미지정</span>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="계획/결과 진행" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <span v-if="data.finish_cnt == 0">진행중 {{ data.progress_cnt }}건</span>
+                                <span v-if="data.finish_cnt == 0">결과 {{ data.e1_result_cnt }}건</span>
+                                <span v-if="data.finish_cnt > 0">종결 {{ data.finish_cnt }}건</span>
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="지원계획" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <Button
+                                    type="button"
+                                    label="보기"
+                                    @click="
+                                        planModalBtn(data);
+                                        planDialog = true;
+                                    "
+                                />
+                            </div>
+                        </template>
+                    </Column>
+                    <Column header="지원결과" style="min-width: 8rem">
+                        <template #body="{ data }">
+                            <div class="flex items-center gap-2">
+                                <Button
+                                    type="button"
+                                    label="보기"
+                                    @click="
+                                        loadResultList(data);
+                                        resultDialog = true;
+                                    "
+                                />
+                            </div>
+                        </template>
+                    </Column>
+                </DataTable>
             </div>
         </div>
     </div>
@@ -197,7 +214,6 @@ onBeforeMount(async () => {
 
             <div class="max-h-[500px] overflow-y-auto p-4 bg-white">
                 <div v-if="filteredApprovalForm.length === 0" class="text-center py-6 text-gray-400">데이터 없음</div>
-
                 <div v-else class="flex flex-col gap-6">
                     <div v-for="(item, index) in filteredApprovalForm" :key="item.plan_no" class="border rounded-xl overflow-hidden bg-white shadow-sm">
                         <div class="flex justify-between items-center px-4 py-3 border-b">
@@ -300,3 +316,16 @@ onBeforeMount(async () => {
         </div>
     </Dialog>
 </template>
+<style scoped>
+:deep(.search-match) {
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+    text-align: center;
+}
+</style>

@@ -19,8 +19,7 @@ const updateInstitutionMyPage = `
 UPDATE \`user\`
 SET
     user_name = ?,
-    tel = ?,
-    address = ?
+    tel = ?
 WHERE user_no = ?
 `;
 

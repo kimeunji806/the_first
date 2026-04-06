@@ -11,11 +11,6 @@ export default [
         component: () => import('@/views/pages/sign/register.vue')
     },
     {
-        path: '/sign/register/search',
-        name: 'registerSearch',
-        component: () => import('@/views/pages/sign/search.vue')
-    },
-    {
         path: '/sign/access',
         name: 'accessWait',
         component: () => import('@/views/pages/sign/Access.vue')
@@ -29,5 +24,20 @@ export default [
         path: '/sign/reset-password',
         name: 'resetPassword',
         component: () => import('@/views/pages/sign/ResetPassword.vue')
+    },
+    {
+        path: '/sign/find-id',
+        name: 'findId',
+        component: () => import('@/views/pages/sign/FindId.vue')
+    },
+    {
+        path: '/sign/find-id-result',
+        name: 'findIdResult',
+        component: () => import('@/views/pages/sign/FindIdResult.vue')
+    },
+    {
+        path: '/sign/with-draw',
+        name: 'withDraw',
+        component: () => import('@/views/pages/sign/WithDraw.vue')
     }
 ];

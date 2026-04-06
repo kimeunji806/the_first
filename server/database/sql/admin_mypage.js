@@ -1,3 +1,5 @@
+// 관리자 마이페이지
+// 조회
 const selectAdminMyPage = `
 SELECT u.user_no
      , u.user_id
@@ -13,13 +15,11 @@ LEFT JOIN institution i
 WHERE u.user_no = ?
   AND u.role = 'e3'
 `;
-
+// 수정
 const updateAdminMyPage = `
 UPDATE user
    SET user_name = ?
      , tel = ?
-     , email = ?
-     , address = ?
  WHERE user_no = ?
    AND role = 'e3'
 `;

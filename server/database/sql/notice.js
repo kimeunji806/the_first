@@ -12,6 +12,13 @@ FROM notice n
 JOIN \`user\` u ON n.user_no = u.user_no
 JOIN institution i ON n.institution_no = i.institution_no
 WHERE n.institution_no = ?
+AND (
+        ? = ''
+        OR n.notice_title LIKE CONCAT('%', ?, '%')
+        OR n.notice_content LIKE CONCAT('%', ?, '%')
+        OR u.user_name LIKE CONCAT('%', ?, '%')
+        OR DATE_FORMAT(n.created_at, '%Y-%m-%d') LIKE CONCAT('%', ?, '%')
+      )
 ORDER BY n.notice_no DESC
 `;
 
@@ -26,6 +33,13 @@ SELECT n.notice_no,
 FROM notice n
 JOIN \`user\` u ON n.user_no = u.user_no
 JOIN institution i ON n.institution_no = i.institution_no
+WHERE (
+        ? = ''
+        OR n.notice_title LIKE CONCAT('%', ?, '%')
+        OR n.notice_content LIKE CONCAT('%', ?, '%')
+         OR u.user_name LIKE CONCAT('%', ?, '%')
+        OR DATE_FORMAT(n.created_at, '%Y-%m-%d') LIKE CONCAT('%', ?, '%')
+      )
 ORDER BY n.notice_no DESC
 `;
 
@@ -35,6 +49,7 @@ SELECT n.notice_no,
        n.notice_title,
        n.notice_content,
        n.user_no,
+       n.institution_no,
        u.user_name,
        n.created_at
 FROM notice n
@@ -96,6 +111,12 @@ FROM notice
 WHERE notice_no = ?
 `;
 
+// 첨부파일 삭제
+const deleteNoticeFile = `
+DELETE FROM files
+WHERE file_no = ?
+`;
+
 module.exports = {
   selectAllNotice,
   selectAllNoticeAdmin,
@@ -106,4 +127,5 @@ module.exports = {
   selectFilesByNoticeNo,
   insertNoticeFile,
   selectNoticeWriter,
+  deleteNoticeFile,
 };

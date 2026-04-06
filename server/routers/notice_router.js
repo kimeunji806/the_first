@@ -7,16 +7,16 @@ const fs = require("fs");
 
 // 공지사항 조회(전체 : 시스템관리자)
 router.get(`/notice`, async (req, res) => {
-  const result = await noticeService.findAllAdmin();
-  console.log("전체 공지사항 result:", result, Array.isArray(result));
+  const keyword = req.query.keyword || "";
+  const result = await noticeService.findAllAdmin(keyword);
   return res.status(200).json(result);
 });
 
 // 공지사항 조회(기관별)
 router.get(`/notice/:institution_no`, async (req, res) => {
   const institutionNo = req.params.institution_no;
-  const result = await noticeService.findAll(institutionNo);
-  console.log("공지사항 result:", result, Array.isArray(result));
+  const keyword = req.query.keyword || "";
+  const result = await noticeService.findAll(institutionNo, keyword);
   return res.status(200).json(result);
 });
 
@@ -26,7 +26,6 @@ router.get("/notice/file/:fileNo", async (req, res) => {
     const fileNo = req.params.fileNo;
     const file = await noticeService.findFileByNo(fileNo);
 
-    // 03/31 수정
     const filePath = file.file_path;
 
     const encodedName = encodeURIComponent(file.file_name.normalize("NFC"));
@@ -83,23 +82,40 @@ router.post(`/notice`, upload.array("files"), async (req, res) => {
 });
 
 // 공지사항 수정
-router.put(`/notice/detail/:noticeNo`, async (req, res) => {
-  try {
-    const noticeNo = req.params.noticeNo;
-    const userNo = req.body.user_no;
+router.put(
+  `/notice/detail/:noticeNo`,
+  upload.array("files"),
+  async (req, res) => {
+    try {
+      const noticeNo = req.params.noticeNo;
+      const userNo = req.body.user_no;
 
-    const noticeInfo = {
-      notice_no: req.params.noticeNo,
-      notice_title: req.body.notice_title,
-      notice_content: req.body.notice_content,
-    };
-    const result = await noticeService.modifyInfo(noticeInfo, userNo);
+      const noticeInfo = {
+        notice_no: noticeNo,
+        notice_title: req.body.notice_title,
+        notice_content: req.body.notice_content,
+        institution_no: req.body.institution_no,
+      };
 
-    res.json(result);
-  } catch (err) {
-    console.log(err);
-  }
-});
+      const deleteFileNos = req.body.delete_file_nos
+        ? JSON.parse(req.body.delete_file_nos)
+        : [];
+
+      const files = req.files || [];
+
+      const result = await noticeService.modifyInfo(
+        noticeInfo,
+        userNo,
+        deleteFileNos,
+        files,
+      );
+
+      res.json(result);
+    } catch (err) {
+      console.log(err);
+    }
+  },
+);
 
 // 공지사항 삭제
 router.delete(`/notice/del/:noticeNo`, async (req, res) => {

@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import logoImage from '@/assets/logo/logo2.png';
+import logoImage from '@/assets/logo/logo.png';
 
 const router = useRouter();
 
@@ -12,11 +12,24 @@ const findForm = ref({
 });
 
 const isVerified = ref(false);
+const isUserMatched = ref(false);
 
 // 타이머
 const timer = ref(180);
 let interval = null;
 const isExpired = ref(false);
+
+// 값이 바뀌면 기존 인증 상태 초기화
+watch(
+    () => [findForm.value.user_id, findForm.value.email],
+    () => {
+        isVerified.value = false;
+        isUserMatched.value = false;
+        findForm.value.auth_code = '';
+        isExpired.value = false;
+        clearInterval(interval);
+    }
+);
 
 // 타이머 시작
 const startTimer = () => {
@@ -50,6 +63,46 @@ const formatTime = computed(() => {
     return `${min}:${sec}`;
 });
 
+// 아이디 및 이메일 DB 일치 확인 함수
+const checkUserMatch = async () => {
+    if (!findForm.value.user_id) {
+        alert('아이디를 입력해주세요.');
+        return false;
+    }
+    if (!findForm.value.email) {
+        alert('이메일을 입력해주세요.');
+        return false;
+    }
+    try {
+        const checkRes = await fetch('/api/user/check-user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                user_id: findForm.value.user_id,
+                email: findForm.value.email
+            })
+        });
+
+        const checkData = await checkRes.json();
+
+        if (!checkRes.ok || !checkData.status) {
+            isUserMatched.value = false;
+            alert(checkData.message || '아이디 또는 이메일이 일치하지 않습니다.');
+            return false;
+        }
+
+        isUserMatched.value = true;
+        return true;
+    } catch (err) {
+        console.error(err);
+        isUserMatched.value = false;
+        alert('사용자 확인 중 오류가 발생했습니다.');
+        return false;
+    }
+};
+
 // 이메일 인증번호 발송(이메일 인증)
 const sendCode = async (email) => {
     if (!findForm.value.user_id) {
@@ -61,22 +114,10 @@ const sendCode = async (email) => {
         return;
     }
     try {
-        // 아이디가 실제 회원인지 확인
-        const checkRes = await fetch('/api/user/check-user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                user_id: findForm.value.user_id
-            })
-        });
-        const checkData = await checkRes.json();
+        // 아이디 및 이메일 실제 회원인지 확인
+        const isValidUser = await checkUserMatch();
+        if (!isValidUser) return;
 
-        if (!checkRes.ok || !checkData.status) {
-            alert(checkData.message || '존재하지 않는 아이디입니다.');
-            return;
-        }
         // 사용자 확인 성공 시에만 메일 발송
         const res = await fetch('/api/mail', {
             method: 'POST',
@@ -89,6 +130,7 @@ const sendCode = async (email) => {
         });
 
         await res.json();
+        isVerified.value = false;
         startTimer();
         alert('인증번호가 발송되었습니다.');
     } catch (err) {
@@ -106,6 +148,9 @@ const verifyCode = async (code) => {
         alert('인증시간이 만료되었습니다. 다시 인증해주세요.');
         return;
     }
+    // 인증 확인 전에 아이디+이메일 다시 일치 확인
+    const isValidUser = await checkUserMatch();
+    if (!isValidUser) return;
     try {
         const emailData = {
             user_email: findForm.value.email,
@@ -133,7 +178,7 @@ const verifyCode = async (code) => {
 
 // 아이디 찾기로 이동
 const goToFindId = () => {
-    router.push('/sign/find-Id');
+    router.push('/sign/find-id');
 };
 
 // 회원가입으로 이동
@@ -156,8 +201,8 @@ const goToResetPassword = () => {
 <template>
     <div class="flex h-screen m-0">
         <!-- 왼쪽 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-yellow-50 gap-4">
-            <img :src="logoImage" alt="The_first 로고" class="w-72 max-w-4/5 object-contain" />
+        <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
+            <img :src="logoImage" alt="로고" class="w-72 max-w-4/5 object-contain" />
         </div>
 
         <!-- 오른쪽 -->
@@ -174,7 +219,7 @@ const goToResetPassword = () => {
                     <label class="font-semibold text-surface-700">이메일</label>
                     <InputGroup>
                         <InputText v-model="findForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
-                        <Button label="인증하기" severity="success" size="large" class="font-bold auth-btn" @click="sendCode(findForm.email)" :disabled="isVerified" />
+                        <Button label="인증하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="sendCode(findForm.email)" :disabled="isVerified" />
                     </InputGroup>
                 </div>
 
@@ -183,14 +228,14 @@ const goToResetPassword = () => {
                     <InputGroup>
                         <InputText v-model="findForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
                         <InputGroupAddon class="timer-addon" v-if="!isVerified">
-                            <span>{{ formatTime }}</span>
+                            <span class="timer-text">{{ formatTime }}</span>
                         </InputGroupAddon>
 
-                        <Button label="확인하기" severity="success" size="large" class="font-bold auth-btn" @click="verifyCode(findForm.auth_code)" :disabled="isVerified" />
+                        <Button label="확인하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="verifyCode(findForm.auth_code)" :disabled="isVerified" />
                     </InputGroup>
 
                     <span class="text-red-500 text-sm" v-if="!isVerified"> * 이메일 인증을 진행해주세요. </span>
-                    <span class="text-green-500 text-sm" v-else> ✔ 인증 완료 </span>
+                    <span class="text-primary-color text-sm" v-else> * 인증이 완료되었습니다. </span>
                 </div>
 
                 <div class="flex justify-end items-center gap-2 text-sm">
@@ -199,24 +244,49 @@ const goToResetPassword = () => {
                     <span class="link-text" @click="goToRegister">회원가입</span>
                 </div>
 
-                <Button label="비밀번호 재설정" severity="success" size="large" fluid class="font-bold" :disabled="!isVerified" @click="goToResetPassword" />
+                <Button label="비밀번호 재설정" size="large" fluid class="font-bold custom-primary-btn" :disabled="!isVerified" @click="goToResetPassword" />
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
+.custom-primary-btn {
+    background-color: #034487 !important;
+    border-color: #034487 !important;
+    color: #ffffff !important;
+}
+
+.custom-primary-btn:hover {
+    background-color: #033d7a !important;
+}
+
+.custom-primary-btn:disabled {
+    background-color: #adc9e3 !important;
+    border-color: #adc9e3 !important;
+    opacity: 0.6;
+}
+
 .auth-btn {
     width: 100px !important;
     flex-shrink: 0;
+}
+
+.timer-text {
+    color: #034487 !important;
+    font-variant-numeric: tabular-nums;
 }
 
 .timer-addon {
     background: transparent !important;
     border-left: none !important;
     border-right: none !important;
-    color: #22c55e;
     font-weight: 600;
+}
+
+.text-primary-color {
+    color: #034487 !important;
+    font-weight: 500;
 }
 
 .p-inputgroup .p-inputtext {
@@ -231,10 +301,11 @@ const goToResetPassword = () => {
     cursor: pointer;
     color: var(--p-text-muted-color);
     font-weight: 500;
+    transition: color 0.2s;
 }
 
 .link-text:hover {
-    color: var(--p-green-500);
+    color: #034487 !important;
     text-decoration: underline;
 }
 </style>

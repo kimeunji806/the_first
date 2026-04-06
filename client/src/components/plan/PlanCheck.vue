@@ -216,7 +216,7 @@ onBeforeUnmount(() => {
 
 <template>
     <!-- 조회영역 전체 -->
-    <div class="card h-full flex flex-col gap-4 min-h-0">
+    <div class="card h-140 flex flex-col gap-4 min-h-0">
         <!-- 화면 제목 -->
         <div class="font-bold text-lg mb-2 border-b pb-2">지원계획 조회</div>
 

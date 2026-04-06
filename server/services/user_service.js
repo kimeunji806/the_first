@@ -1,10 +1,5 @@
 const userMapper = require("../database/mappers/user_mapper");
 
-const findAll = async () => {
-  let list = await userMapper.selectAllUser();
-  return list;
-};
-
 const createUser = async (userObj) => {
   const {
     role,
@@ -28,11 +23,6 @@ const createUser = async (userObj) => {
     institution,
   ];
   let result = await userMapper.insertUser(insertData);
-
-  // let resObj = {
-  //   status: result.insertId > 0 ? "success" : "fail",
-  //   user_no: result.insertId,
-  // };
   return result;
 };
 
@@ -54,6 +44,11 @@ const approvalAccess = async (insNo) => {
   return result;
 };
 
+const approvalByAdminAccess = async () => {
+  let result = await userMapper.approvalByAdmin();
+  return result;
+};
+
 const signAccess = async (userId) => {
   let result = await userMapper.access(userId);
   return result;
@@ -69,9 +64,21 @@ const insTelService = async (no) => {
   return result;
 };
 
+// 아이디 찾기
+const findUserIdByEmail = async (email) => {
+  const result = await userMapper.findUserIdByEmail(email);
+
+  return {
+    retCode: !!result,
+    user_id: result ? result.user_id : null,
+    target: result || null,
+    message: result ? "아이디 조회 성공" : "등록된 이메일이 없습니다.",
+  };
+};
+
 // 비밀번호 찾기
-const findUserById = async (userId) => {
-  const result = await userMapper.findUserById(userId);
+const findUserByIdAndEmail = async (userId, email) => {
+  const result = await userMapper.findUserByIdAndEmail(userId, email);
 
   return {
     status: !!result,
@@ -91,14 +98,27 @@ const resetUserPassword = async (userId, userObj) => {
   };
 };
 
+// DB에서 user_id로 이메일 조회
+const getUserById = async (userId) => {
+  return await userMapper.selectUserById(userId);
+};
+
+// DB에서 user_id로 탈퇴
+const withdrawUser = async (userId) => {
+  return await userMapper.withdrawUser(userId);
+};
+
 module.exports = {
-  findAll,
   loginService,
   createUser,
   approvalAccess,
+  approvalByAdminAccess,
   signAccess,
   signRefuseService,
   insTelService,
-  findUserById,
+  findUserIdByEmail,
+  findUserByIdAndEmail,
   resetUserPassword,
+  getUserById,
+  withdrawUser,
 };

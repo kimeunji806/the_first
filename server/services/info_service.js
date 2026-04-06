@@ -5,6 +5,19 @@ const managerInfoService = async (insNo) => {
   return list;
 };
 
+const managerUpdateService = async(mNo,uName,uTel,uEmail,uIns) => {
+  let list = await infoMapper.managerUpdate(mNo,uName,uTel,uEmail,uIns);
+  return list;
+}
 
+const insInfoService = async () => {
+  let list = await infoMapper.insInfo();
+  return list;
+};
 
-module.exports = {managerInfoService}
+const managerInsertService = async (uId, uPass, uName, uTel, uEmail, uIns) => {
+  let list = await infoMapper.managerInsert(uId, uPass, uName, uTel, uEmail, uIns);
+  return list;
+}
+
+module.exports = {managerInfoService,managerUpdateService,insInfoService,managerInsertService}

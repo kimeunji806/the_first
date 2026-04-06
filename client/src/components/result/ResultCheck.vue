@@ -97,6 +97,16 @@ const editResult = async (supportResultNo) => {
             })
         );
 
+        // Common.vue가 폼을 연 뒤 ResultForm이 마운트될 시간을 조금 주고 한 번 더 전달
+        // ResultForm이 마운트된 뒤 수정 데이터를 받을 수 있도록
+        // 짧게 지연 후 edit-mode 이벤트를 한 번 더 전달
+        setTimeout(() => {
+            window.dispatchEvent(
+                new CustomEvent('result-edit-mode', {
+                    detail: data
+                })
+            );
+        }, 50);
         alert('오른쪽 입력폼에 수정할 내용이 불러와졌습니다.');
     } catch (err) {
         console.error('지원결과 수정 데이터 조회 에러:', err);
@@ -221,7 +231,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="card h-full flex flex-col gap-4">
+    <div class="card h-140 flex flex-col gap-4">
         <div class="font-bold text-lg mb-2 border-b pb-2">지원결과 조회</div>
 
         <div class="max-h-[400px] overflow-y-auto pr-2">

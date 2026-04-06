@@ -104,6 +104,13 @@ function searchAddress() {
     }).open();
 }
 
+function cancelEdit() {
+    router.push({
+        path: '/admin/institutioninfo',
+        query: { tab: '1' }
+    });
+}
+
 // 컴포넌트 시작시 데이터 조회
 onBeforeMount(findAllInfo);
 </script>
@@ -111,14 +118,7 @@ onBeforeMount(findAllInfo);
     <div class="w-full">
         <div class="w-full">
             <div class="card">
-                <Tabs v-model:value="activeTab">
-                    <TabList>
-                        <Tab :value="0">내 정보</Tab>
-                        <Tab :value="1">기관정보</Tab>
-                    </TabList>
-                </Tabs>
                 <div v-if="activeTab === 1 && institution" class="mt-4">
-                    <div class="font-semibold text-xl mb-4">기관정보</div>
                     <div class="mb-5">
                         <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
                         <span class="text-muted-color"> 기관관리자 기관 정보를 수정할 수 있습니다. </span>
@@ -126,44 +126,44 @@ onBeforeMount(findAllInfo);
                     <DataTable
                         :value="[
                             { label: '기관', field: 'name' },
-                            { label: '사업자번호', field: 'business_number' },
+                            { label: '사업자번호', field: 'business_number', readonly: true },
                             { label: '대표번호', field: 'tel' },
                             { label: '주소', field: 'institution_address' },
-                            { label: '이메일', field: 'institution_email' },
-                            { label: '운영여부', field: 'operation' }
+                            { label: '이메일', field: 'institution_email' }
                         ]"
                     >
-                        <Column field="label" header="" class="w-3xs"></Column>
-                        <Column field="field" header="">
+                        <Column field="label" class="w-3xs"></Column>
+                        <Column field="field">
                             <template #body="slotProps">
-                                <span v-if="slotProps.data.field === 'business_number'">{{ institution.business_number }}</span>
-                                <div v-else-if="slotProps.data.field === 'operation'" class="flex gap-4">
-                                    <div class="flex items-center">
-                                        <RadioButton id="option1" name="operation" :value="1" v-model="institution.operation" />
-                                        <label for="option1" class="ml-2">여</label>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <RadioButton id="option2" name="operation" :value="0" v-model="institution.operation" />
-                                        <label for="option2" class="ml-2">부</label>
-                                    </div>
-                                </div>
+                                <InputText v-if="slotProps.data.field === 'business_number'" :value="institution.business_number" class="w-full readonly-field" readonly />
                                 <div v-else-if="slotProps.data.field === 'institution_address'" class="flex flex-col gap-2 w-full">
                                     <div class="flex gap-2">
-                                        <InputText v-model="institution.zonecode" class="w-32" readonly />
+                                        <InputText v-model="institution.zonecode" class="w-32 readonly-field" readonly />
                                         <Button label="우편번호 검색" @click="searchAddress" />
                                     </div>
-                                    <InputText v-model="institution.institution_address" readonly />
+
+                                    <InputText v-model="institution.institution_address" class="readonly-field" readonly />
                                     <InputText v-model="institution.detail_address" placeholder="상세 주소 입력" />
                                 </div>
-                                <InputText v-else v-model="institution[slotProps.data.field]" />
+                                <InputText v-else-if="slotProps.data.readonly" :value="institution[slotProps.data.field]" class="w-full readonly-field" readonly />
+                                <InputText v-else v-model="institution[slotProps.data.field]" class="w-full" />
                             </template>
                         </Column>
                     </DataTable>
                 </div>
-                <div class="flex justify-end mt-4">
+                <div class="flex gap-2 justify-end mt-2">
+                    <Button label="취소" severity="secondary" outlined @click="cancelEdit"></Button>
                     <Button label="저장" @click="save"></Button>
                 </div>
             </div>
         </div>
     </div>
 </template>
+<style scoped>
+:deep(.readonly-field) {
+    background-color: #f3f4f6 !important;
+    color: #6b7280 !important;
+    border-color: #e5e7eb !important;
+    cursor: default !important;
+}
+</style>

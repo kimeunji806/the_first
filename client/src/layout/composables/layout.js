@@ -20,21 +20,6 @@ const layoutState = reactive({
 });
 
 export function useLayout() {
-    const toggleDarkMode = () => {
-        if (!document.startViewTransition) {
-            executeDarkModeToggle();
-
-            return;
-        }
-
-        document.startViewTransition(() => executeDarkModeToggle(event));
-    };
-
-    const executeDarkModeToggle = () => {
-        layoutConfig.darkTheme = !layoutConfig.darkTheme;
-        document.documentElement.classList.toggle('app-dark');
-    };
-
     const toggleMenu = () => {
         if (isDesktop()) {
             if (layoutConfig.menuMode === 'static') {
@@ -75,7 +60,6 @@ export function useLayout() {
         layoutConfig,
         layoutState,
         isDarkTheme,
-        toggleDarkMode,
         toggleConfigSidebar,
         toggleMenu,
         hideMobileMenu,

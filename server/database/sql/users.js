@@ -1,9 +1,5 @@
 const { pool } = require("../DAO");
 
-const selectAllUser = `
-SELECT * FROM t_board;
-`;
-
 const insertUser = `
 INSERT INTO user (role, user_name, user_id, user_pw, email, tel, address, institution_no)
 VALUES(?,?, ?, ?, ?, ?, ?,?)
@@ -41,6 +37,23 @@ JOIN institution i ON u.institution_no = i.institution_no
 WHERE sa.approval = 0 AND u.institution_no = ?
 `;
 
+const approvalByAdmin = `
+SELECT 
+    sa.approval_no AS no,       
+    u.user_name AS name,
+    u.user_id AS id,
+    i.name AS ins,            
+    u.tel,
+    u.email,
+    DATE_FORMAT(u.created_at, '%Y-%m-%d') AS created_at
+FROM user u
+JOIN sign_approval sa ON u.user_id = sa.user_id 
+LEFT JOIN institution i ON u.institution_no = i.institution_no
+WHERE u.approval = '0'       
+  AND u.role = 'e3'
+ORDER BY sa.approval_no DESC;
+`;
+
 const access = `
 UPDATE user
 SET approval = 1
@@ -69,11 +82,19 @@ FROM institution
 WHERE institution_no = ?
 `;
 
+// 아이디 찾기
+const findUserIdByEmail = `
+SELECT user_id, email
+FROM user
+WHERE email = ?
+`;
+
 // 비밀번호 찾기
-const findUserById = `
+const findUserByIdAndEmail = `
 SELECT user_id,email
 FROM user
 WHERE user_id = ?
+AND   email = ?
 `;
 
 // 비밀번호 변경
@@ -83,10 +104,23 @@ SET user_pw = ?
 WHERE user_id = ?
 `;
 
+// user_id로 이메일 조회
+const selectUserById = `
+SELECT user_id, email
+FROM user
+WHERE user_id = ?
+`;
+
+// user_id 기준 탈퇴
+const withdrawUser = `
+DELETE FROM user
+WHERE user_id = ?
+`;
+
 module.exports = {
-  selectAllUser,
   loginUser,
   approval,
+  approvalByAdmin,
   insertUser,
   signApproval,
   access,
@@ -94,6 +128,9 @@ module.exports = {
   signRefuse,
   signRefuse2,
   instelSelect,
-  findUserById,
+  findUserIdByEmail,
+  findUserByIdAndEmail,
   updatePw,
+  selectUserById,
+  withdrawUser,
 };
