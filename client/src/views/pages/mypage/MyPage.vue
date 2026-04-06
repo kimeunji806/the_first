@@ -161,28 +161,23 @@ function goToWithdraw() {
 
 <template>
     <div class="flex flex-col md:flex-row gap-8 h-full">
-        <!-- 왼쪽 패널 -->
         <div class="md:w-2/8 h-full">
-            <div class="card h-full flex flex-col gap-4">
-                <!-- 상단 정보 -->
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <div class="text-sm text-gray-700">보호자</div>
+            <div class="card h-full flex flex-col p-0 overflow-hidden shadow-sm">
+                <div class="flex justify-between items-center p-5 bg-white border-b border-gray-100">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-user text-blue-500 text-sm"></i>
+                        <div class="text-sm font-semibold text-gray-800">
+                            보호자 : <span class="text-blue-600">{{ loginUserName }}</span>
+                        </div>
                     </div>
-
-                    <button type="button" class="text-sm text-gray-500 hover:text-gray-700" @click="goToMyInfo">정보보기</button>
+                    <button type="button" class="text-[11px] px-2.5 py-1 border border-gray-200 rounded bg-white text-gray-500 hover:bg-gray-50 transition-all font-medium" @click="goToMyInfo">보호자 정보</button>
                 </div>
 
-                <!-- 인사말 -->
-                <div class="mb-4">
-                    <div class="text-xl font-semibold text-gray-800 mb-1">{{ loginUserName }}님 반갑습니다</div>
-                </div>
-
-                <!-- 왼쪽 목록 -->
-                <div class="flex-1 min-h-0">
+                <div class="flex-1 min-h-0 p-5 pt-6">
                     <TargetList :targets="targets" :selectedId="selectedId" @select="selectTarget" @add="addTarget" />
                 </div>
-                <div class="mt-6 text-right">
+
+                <div class="px-5 pb-5">
                     <Button label="회원탈퇴" class="w-full" severity="danger" @click="goToWithdraw" />
                 </div>
             </div>
@@ -196,10 +191,6 @@ function goToWithdraw() {
                     <MyPageInfo v-if="isMyInfoMode" />
 
                     <TargetDetail v-else :target="selectedTarget" :isCreateMode="isCreateMode" @created="createTarget" @updated="updateTarget" />
-                </div>
-
-                <div class="mt-6 text-right">
-                    <Button label="회원탈퇴" severity="danger" outlined @click="goToWithdraw" />
                 </div>
             </div>
         </div>

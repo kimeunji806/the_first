@@ -186,7 +186,7 @@ onMounted(() => {
             <!-- 기관번호 -->
             <Column field="institution_no">
                 <template #header>
-                    <div class="w-full text-center">기관번호</div>
+                    <div class="w-full text-center font-bold">기관번호</div>
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data.institution_no }}
@@ -196,7 +196,7 @@ onMounted(() => {
             <!-- 기관명 -->
             <Column field="name">
                 <template #header>
-                    <div class="w-full text-center">기관명</div>
+                    <div class="w-full text-center font-bold">기관명</div>
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data.name || '-' }}
@@ -206,7 +206,7 @@ onMounted(() => {
             <!-- 연락처 -->
             <Column field="tel">
                 <template #header>
-                    <div class="w-full text-center">연락처</div>
+                    <div class="w-full text-center font-bold">연락처</div>
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data.tel || '-' }}
@@ -216,7 +216,7 @@ onMounted(() => {
             <!-- 이메일 -->
             <Column field="institution_email">
                 <template #header>
-                    <div class="w-full text-center">이메일</div>
+                    <div class="w-full text-center font-bold">이메일</div>
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data.institution_email || '-' }}
@@ -226,7 +226,7 @@ onMounted(() => {
             <!-- 가입일 -->
             <Column field="created_at">
                 <template #header>
-                    <div class="w-full text-center">가입일</div>
+                    <div class="w-full text-center font-bold">가입일</div>
                 </template>
                 <template #body="slotProps">
                     {{ slotProps.data.created_at || '-' }}
@@ -236,7 +236,7 @@ onMounted(() => {
             <!-- 운영여부 -->
             <Column>
                 <template #header>
-                    <div class="w-full text-center">운영여부</div>
+                    <div class="w-full text-center font-bold">운영여부</div>
                 </template>
                 <template #body="slotProps">
                     <Tag :value="Number(slotProps.data.operation) === 1 ? '운영' : '종료'" :severity="Number(slotProps.data.operation) === 1 ? null : 'secondary'" rounded />
@@ -246,7 +246,7 @@ onMounted(() => {
             <!-- 수정 -->
             <Column>
                 <template #header>
-                    <div class="w-full text-center">수정</div>
+                    <div class="w-full text-center font-bold">수정</div>
                 </template>
                 <template #body="slotProps">
                     <Button label="수정" size="small" @click.stop="goEdit(slotProps.data.institution_no)" />
@@ -258,9 +258,13 @@ onMounted(() => {
             </template>
         </DataTable>
 
-        <div class="flex justify-end gap-2 mt-4">
-            <Button label="삭제" severity="danger" :disabled="selectedInstitutions.length === 0" @click="deleteSelectedInstitutionList" />
-            <Button label="기관 등록" @click="goCreate" />
+        <div class="flex justify-between mt-4">
+            <div>
+                <Button label="기관 등록" @click="goCreate" />
+            </div>
+            <div class="flex gap-2">
+                <Button label="삭제" severity="danger" :disabled="selectedInstitutions.length === 0" @click="deleteSelectedInstitutionList" />
+            </div>
         </div>
     </div>
 </template>

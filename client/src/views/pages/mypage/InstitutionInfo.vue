@@ -57,52 +57,56 @@ onMounted(() => {
 
 <template>
     <div class="p-6">
-        <!-- 페이지 제목 -->
-        <div class="mb-5">
-            <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
-            <span class="text-muted-color"> 기관담당자 본인 정보를 확인할 수 있습니다. </span>
-        </div>
+        <div class="bg-white dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-8 lg:p-10 shadow-sm">
+            <div class="mb-8">
+                <div class="text-surface-900 dark:text-surface-0 text-3xl font-bold mb-2">마이페이지</div>
+                <span class="text-muted-color text-lg">기관담당자 본인 정보를 확인할 수 있습니다.</span>
+            </div>
 
-        <!-- 본문 -->
-        <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
-            <div v-if="info" class="grid gap-3">
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">아이디</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.user_id }}</div>
+            <div v-if="info">
+                <div class="grid gap-0">
+                    <div class="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 py-4 border-b border-surface-100 dark:border-surface-800 items-center">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 text-lg">아이디</div>
+                        <div class="text-surface-600 dark:text-surface-400 text-lg">{{ info.user_id }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 py-4 border-b border-surface-100 dark:border-surface-800 items-center">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 text-lg">이름</div>
+                        <div class="text-surface-600 dark:text-surface-400 text-lg">{{ info.user_name }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 py-4 border-b border-surface-100 dark:border-surface-800 items-center">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 text-lg">전화번호</div>
+                        <div class="text-surface-600 dark:text-surface-400 text-lg">{{ info.tel || '-' }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 py-4 border-b border-surface-100 dark:border-surface-800 items-center">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 text-lg">이메일</div>
+                        <div class="text-surface-600 dark:text-surface-400 text-lg">{{ info.email }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 py-4 border-b border-surface-100 dark:border-surface-800 items-center">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 text-lg">소속 기관</div>
+                        <div class="text-surface-600 dark:text-surface-400 text-lg">{{ info.institution_name || '-' }}</div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-[160px_1fr] gap-4 py-4 items-center">
+                        <div class="font-bold text-surface-800 dark:text-surface-200 text-lg">가입일</div>
+                        <div class="text-surface-600 dark:text-surface-400 text-lg">{{ formatDate(info.created_at) }}</div>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">이름</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.user_name }}</div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">전화번호</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.tel || '-' }}</div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">이메일</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.email }}</div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2 border-b border-surface-200 dark:border-surface-700">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">소속 기관</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ info.institution_name || '-' }}</div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-[140px_1fr] gap-2 py-2">
-                    <div class="font-semibold text-surface-700 dark:text-surface-200">가입일</div>
-                    <div class="text-surface-900 dark:text-surface-0">{{ formatDate(info.created_at) }}</div>
-                </div>
-
-                <div class="flex justify-between pt-3">
-                    <Button label="회원탈퇴" severity="danger" @click="goToWithdraw" />
-                    <Button label="수정" @click="goEdit" />
+                <div class="flex justify-between items-center mt-10 pt-4">
+                    <Button label="회원탈퇴" severity="danger" class="px-6 py-2 font-semibold" @click="goToWithdraw" />
+                    <!-- 이미지의 진한 남색 버튼 반영 -->
+                    <Button label="수정" class="px-10 py-2 font-semibold bg-blue-900 border-none" @click="goEdit" />
                 </div>
             </div>
 
-            <div v-else class="text-muted-color">정보를 불러오는 중입니다.</div>
+            <div v-else class="flex flex-col items-center py-20">
+                <i class="pi pi-spin pi-spinner text-3xl mb-4 text-primary"></i>
+                <div class="text-muted-color text-xl font-medium">정보를 불러오는 중입니다...</div>
+            </div>
         </div>
     </div>
 </template>
