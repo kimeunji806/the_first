@@ -291,7 +291,7 @@ const checked = ref(false);
                         <InputGroup class="mb-2">
                             <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" v-model="info.user_account" class="pr-20" :disabled="isEmailVerified" />
                             <InputGroupAddon class="timer-addon" v-if="!isEmailVerified">
-                                <span>{{ formatTime }}</span>
+                                <span class="timer-text">{{ formatTime }}</span>
                             </InputGroupAddon>
 
                             <Button label="확인" class="font-bold auth-btn unified-btn" @click="verifyCode(info.user_account)" :disabled="isEmailVerified" />
@@ -345,6 +345,11 @@ const checked = ref(false);
 .auth-btn {
     width: 110px !important;
     flex-shrink: 0;
+}
+
+.timer-text {
+    color: #034487 !important;
+    font-variant-numeric: tabular-nums;
 }
 
 .timer-addon {

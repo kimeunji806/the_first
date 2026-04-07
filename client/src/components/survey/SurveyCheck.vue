@@ -23,7 +23,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-    <div class="card h-6/10 flex flex-col gap 4">
+    <div class="card md:h-12/19 flex flex-col gap 4">
         <div class="font-semibold text-xl mb-4">지원신청서</div>
 
         <div v-if="question[0]?.subs?.[0]?.questions?.[0]?.answer_name == null" class="font-semibold text-l mb-4">지원신청내역이 없습니다.</div>
