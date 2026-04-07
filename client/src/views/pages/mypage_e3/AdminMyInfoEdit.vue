@@ -114,31 +114,32 @@ onMounted(() => {
                 <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">마이페이지</div>
                 <span class="text-muted-color"> 기관관리자 본인 정보를 수정할 수 있습니다. </span>
             </div>
+            <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
+                <DataTable
+                    :value="[
+                        { label: '아이디', field: 'user_id', readonly: true },
+                        { label: '이름', field: 'user_name' },
+                        { label: '전화번호', field: 'tel' },
+                        { label: '이메일', field: 'email', readonly: true },
+                        { label: '소속 기관', field: 'institution_name', readonly: true },
+                        { label: '가입일', field: 'created_at', readonly: true }
+                    ]"
+                >
+                    <Column field="label" class="w-3xs" />
+                    <Column field="field">
+                        <template #body="slotProps">
+                            <!-- 가입일 (수정 불가) -->
+                            <InputText v-if="slotProps.data.field === 'created_at'" :value="formatDate(form.created_at)" class="w-full readonly-field" readonly />
+                            <InputText v-else-if="slotProps.data.readonly" :value="form[slotProps.data.field]" class="w-full readonly-field" readonly />
+                            <InputText v-else v-model="form[slotProps.data.field]" class="w-full" :placeholder="slotProps.data.field === 'tel' ? '010-0000-0000' : ''" />
+                        </template>
+                    </Column>
+                </DataTable>
 
-            <DataTable
-                :value="[
-                    { label: '아이디', field: 'user_id', readonly: true },
-                    { label: '이름', field: 'user_name' },
-                    { label: '전화번호', field: 'tel' },
-                    { label: '이메일', field: 'email', readonly: true },
-                    { label: '소속 기관', field: 'institution_name', readonly: true },
-                    { label: '가입일', field: 'created_at', readonly: true }
-                ]"
-            >
-                <Column field="label" class="w-3xs" />
-                <Column field="field">
-                    <template #body="slotProps">
-                        <!-- 가입일 (수정 불가) -->
-                        <InputText v-if="slotProps.data.field === 'created_at'" :value="formatDate(form.created_at)" class="w-full readonly-field" readonly />
-                        <InputText v-else-if="slotProps.data.readonly" :value="form[slotProps.data.field]" class="w-full readonly-field" readonly />
-                        <InputText v-else v-model="form[slotProps.data.field]" class="w-full" :placeholder="slotProps.data.field === 'tel' ? '010-0000-0000' : ''" />
-                    </template>
-                </Column>
-            </DataTable>
-
-            <div class="flex gap-2 justify-end mt-2">
-                <Button label="취소" severity="secondary" outlined @click="cancelEdit" />
-                <Button label="저장" @click="saveInfo" />
+                <div class="flex gap-2 justify-end mt-2">
+                    <Button label="취소" severity="secondary" outlined @click="cancelEdit" />
+                    <Button label="저장" @click="saveInfo" />
+                </div>
             </div>
         </div>
     </div>

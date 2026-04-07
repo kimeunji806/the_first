@@ -289,7 +289,7 @@ const saveAll = async () => {
                                     <span v-else>{{ value.main_title }}</span>
                                 </div>
 
-                                <div v-if="main_update_isVisible">
+                                <div v-if="main_update_isVisible" class="flex gap-2">
                                     <Button type="submit" label="수정" @click="toggleEditM(value)">{{ value.isEditing ? '저장' : '수정' }}</Button>
                                     <Button type="submit" label="삭제" severity="danger" @click="mainDelete(value.main_no)"></Button>
                                 </div>
@@ -297,9 +297,10 @@ const saveAll = async () => {
                         </li>
                     </ul>
                 </div>
-                <div v-if="main_isVisible">
-                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-model="content.main_title"></InputText>
+                <div v-if="main_isVisible" class="flex gap-2">
+                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="md:w-5/9" v-model="content.main_title"></InputText>
                     <Button type="submit" label="저장" @click="main_isVisible = !main_isVisible" v-on:click="mainCreate()" />
+                    <Button type="submit" label="취소" severity="secondary" @click="main_isVisible = !main_isVisible" />
                 </div>
                 <div class="mt-auto grid grid-cols-2 gap-2 w-full">
                     <div v-if="!main_isVisible"><Button type="submit" label="항목추가" class="w-full" @click="main_isVisible = !main_isVisible"></Button></div>
@@ -321,17 +322,18 @@ const saveAll = async () => {
                                 <span v-else>{{ value.sub_title }}</span>
                             </div>
 
-                            <div v-if="sub_update_isVisible">
+                            <div v-if="sub_update_isVisible" class="flex gap-2">
                                 <Button type="submit" label="수정" @click="toggleEdit(value)">{{ value.isEditing ? '저장' : '수정' }}</Button>
                                 <Button type="submit" label="삭제" severity="danger" @click="subDelete(value.sub_no)"></Button>
                             </div>
                         </div>
                     </li>
                 </ul>
-                <div v-if="sub_isVisible">
-                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" v-model="content.sub_title" />
+                <div v-if="sub_isVisible" class="flex gap-2">
+                    <InputText class="md:w-5/9" type="text" id="myInput" placeholder="지원서 항목 추가" v-model="content.sub_title" />
 
                     <Button type="submit" label="저장" @click="sub_isVisible = !sub_isVisible" v-on:click="subCreate()" />
+                    <Button type="submit" label="취소" severity="secondary" @click="sub_isVisible = !sub_isVisible" />
                 </div>
                 <div class="mt-auto grid grid-cols-2 gap-2 w-full">
                     <div v-if="!sub_isVisible"><Button type="submit" label="항목추가" @click="sub_isVisible = !sub_isVisible" class="w-full"></Button></div>
@@ -345,21 +347,22 @@ const saveAll = async () => {
                 <div class="font-semibold text-xl mb-4">질문 항목</div>
                 <div class="font-semibold text-xl mb-4">지원신청내역</div>
                 <!-- <DataTable :value="question" :paginator="true" :rows="5" dataKey="id" :rowHover="true" showGridlines> -->
-                <DataTable :value="visibleQuestion" scrollable scrollHeight="500px" dataKey="id" :rowHover="true" showGridlines>
+                <DataTable :value="visibleQuestion" scrollHeight="500px" dataKey="id" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
                     <template #empty> No customers found. </template>
 
-                    <Column header="질문" style="min-width: 40rem">
+                    <Column header="질문" style="min-width: 38rem">
                         <template #body="{ data }">
                             <div>
                                 <!-- 수정 상태일 때 -->
                                 <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[13rem]" v-if="data.isEditing" v-model="data.question_text" @input="data.isDirty = !data.isNew" />
+
                                 <!-- 보기 상태일 때 -->
                                 <span v-else>{{ data.question_text }}</span>
                             </div>
                         </template>
                     </Column>
-                    <Column header="수정" style="min-width: 1rem">
+                    <Column header="수정" style="min-width: 2rem">
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
                                 <span
@@ -368,7 +371,7 @@ const saveAll = async () => {
                             </div>
                         </template>
                     </Column>
-                    <Column header="삭제" style="min-width: 1rem">
+                    <Column header="삭제" style="min-width: 2rem">
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
                                 <!-- <Checkbox id="checkOption1" name="option" value="Chicago" v-model="checkboxValue" /> -->
@@ -377,10 +380,10 @@ const saveAll = async () => {
                         </template>
                     </Column>
                 </DataTable>
-                <div v-if="question_isVisible">
-                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="w-full md:w-[56rem]" v-model="content.question_text" />
-
+                <div v-if="question_isVisible" class="flex gap-2">
+                    <InputText type="text" id="myInput" placeholder="지원서 항목 추가" class="md:w-7/9" v-model="content.question_text" />
                     <Button type="submit" label="저장" @click="question_isVisible = !question_isVisible" v-on:click="questionCreate()" />
+                    <Button type="submit" label="취소" severity="secondary" @click="question_isVisible = !question_isVisible" />
                 </div>
                 <div class="flex justify-end">
                     <div class="mt-auto" v-if="!question_isVisible"><Button type="submit" label="항목추가" class="w-full" @click="question_isVisible = !question_isVisible"></Button></div>
@@ -396,4 +399,3 @@ const saveAll = async () => {
         </div>
     </div>
 </template>
-<style scoped></style>

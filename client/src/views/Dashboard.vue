@@ -173,3 +173,12 @@ onBeforeMount(() => {
         </div>
     </div>
 </template>
+<style scoped>
+:deep(.search-match) {
+    background-color: rgba(var(--primary-color-rgb), 0.15);
+    color: var(--primary-color);
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+</style>

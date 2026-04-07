@@ -323,8 +323,4 @@ const filters = ref({
     padding: 2px 4px;
     border-radius: 4px;
 }
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    text-align: center;
-}
 </style>

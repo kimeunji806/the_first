@@ -22,7 +22,7 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-    <div class="card h-5/10 flex flex-col gap 4">
+    <div class="card md:h-12/19 flex flex-col gap 4">
         <div class="overflow-y-auto">
             <div v-if="priority.length === 0" class="text-center text-gray-500 py-10">등록된 우선순위 요청이 없습니다.</div>
 

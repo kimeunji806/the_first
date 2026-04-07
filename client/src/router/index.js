@@ -21,7 +21,7 @@ const router = createRouter({
     history: createWebHistory(),
     routes: [
         {
-            path: '/',
+            path: '/sign/login',
             component: AppSignLayout,
             children: [...sign_index]
         },

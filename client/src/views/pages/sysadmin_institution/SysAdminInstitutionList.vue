@@ -138,132 +138,135 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="w-full mt-4">
-        <!-- 제목/설명 -->
-        <div class="mb-5">
-            <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">기관 정보</div>
-            <span class="text-muted-color">시스템관리자가 기관 목록을 조회할 수 있습니다.</span>
-        </div>
+    <div class="md:w-full">
+        <div class="h-9/10">
+            <div class="card">
+                <!-- 제목/설명 -->
+                <div class="mb-5">
+                    <div class="text-surface-900 dark:text-surface-0 text-2xl font-medium mb-1">기관 정보</div>
+                    <span class="text-muted-color">시스템관리자가 기관 목록을 조회할 수 있습니다.</span>
+                </div>
 
-        <!-- 테이블 위 툴바 -->
-        <div class="flex justify-between items-center mb-3">
-            <div class="flex gap-2">
-                <Button label="미운영 전체선택" severity="secondary" outlined @click="selectClosedInstitutionsOnPage" />
-                <Button label="선택해제" severity="secondary" outlined @click="clearSelectedInstitutions" />
-            </div>
+                <!-- 테이블 위 툴바 -->
+                <div class="flex justify-between items-center mb-3">
+                    <div class="flex gap-2">
+                        <Button label="미운영 전체선택" severity="secondary" outlined @click="selectClosedInstitutionsOnPage" />
+                        <Button label="선택해제" severity="secondary" outlined @click="clearSelectedInstitutions" />
+                    </div>
 
-            <div class="flex gap-2 items-center">
-                <InputText v-model="keyword" placeholder="기관번호 / 기관명 검색" class="w-72" @keydown="handleSearchEnter" />
-                <Button icon="pi pi-search" @click="searchInstitution" />
-                <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
-            </div>
-        </div>
+                    <div class="flex gap-2 items-center">
+                        <InputText v-model="keyword" placeholder="기관번호 / 기관명 검색" class="w-72" @keydown="handleSearchEnter" />
+                        <Button icon="pi pi-search" @click="searchInstitution" />
+                        <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
+                    </div>
+                </div>
 
-        <DataTable
-            v-model:selection="selectedInstitutions"
-            :value="institutionList"
-            dataKey="institution_no"
-            class="w-full institution-table"
-            paginator
-            :rows="rows"
-            :first="first"
-            :totalRecords="institutionList.length"
-            @page="
-                (event) => {
-                    first = event.first;
-                    rows = event.rows;
-                }
-            "
-            @row-click="(event) => openDetail(event.data.institution_no)"
-        >
-            <!-- 개별 선택 체크박스 -->
-            <Column selectionMode="multiple" headerStyle="width: 3rem" :exportable="false">
-                <template #header>
+                <DataTable
+                    v-model:selection="selectedInstitutions"
+                    :value="institutionList"
+                    dataKey="institution_no"
+                    class="w-full institution-table"
+                    paginator
+                    :rows="rows"
+                    :first="first"
+                    :totalRecords="institutionList.length"
+                    @page="
+                        (event) => {
+                            first = event.first;
+                            rows = event.rows;
+                        }
+                    "
+                    @row-click="(event) => openDetail(event.data.institution_no)"
+                >
+                    <!-- 개별 선택 체크박스 -->
+                    <Column selectionMode="multiple" headerStyle="width: 3rem" :exportable="false">
+                        <template #header>
+                            <div></div>
+                        </template>
+                    </Column>
+
+                    <!-- 기관번호 -->
+                    <Column field="institution_no">
+                        <template #header>
+                            <div class="w-full text-center font-bold">기관번호</div>
+                        </template>
+                        <template #body="slotProps">
+                            {{ slotProps.data.institution_no }}
+                        </template>
+                    </Column>
+
+                    <!-- 기관명 -->
+                    <Column field="name">
+                        <template #header>
+                            <div class="w-full text-center font-bold">기관명</div>
+                        </template>
+                        <template #body="slotProps">
+                            {{ slotProps.data.name || '-' }}
+                        </template>
+                    </Column>
+
+                    <!-- 연락처 -->
+                    <Column field="tel">
+                        <template #header>
+                            <div class="w-full text-center font-bold">연락처</div>
+                        </template>
+                        <template #body="slotProps">
+                            {{ slotProps.data.tel || '-' }}
+                        </template>
+                    </Column>
+
+                    <!-- 이메일 -->
+                    <Column field="institution_email">
+                        <template #header>
+                            <div class="w-full text-center font-bold">이메일</div>
+                        </template>
+                        <template #body="slotProps">
+                            {{ slotProps.data.institution_email || '-' }}
+                        </template>
+                    </Column>
+
+                    <!-- 가입일 -->
+                    <Column field="created_at">
+                        <template #header>
+                            <div class="w-full text-center font-bold">가입일</div>
+                        </template>
+                        <template #body="slotProps">
+                            {{ slotProps.data.created_at || '-' }}
+                        </template>
+                    </Column>
+
+                    <!-- 운영여부 -->
+                    <Column>
+                        <template #header>
+                            <div class="w-full text-center font-bold">운영여부</div>
+                        </template>
+                        <template #body="slotProps">
+                            <Tag :value="Number(slotProps.data.operation) === 1 ? '운영' : '종료'" :severity="Number(slotProps.data.operation) === 1 ? null : 'secondary'" rounded />
+                        </template>
+                    </Column>
+
+                    <!-- 수정 -->
+                    <Column>
+                        <template #header>
+                            <div class="w-full text-center font-bold">수정</div>
+                        </template>
+                        <template #body="slotProps">
+                            <Button label="수정" size="small" @click.stop="goEdit(slotProps.data.institution_no)" />
+                        </template>
+                    </Column>
+
+                    <template #empty>
+                        <div class="py-6 text-center text-muted-color">조회된 기관이 없습니다.</div>
+                    </template>
+                </DataTable>
+
+                <div class="flex justify-between mt-4">
                     <div></div>
-                </template>
-            </Column>
-
-            <!-- 기관번호 -->
-            <Column field="institution_no">
-                <template #header>
-                    <div class="w-full text-center font-bold">기관번호</div>
-                </template>
-                <template #body="slotProps">
-                    {{ slotProps.data.institution_no }}
-                </template>
-            </Column>
-
-            <!-- 기관명 -->
-            <Column field="name">
-                <template #header>
-                    <div class="w-full text-center font-bold">기관명</div>
-                </template>
-                <template #body="slotProps">
-                    {{ slotProps.data.name || '-' }}
-                </template>
-            </Column>
-
-            <!-- 연락처 -->
-            <Column field="tel">
-                <template #header>
-                    <div class="w-full text-center font-bold">연락처</div>
-                </template>
-                <template #body="slotProps">
-                    {{ slotProps.data.tel || '-' }}
-                </template>
-            </Column>
-
-            <!-- 이메일 -->
-            <Column field="institution_email">
-                <template #header>
-                    <div class="w-full text-center font-bold">이메일</div>
-                </template>
-                <template #body="slotProps">
-                    {{ slotProps.data.institution_email || '-' }}
-                </template>
-            </Column>
-
-            <!-- 가입일 -->
-            <Column field="created_at">
-                <template #header>
-                    <div class="w-full text-center font-bold">가입일</div>
-                </template>
-                <template #body="slotProps">
-                    {{ slotProps.data.created_at || '-' }}
-                </template>
-            </Column>
-
-            <!-- 운영여부 -->
-            <Column>
-                <template #header>
-                    <div class="w-full text-center font-bold">운영여부</div>
-                </template>
-                <template #body="slotProps">
-                    <Tag :value="Number(slotProps.data.operation) === 1 ? '운영' : '종료'" :severity="Number(slotProps.data.operation) === 1 ? null : 'secondary'" rounded />
-                </template>
-            </Column>
-
-            <!-- 수정 -->
-            <Column>
-                <template #header>
-                    <div class="w-full text-center font-bold">수정</div>
-                </template>
-                <template #body="slotProps">
-                    <Button label="수정" size="small" @click.stop="goEdit(slotProps.data.institution_no)" />
-                </template>
-            </Column>
-
-            <template #empty>
-                <div class="py-6 text-center text-muted-color">조회된 기관이 없습니다.</div>
-            </template>
-        </DataTable>
-
-        <div class="flex justify-between mt-4">
-            <div>
-                <Button label="기관 등록" @click="goCreate" />
-            </div>
-            <div class="flex gap-2">
-                <Button label="삭제" severity="danger" :disabled="selectedInstitutions.length === 0" @click="deleteSelectedInstitutionList" />
+                    <div class="flex gap-2">
+                        <Button label="기관 등록" @click="goCreate" />
+                        <Button label="삭제" severity="danger" :disabled="selectedInstitutions.length === 0" @click="deleteSelectedInstitutionList" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -299,38 +302,6 @@ onMounted(() => {
     justify-content: center;
 }
 
-/* =========================
-   컬럼 폭 조정
-========================= */
-:deep(.institution-table .p-datatable-thead > tr > th:nth-child(1)),
-:deep(.institution-table .p-datatable-tbody > tr > td:nth-child(1)) {
-    width: 90px;
-}
-
-:deep(.institution-table .p-datatable-thead > tr > th:nth-child(3)),
-:deep(.institution-table .p-datatable-tbody > tr > td:nth-child(3)) {
-    width: 170px;
-}
-
-:deep(.institution-table .p-datatable-thead > tr > th:nth-child(4)),
-:deep(.institution-table .p-datatable-tbody > tr > td:nth-child(4)) {
-    width: 230px;
-}
-
-:deep(.institution-table .p-datatable-thead > tr > th:nth-child(5)),
-:deep(.institution-table .p-datatable-tbody > tr > td:nth-child(5)) {
-    width: 130px;
-}
-
-:deep(.institution-table .p-datatable-thead > tr > th:nth-child(6)),
-:deep(.institution-table .p-datatable-tbody > tr > td:nth-child(6)) {
-    width: 110px;
-}
-
-:deep(.institution-table .p-datatable-thead > tr > th:nth-child(7)),
-:deep(.institution-table .p-datatable-tbody > tr > td:nth-child(7)) {
-    width: 110px;
-}
 /* 체크박스 컬럼 헤더의 전체선택 체크박스 숨김 */
 :deep(.institution-table .p-datatable-thead > tr > th:first-child .p-checkbox) {
     display: none;
