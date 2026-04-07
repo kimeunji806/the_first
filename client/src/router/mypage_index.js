@@ -10,6 +10,11 @@ export default [
         component: () => import('@/views/pages/info/ManagerInfo.vue')
     },
     {
+        path: '/info/admin',
+        name: 'adminInfo',
+        component: () => import('@/views/pages/info/AdminInfo.vue')
+    },
+    {
         path: '/admin/mypage',
         name: 'admin-mypage',
         component: () => import('@/views/pages/mypage_e3/InstitutionInfo.vue')

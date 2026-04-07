@@ -47,7 +47,7 @@ async function updateTarget(target, userNo) {
 
 const myInfo = async (no) => {
     try {
-        const result = await fetch(`${BASE_URL}/myPageInfo/${no}`)
+        const result = await fetch(`${BASE_URL}/myPageInfo/${no}`);
         const data = await result.json();
         return data;
     } catch (err) {
@@ -55,4 +55,4 @@ const myInfo = async (no) => {
     }
 };
 
-export { getTargets, createTarget, updateTarget ,myInfo };
+export { getTargets, createTarget, updateTarget, myInfo };

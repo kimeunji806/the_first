@@ -177,11 +177,15 @@ const addUserInfo = async () => {
         if (result.insertId != null) {
             console.log('회원가입완료');
 
-            router.push({ name: 'login' });
+            router.push('/sign/login');
         } else {
             alert('등록되지않았습니다.');
         }
     }
+};
+
+const goToLogin = () => {
+    router.push('/sign/login');
 };
 const historyDialog = ref(false);
 const openHistoryModal = () => {
@@ -323,8 +327,10 @@ const checked = ref(false);
                                 }
                             "
                         />
-                        <div class="flex items-center justify-between mt-2 mb-8 gap-8"></div>
-                        <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
+                        <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+                            <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
+                            <Button type="submit" label="로그인" class="w-full" v-on:click="goToLogin()"></Button>
+                        </div>
                     </div>
                 </div>
             </div>

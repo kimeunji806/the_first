@@ -101,6 +101,9 @@ app.use("/plan", planRouter);
 const resultRouter = require("./routers/result_router"); // 지원결과
 app.use("/result", resultRouter);
 
+const mypagRouter = require("./routers/mypage_router"); //마이페이지 일반사용자
+app.use("/", mypagRouter);
+
 const surveyInputRouter = require("./routers/surveyInput_router");
 app.use("/", surveyInputRouter);
 const fileRouter = require("./routers/file_router");
