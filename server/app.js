@@ -74,41 +74,41 @@ app.post("/verify", (req, res) => {
 
 // 기능별 라우터 모듈 등록
 const userRouter = require("./routers/user_router.js");
-app.use("/", userRouter);
+app.use("/api", userRouter);
 const institutionRouter = require("./routers/institution_router.js");
-app.use("/", institutionRouter);
+app.use("/api", institutionRouter);
 const mypageRouter = require("./routers/mypage_router"); //마이페이지 지원대상자
 app.use("/api/mypage", mypageRouter);
 const institutionMyPageRouter = require("./routers/institution_mypage_router"); //마이페이지 기관담당자
 app.use("/institutionmypage", institutionMyPageRouter);
 const infoRouter = require("./routers/info_router");
-app.use("/", infoRouter);
+app.use("/api", infoRouter);
 const counselRouter = require("./routers/counsel_router");
-app.use("/", counselRouter);
+app.use("/api", counselRouter);
 const managerAssignRouter = require("./routers/manager_assign_router"); // 기관담당자 지정
-app.use("/managerAssign", managerAssignRouter);
+app.use("/api/managerAssign", managerAssignRouter);
 const noticeRouter = require("./routers/notice_router.js"); // 공지사항
-app.use("/", noticeRouter);
+app.use("/api", noticeRouter);
 const adminMyPageRouter = require("./routers/admin_mypage_router"); //마이페이지 기관관리자
-app.use("/admin/mypage", adminMyPageRouter);
+app.use("/api/admin/mypage", adminMyPageRouter);
 const listRouter = require("./routers/list_router");
-app.use("/", listRouter);
+app.use("/api", listRouter);
 
 const surveyRouter = require("./routers/survey_router");
-app.use("/", surveyRouter);
+app.use("/api", surveyRouter);
 const planRouter = require("./routers/plan_router"); // 지원계획
-app.use("/plan", planRouter);
+app.use("/api/plan", planRouter);
 const resultRouter = require("./routers/result_router"); // 지원결과
-app.use("/result", resultRouter);
+app.use("/api/result", resultRouter);
 
 const surveyInputRouter = require("./routers/surveyInput_router");
-app.use("/", surveyInputRouter);
+app.use("/api", surveyInputRouter);
 const fileRouter = require("./routers/file_router");
-app.use("/", fileRouter);
+app.use("/api", fileRouter);
 
 const priorityRouter = require("./routers/priority_router");
-app.use("/", priorityRouter);
-app.use("/sysadmin/institutions", sysAdminInstitutionRouter); // 시스템관리자 기관관리
+app.use("/api", priorityRouter);
+app.use("/api/sysadmin/institutions", sysAdminInstitutionRouter); // 시스템관리자 기관관리
 
 
 const path = require('path');
