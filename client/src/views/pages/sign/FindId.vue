@@ -1,7 +1,6 @@
 <script setup>
 import { ref, computed, onUnmounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { email } from '@vuelidate/validators';
 
 const router = useRouter();
 

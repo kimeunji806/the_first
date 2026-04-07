@@ -68,7 +68,7 @@ const goToFindPassword = () => {
                                 fill="var(--primary-color)"
                             />
                         </g>
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">로그인 페이지</div>
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">로그인</div>
                     </div>
 
                     <div>
