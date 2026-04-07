@@ -80,7 +80,7 @@ app.use("/api", institutionRouter);
 const mypageRouter = require("./routers/mypage_router"); //마이페이지 지원대상자
 app.use("/api/mypage", mypageRouter);
 const institutionMyPageRouter = require("./routers/institution_mypage_router"); //마이페이지 기관담당자
-app.use("/institutionmypage", institutionMyPageRouter);
+app.use("/api/institutionmypage", institutionMyPageRouter);
 const infoRouter = require("./routers/info_router");
 app.use("/api", infoRouter);
 const counselRouter = require("./routers/counsel_router");
