@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3000/api/mypage';
+const BASE_URL = '/api/mypage';
 
 // 로그인 사용자 기준 지원대상자 조회
 async function getTargets(userNo) {

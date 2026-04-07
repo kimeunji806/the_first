@@ -5,7 +5,7 @@
 async function getInstitutionMyPage(userNo) {
     // 백엔드 조회 API 호출
     // 예: http://localhost:3000/institutionmypage/3007
-    const res = await fetch(`http://localhost:3000/institutionmypage/${userNo}`);
+    const res = await fetch(`/api/institutionmypage/${userNo}`);
 
     // 응답을 먼저 text 형태로 받음
     // 왜 text로 받냐면, 에러가 났을 때 응답 원본을 확인하기 쉬움
@@ -21,7 +21,7 @@ async function getInstitutionMyPage(userNo) {
 // 예: { user_name: '홍길동', tel: '010-1111-2222', address: '대구광역시 ...' }
 async function updateInstitutionMyPage(userNo, payload) {
     // 백엔드 수정 API 호출
-    const res = await fetch(`http://localhost:3000/institutionmypage/${userNo}`, {
+    const res = await fetch(`/api/institutionmypage/${userNo}`, {
         // PUT 방식으로 수정 요청
         method: 'PUT',
 
