@@ -73,6 +73,11 @@ const createNotice = async () => {
     }
 };
 
+// 목록으로 이동
+const goToList = () => {
+    router.push('/notice');
+};
+
 onBeforeMount(() => {
     // 시스템관리자(e4)일 때만 기관 목록 조회
     if (userStore.role === 'e4') {
@@ -120,7 +125,8 @@ onBeforeMount(() => {
                 <input id="file-upload" type="file" multiple @change="handleFileChange" style="display: none" />
             </div>
         </div>
-        <div class="flex justify-end mt-3">
+        <div class="flex justify-end gap-2 mt-3">
+            <Button label="취소" severity="secondary" @click="goToList" />
             <Button label="글등록" @click="createNotice" />
         </div>
     </div>
