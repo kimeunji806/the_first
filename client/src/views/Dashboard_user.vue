@@ -120,7 +120,6 @@ const filters = ref({
                 <DataTable :value="users" :filters="filters" :globalFilterFields="['beneficiaries_name', 'guardian_name', 'manager_name']" :paginator="true" :rows="10" dataKey="id" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
                     <template #empty> 검색 결과가 없습니다. </template>
-
                     <Column header="지원자명" style="min-width: 8rem">
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">

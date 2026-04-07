@@ -82,50 +82,51 @@ const goToRegister = () => {
 </script>
 
 <template>
-    <div class="flex h-screen m-0">
-        <!-- 왼쪽 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
-            <img :src="logoImage" alt="로고" class="w-72 max-w-4/5 object-contain" />
-        </div>
+    <!-- 오른쪽 -->
+    <div class="flex items-center justify-center min-h-screen overflow-hidden">
+        <div class="flex flex-col items-center justify-center">
+            <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                    <div class="flex-1 flex items-center justify-center bg-white">
+                        <form class="w-96 xl:w-[480px] flex flex-col gap-5" @submit.prevent="resetPassword">
+                            <h2 class="text-2xl font-bold text-center text-surface-800">비밀번호 재설정</h2>
 
-        <!-- 오른쪽 -->
-        <div class="flex-1 flex items-center justify-center bg-white">
-            <form class="w-96 xl:w-[480px] flex flex-col gap-5" @submit.prevent="resetPassword">
-                <h2 class="text-2xl font-bold text-center text-surface-800">비밀번호 재설정</h2>
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">아이디</label>
+                                <InputText v-model="resetForm.user_id" size="large" fluid disabled />
+                            </div>
 
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">아이디</label>
-                    <InputText v-model="resetForm.user_id" size="large" fluid disabled />
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">비밀번호</label>
+                                <InputGroup>
+                                    <InputText v-model="resetForm.new_pw" :type="showPassword ? 'text' : 'password'" placeholder="비밀번호를 입력하세요" size="large" />
+                                    <Button :icon="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" severity="secondary" outlined type="button" @click="showPassword = !showPassword" />
+                                </InputGroup>
+                                <span class="text-sm text-gray-500"> * 비밀번호는 8자 이상 입력해주세요. </span>
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">비밀번호 확인</label>
+                                <InputGroup>
+                                    <InputText v-model="resetForm.new_pw_check" :type="showPasswordCheck ? 'text' : 'password'" placeholder="비밀번호를 재입력하세요" size="large" />
+                                    <Button :icon="showPasswordCheck ? 'pi pi-eye-slash' : 'pi pi-eye'" severity="secondary" outlined type="button" @click="showPasswordCheck = !showPasswordCheck" />
+                                </InputGroup>
+                                <span v-if="resetForm.new_pw_check && !isPasswordMatched" class="text-red-500 text-sm"> * 비밀번호가 일치하지 않습니다. </span>
+                                <!-- 일치 시 텍스트 색상 변경 -->
+                                <span v-if="resetForm.new_pw_check && isPasswordMatched" class="text-primary-color text-sm"> ✔ 비밀번호가 일치합니다. </span>
+                            </div>
+
+                            <div class="flex justify-end items-center gap-2 text-sm">
+                                <span class="link-text" @click="goToLogin">로그인으로 이동</span>
+                                <Divider layout="vertical" class="!mx-0 !h-3" />
+                                <span class="link-text" @click="goToRegister">회원가입</span>
+                            </div>
+
+                            <Button label="비밀번호 변경" size="large" fluid class="font-bold custom-primary-btn" type="submit" />
+                        </form>
+                    </div>
                 </div>
-
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">비밀번호</label>
-                    <InputGroup>
-                        <InputText v-model="resetForm.new_pw" :type="showPassword ? 'text' : 'password'" placeholder="비밀번호를 입력하세요" size="large" />
-                        <Button :icon="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" severity="secondary" outlined type="button" @click="showPassword = !showPassword" />
-                    </InputGroup>
-                    <span class="text-sm text-gray-500"> * 비밀번호는 8자 이상 입력해주세요. </span>
-                </div>
-
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">비밀번호 확인</label>
-                    <InputGroup>
-                        <InputText v-model="resetForm.new_pw_check" :type="showPasswordCheck ? 'text' : 'password'" placeholder="비밀번호를 재입력하세요" size="large" />
-                        <Button :icon="showPasswordCheck ? 'pi pi-eye-slash' : 'pi pi-eye'" severity="secondary" outlined type="button" @click="showPasswordCheck = !showPasswordCheck" />
-                    </InputGroup>
-                    <span v-if="resetForm.new_pw_check && !isPasswordMatched" class="text-red-500 text-sm"> * 비밀번호가 일치하지 않습니다. </span>
-                    <!-- 일치 시 텍스트 색상 변경 -->
-                    <span v-if="resetForm.new_pw_check && isPasswordMatched" class="text-primary-color text-sm"> ✔ 비밀번호가 일치합니다. </span>
-                </div>
-
-                <div class="flex justify-end items-center gap-2 text-sm">
-                    <span class="link-text" @click="goToLogin">로그인으로 이동</span>
-                    <Divider layout="vertical" class="!mx-0 !h-3" />
-                    <span class="link-text" @click="goToRegister">회원가입</span>
-                </div>
-
-                <Button label="비밀번호 변경" size="large" fluid class="font-bold custom-primary-btn" type="submit" />
-            </form>
+            </div>
         </div>
     </div>
 </template>

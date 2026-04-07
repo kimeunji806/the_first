@@ -1,4 +1,5 @@
 import AppLayout from '@/layout/AppLayout.vue';
+import AppSignLayout from '@/layout/AppSignLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 import counsel_index from '@/router/counsel_index';
@@ -19,7 +20,11 @@ import { useUserStore } from '@/stores/user';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        ...sign_index,
+        {
+            path: '/',
+            component: AppSignLayout,
+            children: [...sign_index]
+        },
         {
             path: '/',
             component: AppLayout,

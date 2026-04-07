@@ -158,50 +158,51 @@ const goToBack = () => {
 };
 </script>
 <template>
-    <div class="flex h-screen m-0">
-        <!-- 왼쪽 로고 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
-            <img :src="logoImage" alt="로고" class="w-72 max-w-4/5 object-contain" />
-        </div>
+    <!-- 오른쪽 폼 -->
+    <div class="flex items-center justify-center min-h-screen overflow-hidden">
+        <div class="flex flex-col items-center justify-center">
+            <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                    <div class="flex-1 flex items-center justify-center bg-white">
+                        <div class="w-96 xl:w-[480px] flex flex-col gap-5">
+                            <h2 class="text-2xl font-bold text-center text-surface-800">회원 탈퇴</h2>
+                            <p class="text-xl text-red-500 text-center font-bold">회원탈퇴 시 지원건에 대한 책임은 개인에게 있습니다.</p>
 
-        <!-- 오른쪽 폼 -->
-        <div class="flex-1 flex items-center justify-center bg-white">
-            <div class="w-96 xl:w-[480px] flex flex-col gap-5">
-                <h2 class="text-2xl font-bold text-center text-surface-800">회원 탈퇴</h2>
-                <p class="text-xl text-red-500 text-center font-bold">회원탈퇴 시 지원건에 대한 책임은 개인에게 있습니다.</p>
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">아이디</label>
+                                <InputText v-model="withdrawForm.user_id" size="large" fluid disabled />
+                            </div>
 
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">아이디</label>
-                    <InputText v-model="withdrawForm.user_id" size="large" fluid disabled />
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">이메일 인증</label>
+                                <InputGroup>
+                                    <InputText v-model="withdrawForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
+                                    <Button label="인증하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="sendCode" :disabled="isVerified" />
+                                </InputGroup>
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="font-semibold text-surface-700">인증번호</label>
+                                <InputGroup>
+                                    <InputText v-model="withdrawForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
+                                    <InputGroupAddon class="timer-addon" v-if="!isVerified">
+                                        <span class="timer-text">{{ formatTime }}</span>
+                                    </InputGroupAddon>
+                                    <Button label="확인하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="verifyCode" :disabled="isVerified" />
+                                </InputGroup>
+
+                                <span class="text-red-500 text-sm" v-if="!isVerified"> * 본인 확인을 위해 이메일 인증을 진행해주세요. </span>
+                                <span class="text-primary-color text-sm" v-else> * 인증이 완료되었습니다. </span>
+                            </div>
+
+                            <div class="flex justify-end items-center gap-2 text-sm">
+                                <span class="link-text" @click="goToBack">취소하고 돌아가기</span>
+                            </div>
+
+                            <Button label="회원 탈퇴하기" severity="danger" size="large" fluid class="font-bold" :disabled="!isVerified" @click="handleWithdraw" />
+                        </div>
+                    </div>
                 </div>
-
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">이메일 인증</label>
-                    <InputGroup>
-                        <InputText v-model="withdrawForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
-                        <Button label="인증하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="sendCode" :disabled="isVerified" />
-                    </InputGroup>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="font-semibold text-surface-700">인증번호</label>
-                    <InputGroup>
-                        <InputText v-model="withdrawForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
-                        <InputGroupAddon class="timer-addon" v-if="!isVerified">
-                            <span class="timer-text">{{ formatTime }}</span>
-                        </InputGroupAddon>
-                        <Button label="확인하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="verifyCode" :disabled="isVerified" />
-                    </InputGroup>
-
-                    <span class="text-red-500 text-sm" v-if="!isVerified"> * 본인 확인을 위해 이메일 인증을 진행해주세요. </span>
-                    <span class="text-primary-color text-sm" v-else> * 인증이 완료되었습니다. </span>
-                </div>
-
-                <div class="flex justify-end items-center gap-2 text-sm">
-                    <span class="link-text" @click="goToBack">취소하고 돌아가기</span>
-                </div>
-
-                <Button label="회원 탈퇴하기" severity="danger" size="large" fluid class="font-bold" :disabled="!isVerified" @click="handleWithdraw" />
             </div>
         </div>
     </div>

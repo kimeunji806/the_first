@@ -291,7 +291,7 @@ const saveAll = async () => {
 
                                 <div v-if="main_update_isVisible">
                                     <Button type="submit" label="수정" @click="toggleEditM(value)">{{ value.isEditing ? '저장' : '수정' }}</Button>
-                                    <Button type="submit" label="삭제" @click="mainDelete(value.main_no)"></Button>
+                                    <Button type="submit" label="삭제" severity="danger" @click="mainDelete(value.main_no)"></Button>
                                 </div>
                             </div>
                         </li>
@@ -323,7 +323,7 @@ const saveAll = async () => {
 
                             <div v-if="sub_update_isVisible">
                                 <Button type="submit" label="수정" @click="toggleEdit(value)">{{ value.isEditing ? '저장' : '수정' }}</Button>
-                                <Button type="submit" label="삭제" @click="subDelete(value.sub_no)"></Button>
+                                <Button type="submit" label="삭제" severity="danger" @click="subDelete(value.sub_no)"></Button>
                             </div>
                         </div>
                     </li>
@@ -372,7 +372,7 @@ const saveAll = async () => {
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
                                 <!-- <Checkbox id="checkOption1" name="option" value="Chicago" v-model="checkboxValue" /> -->
-                                <span><Button type="submit" label="삭제" @click="questionDelete(data.question_no)"></Button></span>
+                                <span><Button type="submit" label="삭제" severity="danger" @click="questionDelete(data.question_no)"></Button></span>
                             </div>
                         </template>
                     </Column>
