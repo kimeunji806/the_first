@@ -204,7 +204,7 @@ onMounted(() => {
 
                 <div>
                     <label class="block text-surface-900 dark:text-surface-0 font-medium mb-2">사업자번호</label>
-                    <InputText :value="form.business_number" class="w-full readonly-field" readonly />
+                    <InputText v-model="form.business_number" class="w-full" :class="{ 'readonly-field': isEditMode }" :readonly="isEditMode" />
                 </div>
 
                 <div>

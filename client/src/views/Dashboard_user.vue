@@ -112,12 +112,12 @@ const filters = ref({
                     <div class="font-semibold text-xl">지원신청내역</div>
 
                     <div class="flex gap-2">
-                        <InputText v-model="keyword" placeholder="지원자 / 보호자 / 담당자 검색" class="w-72" @keydown="handleSearchEnter" />
+                        <InputText v-model="filters.global.value" placeholder="지원자 / 보호자 / 담당자 검색" class="w-72" @keydown="handleSearchEnter" />
                         <Button icon="pi pi-search" @click="searchUsers" />
                         <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
                     </div>
                 </div>
-                <DataTable :value="users" :paginator="true" :rows="10" dataKey="id" :rowHover="true" showGridlines>
+                <DataTable :value="users" :filters="filters" :globalFilterFields="['beneficiaries_name', 'guardian_name', 'manager_name']" :paginator="true" :rows="10" dataKey="id" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
                     <template #empty> 검색 결과가 없습니다. </template>
                     <Column header="지원자명" style="min-width: 8rem">
