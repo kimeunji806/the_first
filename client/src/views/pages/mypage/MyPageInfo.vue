@@ -98,72 +98,72 @@ onMounted(async () => {
 <template>
     <div class="p-6 rounded">
         <div class="text-lg font-semibold mb-4 border-b pb-2">보호자 {{ uName }} 정보</div>
-
-        <div v-if="myInfoList[0]" class="divide-y">
-            <!-- 아이디 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>아이디</div>
-                <div class="col-span-3">{{ myInfoList[0].user_id }}</div>
-            </div>
-
-            <!-- 이름 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>이름</div>
-                <div class="col-span-3">
-                    <input v-if="isEditMode" v-model="editForm.user_name" class="border px-2 py-1 rounded w-full" />
-                    <span v-else>{{ myInfoList[0].user_name }}</span>
+        <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 lg:p-6">
+            <div v-if="myInfoList[0]" class="divide-y">
+                <!-- 아이디 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>아이디</div>
+                    <div class="col-span-3">{{ myInfoList[0].user_id }}</div>
                 </div>
-            </div>
 
-            <!-- 전화번호 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>전화번호</div>
-                <div class="col-span-3">
-                    <input v-if="isEditMode" v-model="editForm.tel" class="border px-2 py-1 rounded w-full" />
-                    <span v-else>{{ myInfoList[0].tel }}</span>
+                <!-- 이름 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>이름</div>
+                    <div class="col-span-3">
+                        <input v-if="isEditMode" v-model="editForm.user_name" class="border px-2 py-1 rounded w-full" />
+                        <span v-else>{{ myInfoList[0].user_name }}</span>
+                    </div>
                 </div>
-            </div>
 
-            <!-- 이메일 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>이메일</div>
-                <div class="col-span-3">{{ myInfoList[0].email }}</div>
-            </div>
+                <!-- 전화번호 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>전화번호</div>
+                    <div class="col-span-3">
+                        <input v-if="isEditMode" v-model="editForm.tel" class="border px-2 py-1 rounded w-full" />
+                        <span v-else>{{ myInfoList[0].tel }}</span>
+                    </div>
+                </div>
 
-            <!-- 주소 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>주소</div>
-                <div class="col-span-3">
-                    <!-- 수정모드 -->
-                    <div v-if="isEditMode">
-                        <div class="flex gap-2 mb-2">
-                            <input v-model="form.zonecode" placeholder="우편번호" readonly class="border px-2 py-1 w-32" />
-                            <button @click="searchAddress" class="bg-gray-300 px-2 rounded">검색</button>
+                <!-- 이메일 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>이메일</div>
+                    <div class="col-span-3">{{ myInfoList[0].email }}</div>
+                </div>
+
+                <!-- 주소 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>주소</div>
+                    <div class="col-span-3">
+                        <!-- 수정모드 -->
+                        <div v-if="isEditMode">
+                            <div class="flex gap-2 mb-2">
+                                <input v-model="form.zonecode" placeholder="우편번호" readonly class="border px-2 py-1 w-32" />
+                                <button @click="searchAddress" class="bg-gray-300 px-2 rounded">검색</button>
+                            </div>
+
+                            <input v-model="form.roadAddress" placeholder="기본주소" readonly class="border px-2 py-1 w-full mb-2" />
+                            <input id="detailAddress" v-model="form.detailAddress" placeholder="상세주소" class="border px-2 py-1 w-full" />
                         </div>
 
-                        <input v-model="form.roadAddress" placeholder="기본주소" readonly class="border px-2 py-1 w-full mb-2" />
-                        <input id="detailAddress" v-model="form.detailAddress" placeholder="상세주소" class="border px-2 py-1 w-full" />
+                        <!-- 일반모드 -->
+                        <span v-else>
+                            {{ myInfoList[0].address }}
+                        </span>
                     </div>
+                </div>
+                <!-- 기관 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>기관</div>
+                    <div class="col-span-3">{{ myInfoList[0].ins }}</div>
+                </div>
 
-                    <!-- 일반모드 -->
-                    <span v-else>
-                        {{ myInfoList[0].address }}
-                    </span>
+                <!-- 가입일 -->
+                <div class="grid grid-cols-4 py-4">
+                    <div>가입일</div>
+                    <div class="col-span-3">{{ myInfoList[0].created_at }}</div>
                 </div>
             </div>
-            <!-- 기관 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>기관</div>
-                <div class="col-span-3">{{ myInfoList[0].ins }}</div>
-            </div>
-
-            <!-- 가입일 -->
-            <div class="grid grid-cols-4 py-4">
-                <div>가입일</div>
-                <div class="col-span-3">{{ myInfoList[0].created_at }}</div>
-            </div>
         </div>
-
         <!-- 버튼 -->
         <div class="flex justify-end mt-6 gap-3">
             <Button v-if="!isEditMode" @click="handleEdit" label="수정" class="w-24" />

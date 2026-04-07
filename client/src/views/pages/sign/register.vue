@@ -183,6 +183,10 @@ const addUserInfo = async () => {
         }
     }
 };
+
+const goToLogin = () => {
+    router.push('/sign/login');
+};
 const historyDialog = ref(false);
 const openHistoryModal = () => {
     historyDialog.value = true;
@@ -240,7 +244,7 @@ const checked = ref(false);
 </script>
 
 <template>
-    <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-full min-w-[100vw] overflow-hidden">
+    <div class="flex items-center justify-center min-h-screen overflow-hidden">
         <div class="flex flex-col items-center justify-center">
             <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
                 <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
@@ -291,7 +295,7 @@ const checked = ref(false);
                         <InputGroup class="mb-2">
                             <InputText id="user_account" type="text" placeholder="인증번호를 입력해주세요" v-model="info.user_account" class="pr-20" :disabled="isEmailVerified" />
                             <InputGroupAddon class="timer-addon" v-if="!isEmailVerified">
-                                <span>{{ formatTime }}</span>
+                                <span class="timer-text">{{ formatTime }}</span>
                             </InputGroupAddon>
 
                             <Button label="확인" class="font-bold auth-btn unified-btn" @click="verifyCode(info.user_account)" :disabled="isEmailVerified" />
@@ -323,8 +327,10 @@ const checked = ref(false);
                                 }
                             "
                         />
-                        <div class="flex items-center justify-between mt-2 mb-8 gap-8"></div>
-                        <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
+                        <div class="flex items-center justify-between mt-2 mb-8 gap-8">
+                            <Button type="submit" label="회원가입" class="w-full" v-on:click="addUserInfo()"></Button>
+                            <Button type="submit" label="로그인" class="w-full" v-on:click="goToLogin()"></Button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -345,6 +351,11 @@ const checked = ref(false);
 .auth-btn {
     width: 110px !important;
     flex-shrink: 0;
+}
+
+.timer-text {
+    color: #034487 !important;
+    font-variant-numeric: tabular-nums;
 }
 
 .timer-addon {

@@ -96,7 +96,7 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-    <div class="card h-140 flex flex-col gap 4">
+    <div class="card md:h-12/19 flex flex-col gap 4">
         <div class="overflow-y-auto">
             <div class="font-bold text-lg mb-2 border-b pb-2">상담기록 조회</div>
             <div v-if="list.length === 0" class="text-center text-gray-500 py-10">등록된 상담기록이 없습니다.</div>

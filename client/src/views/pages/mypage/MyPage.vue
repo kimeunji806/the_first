@@ -162,7 +162,7 @@ function goToWithdraw() {
 <template>
     <div class="flex flex-col md:flex-row gap-8 h-full">
         <div class="md:w-2/8 h-full">
-            <div class="card h-full flex flex-col p-0 overflow-hidden shadow-sm">
+            <div class="card h-full flex flex-col p-0 overflow-hidden">
                 <div class="flex justify-between items-center p-5 bg-white border-b border-gray-100">
                     <div class="flex items-center gap-2">
                         <i class="pi pi-user text-blue-500 text-sm"></i>

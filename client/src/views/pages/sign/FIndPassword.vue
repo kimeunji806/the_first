@@ -201,50 +201,56 @@ const goToResetPassword = () => {
 <template>
     <div class="flex h-screen m-0">
         <!-- 왼쪽 -->
-        <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
+        <!-- <div class="flex-1 flex flex-col items-center justify-center bg-white gap-4">
             <img :src="logoImage" alt="로고" class="w-72 max-w-4/5 object-contain" />
-        </div>
+        </div> -->
 
         <!-- 오른쪽 -->
-        <div class="flex-1 flex items-center justify-center bg-white">
-            <div class="w-96 xl:w-[480px] flex flex-col gap-5">
-                <h2 class="text-2xl font-bold text-center text-surface-800">비밀번호 찾기</h2>
+        <div class="flex items-center justify-center min-h-screen overflow-hidden">
+            <div class="flex flex-col items-center justify-center">
+                <div style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                    <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                        <div class="xl:w-[480px] flex flex-col gap-5">
+                            <h2 class="text-2xl font-bold text-center text-surface-800">비밀번호 찾기</h2>
 
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">아이디</label>
-                    <InputText v-model="findForm.user_id" placeholder="아이디를 입력하세요" size="large" fluid :disabled="isVerified" />
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">아이디</label>
+                                <InputText v-model="findForm.user_id" placeholder="아이디를 입력하세요" size="large" fluid :disabled="isVerified" />
+                            </div>
+
+                            <div class="flex flex-col gap-2">
+                                <label class="font-semibold text-surface-700">이메일</label>
+                                <InputGroup>
+                                    <InputText v-model="findForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
+                                    <Button label="인증하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="sendCode(findForm.email)" :disabled="isVerified" />
+                                </InputGroup>
+                            </div>
+
+                            <div class="flex flex-col gap-1">
+                                <label class="font-semibold text-surface-700">인증번호</label>
+                                <InputGroup>
+                                    <InputText v-model="findForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
+                                    <InputGroupAddon class="timer-addon" v-if="!isVerified">
+                                        <span class="timer-text">{{ formatTime }}</span>
+                                    </InputGroupAddon>
+
+                                    <Button label="확인하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="verifyCode(findForm.auth_code)" :disabled="isVerified" />
+                                </InputGroup>
+
+                                <span class="text-red-500 text-sm" v-if="!isVerified"> * 이메일 인증을 진행해주세요. </span>
+                                <span class="text-primary-color text-sm" v-else> * 인증이 완료되었습니다. </span>
+                            </div>
+
+                            <div class="flex justify-end items-center gap-2 text-sm">
+                                <span class="link-text" @click="goToFindId">아이디 찾기</span>
+                                <Divider layout="vertical" class="!mx-0 !h-3" />
+                                <span class="link-text" @click="goToRegister">회원가입</span>
+                            </div>
+
+                            <Button label="비밀번호 재설정" size="large" fluid class="font-bold custom-primary-btn" :disabled="!isVerified" @click="goToResetPassword" />
+                        </div>
+                    </div>
                 </div>
-
-                <div class="flex flex-col gap-2">
-                    <label class="font-semibold text-surface-700">이메일</label>
-                    <InputGroup>
-                        <InputText v-model="findForm.email" placeholder="이메일을 입력하세요" size="large" :disabled="isVerified" />
-                        <Button label="인증하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="sendCode(findForm.email)" :disabled="isVerified" />
-                    </InputGroup>
-                </div>
-
-                <div class="flex flex-col gap-1">
-                    <label class="font-semibold text-surface-700">인증번호</label>
-                    <InputGroup>
-                        <InputText v-model="findForm.auth_code" placeholder="인증번호를 입력하세요" size="large" class="pr-20" :disabled="isVerified" />
-                        <InputGroupAddon class="timer-addon" v-if="!isVerified">
-                            <span class="timer-text">{{ formatTime }}</span>
-                        </InputGroupAddon>
-
-                        <Button label="확인하기" size="large" class="font-bold auth-btn custom-primary-btn" @click="verifyCode(findForm.auth_code)" :disabled="isVerified" />
-                    </InputGroup>
-
-                    <span class="text-red-500 text-sm" v-if="!isVerified"> * 이메일 인증을 진행해주세요. </span>
-                    <span class="text-primary-color text-sm" v-else> * 인증이 완료되었습니다. </span>
-                </div>
-
-                <div class="flex justify-end items-center gap-2 text-sm">
-                    <span class="link-text" @click="goToFindId">아이디 찾기</span>
-                    <Divider layout="vertical" class="!mx-0 !h-3" />
-                    <span class="link-text" @click="goToRegister">회원가입</span>
-                </div>
-
-                <Button label="비밀번호 재설정" size="large" fluid class="font-bold custom-primary-btn" :disabled="!isVerified" @click="goToResetPassword" />
             </div>
         </div>
     </div>
