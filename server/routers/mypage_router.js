@@ -151,7 +151,6 @@ router.get("/myPageInfo/:no", async (req, res) => {
   }
 });
 
-
 router.put("/myPageInfo", async (req, res) => {
   try {
     // 로그인 사용자 번호

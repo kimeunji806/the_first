@@ -177,7 +177,7 @@ const addUserInfo = async () => {
         if (result.insertId != null) {
             console.log('회원가입완료');
 
-            router.push({ name: 'login' });
+            router.push('/sign/login');
         } else {
             alert('등록되지않았습니다.');
         }

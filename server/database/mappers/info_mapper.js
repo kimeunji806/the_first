@@ -15,11 +15,51 @@ const managerInfo = async (insNo) => {
   }
 };
 
-const managerUpdate = async (mNo,uName,uTel,uEmail,uIns) => {
+const adminInfo = async (insNo) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let result = await conn.query(infoSql.mUpdate, [uName,uTel,uEmail,uIns,mNo]);
+    let result = await conn.query(infoSql.aInfo, [insNo]);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+const managerUpdate = async (mNo, uName, uTel, uEmail, uIns) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query(infoSql.mUpdate, [
+      uName,
+      uTel,
+      uEmail,
+      uIns,
+      mNo,
+    ]);
+    console.log(result);
+    return result;
+  } catch (err) {
+    console.log(err);
+  } finally {
+    if (conn) conn.release();
+  }
+};
+
+const adminUpdate = async (mNo, uName, uTel, uEmail, uIns) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    let result = await conn.query(infoSql.aUpdate, [
+      uName,
+      uTel,
+      uEmail,
+      uIns,
+      mNo,
+    ]);
     console.log(result);
     return result;
   } catch (err) {
@@ -43,13 +83,19 @@ const insInfo = async () => {
   }
 };
 
-
 const managerInsert = async (uId, uPass, uName, uTel, uEmail, uIns) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
     await conn.beginTransaction();
-    let result = await conn.query(infoSql.mInsert,[uId, uPass, uName, uTel, uEmail, uIns]);
+    let result = await conn.query(infoSql.mInsert, [
+      uId,
+      uPass,
+      uName,
+      uTel,
+      uEmail,
+      uIns,
+    ]);
     await conn.commit();
     return result;
   } catch (err) {
@@ -59,10 +105,34 @@ const managerInsert = async (uId, uPass, uName, uTel, uEmail, uIns) => {
   }
 };
 
+const adminInsert = async (uId, uPass, uName, uTel, uEmail, uIns) => {
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+    await conn.beginTransaction();
+    let result = await conn.query(infoSql.aInsert, [
+      uId,
+      uPass,
+      uName,
+      uTel,
+      uEmail,
+      uIns,
+    ]);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    if (conn) await conn.rollback();
+  } finally {
+    if (conn) conn.release();
+  }
+};
 
-
-
-
-
-
-module.exports = {managerInfo,managerUpdate,insInfo,managerInsert}
+module.exports = {
+  managerInfo,
+  adminInfo,
+  managerUpdate,
+  adminUpdate,
+  insInfo,
+  managerInsert,
+  adminInsert,
+};
