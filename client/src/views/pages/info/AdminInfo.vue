@@ -30,7 +30,9 @@ const form = reactive({
 
 // 담당자 리스트 조회
 const handleChange = async (e) => {
-    insNo.value = e.value.ins_no;
+    const selectedInsNo = e?.value?.ins_no ?? e;
+    insNo.value = selectedInsNo;
+
     console.log(insNo.value);
     try {
         const resp = await fetch(`/api/adminList/${insNo.value}`);
@@ -42,7 +44,7 @@ const handleChange = async (e) => {
             loadForm(selectedUser.value);
         }
     } catch (err) {
-        console.error('담당자 조회 에러:', err);
+        console.error('관리자 조회 에러:', err);
     }
 };
 
@@ -117,12 +119,14 @@ const insertUser = async () => {
 
         alert('등록 완료');
 
-        selectedUser.value = managerList.value.find((u) => u.user_no === newUser.user_no);
+        await handleChange(payload.ins_no);
+        const latestUser = managerList.value[managerList.value.length - 1];
 
+        selectedUser.value = latestUser;
+        loadForm(latestUser);
         isCreateMode.value = false;
-        loadForm(selectedUser.value);
     } catch (err) {
-        alert('등록 실패');
+        alert('이미 사용중인 아이디입니다.');
     }
 };
 

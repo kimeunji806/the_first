@@ -179,7 +179,7 @@ const addUserInfo = async () => {
 
             router.push('/sign/login');
         } else {
-            alert('등록되지않았습니다.');
+            alert('중복된 아이디입니다.');
         }
     }
 };

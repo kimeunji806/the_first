@@ -28,7 +28,7 @@ app.listen(port, () => {
 //   res.send("Welcome!!");
 // });
 
-app.post("/mail", async (req, res) => {
+app.post("/api/mail", async (req, res) => {
   const { email } = req.body;
   console.log(email);
 

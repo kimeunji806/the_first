@@ -70,6 +70,8 @@ onBeforeMount(async () => {
             <h2 class="text-lg font-bold mb-4 border-b pb-2">우선순위 승인여부</h2>
 
             <div>
+                <h3 v-if="filteredPriority.length == 0" class="text-lg font-bold mb-4 border-b pb-2">대기중인 우선순위가 없습니다.</h3>
+                <h3 v-if="filteredApprovalForm.length > 0" class="text-lg font-bold mb-4 border-b pb-2">우선순위 선정이 완료되었습니다.</h3>
                 <Select v-if="filteredPriority.length > 0" v-model="dropdownValue" :options="filteredPriority" optionLabel="priority_no" placeholder="지정할 우선순위 선택하기" />
             </div>
             <div v-if="dropdownValue" class="mb-6 border-b pb-4">

@@ -176,8 +176,10 @@ const handleSearchEnter = (event) => {
                     <Column header="우선순위" style="min-width: 8rem">
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
-                                <span>{{ data.priority_name }}</span>
-                                <span v-if="data.priority_name == null">미지정</span>
+                                <span v-if="data.priority_id != null">
+                                    {{ data.priority_name }}
+                                </span>
+                                <span v-else>미지정</span>
                             </div>
                         </template>
                     </Column>
@@ -339,9 +341,5 @@ const handleSearchEnter = (event) => {
     font-weight: bold;
     padding: 2px 4px;
     border-radius: 4px;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-    text-align: center;
 }
 </style>

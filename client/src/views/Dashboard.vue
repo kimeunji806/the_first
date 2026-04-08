@@ -130,8 +130,10 @@ onBeforeMount(() => {
                     <Column header="우선순위" style="min-width: 8rem">
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
-                                <span v-if="data.approval === 'a1'">{{ data.priority_name }}</span>
-                                <span v-if="data.approval != 'a1'">미지정</span>
+                                <span v-if="data.priority_id != null">
+                                    {{ data.priority_name }}
+                                </span>
+                                <span v-else>미지정</span>
                             </div>
                         </template>
                     </Column>

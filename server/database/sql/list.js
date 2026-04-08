@@ -8,9 +8,9 @@ SELECT MAX(b.beneficiaries_name) AS beneficiaries_name
      , MAX(g.user_name) AS guardian_name
      , MAX(g.institution_no) AS institution_no
      , MAX(DATE_FORMAT(s.created_at, '%Y-%m-%d')) AS created_at
-     , MAX(p.priority_id) AS priority_id
-      , MAX(p.approval) AS approval
-     , MAX(c.code_name) AS priority_name
+     , MAX(CASE WHEN p.approval = 'a1' THEN p.priority_id END) AS priority_id
+    , MAX(CASE WHEN p.approval = 'a1' THEN p.approval END) AS approval
+    , MAX(CASE WHEN p.approval = 'a1' THEN c.code_name END) AS priority_name
      , MAX(u.user_name) AS manager_name
      , s.survey_no AS survey_no
 

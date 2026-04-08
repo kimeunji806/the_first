@@ -207,7 +207,7 @@ const handleAssigned = (data) => {
                             <div class="w-full rounded-md p-4">{{ user[0]?.guardian_name }}</div>
 
                             <div class="w-full rounded-md p-4">우선순위</div>
-                            <div v-if="user[0]?.priority_name == null" class="w-full rounded-md p-4">미지정</div>
+                            <div v-if="user[0]?.priority_name == null && filteredApprovalForm.length == 0" class="w-full rounded-md p-4">미지정</div>
                             <div v-if="filteredApprovalForm.length > 0" class="w-full rounded-md p-4">{{ filteredApprovalForm[0]?.priority_name }}</div>
 
                             <div class="w-full rounded-md p-4">성별</div>

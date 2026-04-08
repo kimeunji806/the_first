@@ -77,26 +77,31 @@ const openHistoryModal = (surveyNo) => {
 const addUSurveyInput = async () => {
     const data = question.value.flatMap((main) =>
         (main.subs ?? []).flatMap((sub) =>
-            (sub.questions ?? [])
-                .filter((q) => q.answer !== null)
-                .map((q) => ({
-                    survey_no: currentSurveyNo.value,
-                    question_no: q.question_no,
-                    choice_value: q.answer
-                }))
+            (sub.questions ?? []).map((q) => ({
+                survey_no: currentSurveyNo.value,
+                question_no: q.question_no,
+                choice_value: q.answer
+            }))
         )
     );
 
-    console.log('전송 data:', data);
+    const unansweredQuestions = data.filter((q) => q.choice_value === null || q.choice_value === undefined || q.choice_value === '');
 
-    let result = await fetch(`/api/createSurveyInput`, {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }).catch((err) => console.log(err));
-    openHistoryModal(currentSurveyNo.value);
+    if (unansweredQuestions.length > 0) {
+        alert('답변하지 않은 문항이 있습니다. 모든 문항에 답변해주세요.');
+        return;
+    } else {
+        console.log('전송 data:', data);
+
+        let result = await fetch(`/api/createSurveyInput`, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        }).catch((err) => console.log(err));
+        openHistoryModal(currentSurveyNo.value);
+    }
 };
 
 console.log(user_no);
