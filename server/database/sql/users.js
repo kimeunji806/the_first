@@ -13,13 +13,14 @@ VALUES(?)
 
 const loginUser = `
 SELECT user_no,
-        role,
-        user_id,
-        user_name,
-        approval,
-        institution_no
+       role,
+       user_id,
+       user_name,
+       user_pw,
+       approval,
+       institution_no
 FROM user
-WHERE user_id = ? AND user_pw = ?
+WHERE user_id = ?
 `;
 
 const approval = `

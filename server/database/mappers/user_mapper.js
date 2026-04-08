@@ -20,11 +20,11 @@ const insertUser = async (userInfo) => {
   }
 };
 
-const loginUser = async (userId, userPw) => {
+const loginUser = async (userId) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
-    let [result] = await conn.query(userSql.loginUser, [userId, userPw]);
+    let [result] = await conn.query(userSql.loginUser, [userId]);
     return result;
   } catch (err) {
     console.log(err);

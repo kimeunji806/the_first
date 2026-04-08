@@ -72,7 +72,7 @@ app.post("/api/verify", (req, res) => {
   }
 });
 
-// 기능별 라우터 모듈 등록
+
 const userRouter = require("./routers/user_router.js");
 app.use("/api", userRouter);
 const institutionRouter = require("./routers/institution_router.js");
@@ -124,3 +124,6 @@ app.get("/", function (req, res, next) {
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, "./public", "index.html"));
 });
+
+
+

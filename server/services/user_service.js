@@ -1,4 +1,5 @@
 const userMapper = require("../database/mappers/user_mapper");
+const bcrypt = require('bcrypt');
 
 const createUser = async (userObj) => {
   const {
@@ -12,11 +13,13 @@ const createUser = async (userObj) => {
     institution,
   } = userObj;
 
+  const hashedPw = await bcrypt.hash(user_pwd, 10);
+
   let insertData = [
     role,
     user_name,
     user_id,
-    user_pwd,
+    hashedPw,
     user_email,
     tel,
     address,
@@ -27,16 +30,21 @@ const createUser = async (userObj) => {
 };
 
 const loginService = async (id, pw) => {
-  let result = await userMapper.loginUser(id, pw);
-  // console.log(result);
-  if (result.length == 0) {
+  let result = await userMapper.loginUser(id);
+
+  if (result.length === 0) {
     return null;
   }
-  // const match = await bcrypt.compare(password, user.password);
-  // if (!match) {
-  //   return null;
-  // }
-  return result;
+
+  const user = result;
+  console.log(user);
+  const isMatch = await bcrypt.compare(pw, user.user_pw);
+
+  if (!isMatch) {
+    return null;
+  }
+
+  return user;
 };
 
 const approvalAccess = async (insNo) => {

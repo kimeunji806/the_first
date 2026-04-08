@@ -36,7 +36,7 @@ const userName = computed(() => userStore.user_name || '');
             </button>
             <router-link to="/" class="layout-topbar-logo flex items-center">
                 <img :src="logoImage" alt="Logo" class="h-[4.0rem] w-auto object-contain" />
-                <span class="ml-0 whitespace-nowrap">발달장애인 지원프로그램</span>
+                <span class="ml-0 whitespace-nowrap">First Step</span>
             </router-link>
         </div>
 
