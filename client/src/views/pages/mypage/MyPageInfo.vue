@@ -95,6 +95,7 @@ async function handleSave() {
 
         isEditMode.value = false;
         alert('수정 완료');
+        window.location.reload();
     } catch (err) {
         console.error(err);
         alert('수정 실패');
