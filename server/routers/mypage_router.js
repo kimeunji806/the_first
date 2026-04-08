@@ -151,5 +151,38 @@ router.get("/myPageInfo/:no", async (req, res) => {
   }
 });
 
+
+router.put("/myPageInfo", async (req, res) => {
+  try {
+    // 로그인 사용자 번호
+    // let userNo = req.params.no;
+
+    // 프론트에서 넘어온 수정값 정리
+    const target = {
+      // userNo, // guardian_no
+      user_no: req.body.user_no,
+      name: req.body.user_name,
+      tel: req.body.tel,
+      address: req.body.address,
+    };
+
+    // service 호출해서 UPDATE 실행
+    await service.myPageTarget(target);
+
+    // 수정 성공 응답
+    res.json({
+      retCode: "OK",
+      message: "수정 완료",
+    });
+  } catch (err) {
+    console.error("사용자 수정 오류:", err);
+
+    res.status(500).json({
+      retCode: "FAIL",
+      message: "사용자 수정 실패",
+    });
+  }
+});
+
 // router 내보내기
 module.exports = router;

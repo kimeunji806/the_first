@@ -114,14 +114,15 @@ const insertUser = async () => {
 
         await managerFetch(ins_no);
 
-        selectedUser.value = managerList.value.find((u) => u.user_no === newUser.user_no);
+        const latestUser = managerList.value[managerList.value.length - 1];
 
-        loadForm(selectedUser.value);
+        selectedUser.value = latestUser;
+        loadForm(latestUser);
 
         isCreateMode.value = false;
     } catch (err) {
         console.error('등록 에러:', err);
-        alert('등록 실패');
+        alert('이미 사용중인 아이디');
     }
 };
 
@@ -178,17 +179,18 @@ onBeforeMount(() => {
 <template>
     <div class="flex flex-col md:flex-row gap-8 h-full">
         <div class="md:w-2/8 h-full">
-            <div class="card h-full flex flex-col gap-4">
+            <div class="card h-full flex flex-col gap-4 min-h-0">
                 <div class="flex justify-between mb-4">
                     <h3>담당자 목록</h3>
                     <span>{{ managerList.length }}명</span>
                 </div>
 
-                <div v-for="user in managerList" :key="user.user_id" class="p-3 border-b cursor-pointer hover:bg-gray-200" @click="selectUser(user)">
-                    {{ user.name }}
+                <div class="flex-1 overflow-y-auto">
+                    <div v-for="user in managerList" :key="user.user_id" class="p-3 border-b cursor-pointer hover:bg-gray-200" @click="selectUser(user)">
+                        {{ user.name }}
+                    </div>
                 </div>
 
-                <!-- <button class="mt-4 w-full bg-green-400 text-white py-2 rounded" @click="createUser">기관담당자 등록</button> -->
                 <Button @click="createUser" class="w-full" label="기관담당자 등록" />
             </div>
         </div>

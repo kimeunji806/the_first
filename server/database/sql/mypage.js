@@ -46,6 +46,15 @@ INSERT INTO beneficiaries (
 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
 `;
 
+const updateMypage = `
+UPDATE user
+SET
+    user_name = ?,
+    tel = ?,
+    address = ?
+WHERE user_no = ?
+`;
+
 const mypageInfoSql = ` 
 SELECT u.user_id
       ,u.user_name
@@ -69,4 +78,5 @@ module.exports = {
   insertTarget,
   mypageInfoSql,
   selectGuardianInstitutionNo,
+  updateMypage,
 };

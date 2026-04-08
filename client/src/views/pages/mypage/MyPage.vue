@@ -3,7 +3,7 @@
 // ref: 반응형 변수
 // onMounted: 화면 처음 들어올 때 실행
 import { computed, ref, onMounted } from 'vue';
-
+import { useUserStore } from '@/stores/user';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 
@@ -31,7 +31,7 @@ const isMyInfoMode = ref(false);
 const loginUser = JSON.parse(localStorage.getItem('user'));
 const loginUserNo = loginUser?.user_no || null;
 const loginUserName = loginUser?.user_name || '사용자';
-
+const userStore = useUserStore();
 // 지원대상자 목록 불러오기
 async function loadTargets() {
     try {
@@ -122,6 +122,10 @@ async function updateTarget(updated) {
 
         if (result.retCode === 'OK') {
             alert('수정되었습니다.');
+            userStore.updateUser({
+                user_name: updated.user_name,
+                role: updated.role
+            });
 
             // 수정 후 목록 다시 조회
             await loadTargets();

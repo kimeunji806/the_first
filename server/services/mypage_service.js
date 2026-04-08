@@ -130,6 +130,39 @@ const myPageInfoService = async (uNo) => {
     if (conn) conn.release();
   }
 };
+
+const myPageTarget = async (target) => {
+  let conn = null;
+
+  try {
+    // DB 연결 가져오기
+    conn = await dao.pool.getConnection();
+
+    // SQL의 ? 자리에 들어갈 값 순서대로 작성
+    // updateTarget SQL 순서와 완전히 같아야 함
+    const params = [
+      target.name, // beneficiaries_name
+      target.tel, // tel
+      target.address, // beneficiaries_address
+      target.user_no, // guardian_no
+    ];
+
+    // UPDATE SQL 실행
+    const result = await conn.query(sql.updateMypage, params);
+
+    // 실행 결과 반환
+    return result;
+  } catch (err) {
+    console.error("service - mypageTarget 에러:", err);
+    throw err;
+  } finally {
+    // DB 연결 반환
+    if (conn) conn.release();
+  }
+};
+
+
+
 // ==============================
 // 보호자 기관번호 조회
 // ==============================
@@ -161,4 +194,5 @@ module.exports = {
   createTarget,
   myPageInfoService,
   findGuardianInstitutionNo,
+  myPageTarget,
 };
