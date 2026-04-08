@@ -102,6 +102,25 @@ onBeforeMount(() => {
 const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS }
 });
+
+// 검색 버튼 클릭 시 실행
+const searchUsers = () => {
+    // PrimeVue DataTable은 filters.global.value 값만 있어도 자동 필터링됨
+    // 그래서 별도 fetch 없이 값 정리만 해주면 됨
+    filters.value.global.value = filters.value.global.value?.trim() || '';
+};
+
+// 초기화 버튼 클릭 시 실행
+const resetSearch = () => {
+    filters.value.global.value = null;
+};
+
+// 엔터 누르면 검색되도록 처리
+const handleSearchEnter = (event) => {
+    if (event.key === 'Enter') {
+        searchUsers();
+    }
+};
 </script>
 
 <template>
@@ -117,7 +136,7 @@ const filters = ref({
                         <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
                     </div>
                 </div>
-                <DataTable :value="users" :filters="filters" :globalFilterFields="['beneficiaries_name', 'guardian_name', 'manager_name']" :paginator="true" :rows="10" dataKey="id" :rowHover="true" showGridlines>
+                <DataTable :value="users" :filters="filters" filterDisplay="menu" :globalFilterFields="['beneficiaries_name', 'guardian_name', 'manager_name']" :paginator="true" :rows="10" dataKey="survey_no" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
                     <template #empty> 검색 결과가 없습니다. </template>
                     <Column header="지원자명" style="min-width: 8rem">

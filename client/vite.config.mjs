@@ -31,7 +31,7 @@ export default defineConfig({
         }
     },
     server: {
-        port : 8099,
+        port: 8099,
         proxy: {
             '^/api': {
                 target: `http://localhost:3000`,
@@ -39,7 +39,7 @@ export default defineConfig({
                 rewrite: (path) => path.replace(/^\/api/, '')
             }
         }
-    },
+    }
     // build : {
     // //    outDir: '../backend/public'
     // }

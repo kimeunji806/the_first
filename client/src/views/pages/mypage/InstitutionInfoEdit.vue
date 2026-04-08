@@ -1,9 +1,11 @@
 <script setup>
 import { reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user';
 import { getInstitutionMyPage, updateInstitutionMyPage } from '@/service/InstitutionMyPageService';
 
 const router = useRouter();
+const userStore = useUserStore();
 
 // 수정 폼
 const form = reactive({
@@ -75,6 +77,15 @@ async function saveInfo() {
         const result = await updateInstitutionMyPage(form.user_no, payload);
 
         if (result.retCode === 'OK') {
+            userStore.updateUser({
+                user_name: form.user_name,
+                role: userStore.role
+            });
+
+            const loginUser = JSON.parse(localStorage.getItem('user')) || {};
+            loginUser.user_name = form.user_name;
+            localStorage.setItem('user', JSON.stringify(loginUser));
+
             alert('수정되었습니다.');
             router.push('/institutioninfo');
         } else {

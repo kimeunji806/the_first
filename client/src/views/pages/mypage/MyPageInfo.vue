@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 const uNo = userStore.user_no;
-const uName = userStore.user_name;
+const uName = computed(() => userStore.user_name);
 
 import { myInfo } from '@/service/MyPageService';
 
@@ -82,6 +82,15 @@ async function handleSave() {
         myInfoList.value[0].user_name = editForm.value.user_name;
         myInfoList.value[0].tel = editForm.value.tel;
         myInfoList.value[0].address = formdata.value;
+
+        userStore.updateUser({
+            user_name: editForm.value.user_name,
+            role: userStore.role
+        });
+
+        const loginUser = JSON.parse(localStorage.getItem('user')) || {};
+        loginUser.user_name = editForm.value.user_name;
+        localStorage.setItem('user', JSON.stringify(loginUser));
 
         isEditMode.value = false;
         alert('수정 완료');

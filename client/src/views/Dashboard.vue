@@ -69,14 +69,6 @@ const resetSearch = async () => {
     await findAllUsers();
 };
 
-// 검색어 하이라이트
-const highlightText = (text) => {
-    const trimmedKeyword = keyword.value.trim();
-    if (!trimmedKeyword || !text) return text;
-    const regex = new RegExp(`(${trimmedKeyword})`, 'gi');
-    return String(text).replace(regex, '<mark class="search-match">$1</mark>');
-};
-
 onBeforeMount(() => {
     findAllUsers();
 });
@@ -94,9 +86,9 @@ onBeforeMount(() => {
                         <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
                     </div>
                 </div>
-                <DataTable :value="users" :paginator="true" :rows="12" dataKey="id" :rowHover="true" showGridlines>
+                <DataTable :value="users" :paginator="true" :rows="12" dataKey="survey_no" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
-                    <template #empty> No customers found. </template>
+                    <template #empty> 검색 결과가 없습니다. </template>
 
                     <Column header="지원자명" style="min-width: 8rem">
                         <template #body="{ data }">
@@ -107,7 +99,7 @@ onBeforeMount(() => {
                     </Column>
                     <Column header="보호자명" style="min-width: 8rem">
                         <template #body="{ data }">
-                            {{ data.guardian_name }}
+                            <span>{{ data.guardian_name }}</span>
                         </template>
                     </Column>
                     <Column header="지원신청일" style="min-width: 10rem">
@@ -125,7 +117,7 @@ onBeforeMount(() => {
                     <Column header="담당자" style="min-width: 8rem">
                         <template #body="{ data }">
                             <div class="flex items-center gap-2">
-                                <span>{{ data.manager_name }}</span>
+                                <span v-if="data.manager_name">{{ data.manager_name }}</span>
                                 <span v-if="data.manager_name == null">미지정</span>
                             </div>
                         </template>
