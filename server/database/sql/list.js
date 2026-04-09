@@ -9,24 +9,24 @@ SELECT MAX(b.beneficiaries_name) AS beneficiaries_name
      , MAX(g.institution_no) AS institution_no
      , MAX(DATE_FORMAT(s.created_at, '%Y-%m-%d')) AS created_at
      , MAX(CASE WHEN p.approval = 'a1' THEN p.priority_id END) AS priority_id
-    , MAX(CASE WHEN p.approval = 'a1' THEN p.approval END) AS approval
-    , MAX(CASE WHEN p.approval = 'a1' THEN c.code_name END) AS priority_name
+     , MAX(CASE WHEN p.approval = 'a1' THEN p.approval END) AS approval
+     , MAX(CASE WHEN p.approval = 'a1' THEN c.code_name END) AS priority_name
      , MAX(u.user_name) AS manager_name
      , s.survey_no AS survey_no
 
      /* e2, e3용 */
-     , MAX(COALESCE(r.review_cnt, 0)) AS review_cnt
-     , MAX(COALESCE(r.approve_cnt, 0)) AS approve_cnt
-     , MAX(COALESCE(r.reject_cnt, 0)) AS reject_cnt
-     , MAX(COALESCE(r.result_cnt, 0)) AS result_cnt
-     , MAX(COALESCE(r.finish_cnt, 0)) AS finish_cnt
+     , COALESCE(MAX(plan_wait.cnt), 0) + COALESCE(MAX(result_wait.cnt), 0) AS review_cnt
+     , COALESCE(MAX(plan_approve.cnt), 0) + COALESCE(MAX(result_approve.cnt), 0) AS approve_cnt
+     , COALESCE(MAX(plan_reject.cnt), 0) + COALESCE(MAX(result_reject.cnt), 0) AS reject_cnt
+     , COALESCE(MAX(result_only.cnt), 0) AS result_cnt
+     , COALESCE(MAX(result_finish.cnt), 0) AS finish_cnt
 
      /* e1용 진행중 */
      , MAX(
          CASE
-           WHEN COALESCE(r.finish_cnt, 0) > 0 THEN 0
+           WHEN COALESCE(result_finish.cnt, 0) > 0 THEN 0
            ELSE GREATEST(
-                  COALESCE(r.plan_approve_cnt, 0) - COALESCE(r.result_approve_cnt, 0),
+                  COALESCE(plan_approve.cnt, 0) - COALESCE(result_approve_all.cnt, 0),
                   0
                 )
          END
@@ -35,8 +35,8 @@ SELECT MAX(b.beneficiaries_name) AS beneficiaries_name
      /* e1용 결과 */
      , MAX(
          CASE
-           WHEN COALESCE(r.finish_cnt, 0) > 0 THEN 0
-           ELSE COALESCE(r.result_approve_cnt, 0)
+           WHEN COALESCE(result_finish.cnt, 0) > 0 THEN 0
+           ELSE COALESCE(result_approve_all.cnt, 0)
          END
        ) AS e1_result_cnt
 
@@ -47,7 +47,6 @@ JOIN beneficiaries b
      ON b.beneficiaries_no = s.beneficiaries_no
 LEFT JOIN user g
        ON b.guardian_no = g.user_no
-
 LEFT JOIN user h
        ON s.sub_manager_no = h.user_no
 LEFT JOIN priority p
@@ -56,70 +55,101 @@ LEFT JOIN common_code c
        ON c.group_id = 'priority'
       AND c.common_id = p.priority_id
 
+/* 진행계획 대기 */
 LEFT JOIN (
-    SELECT sp.survey_no
+    SELECT survey_no, COUNT(*) AS cnt
+    FROM support_plan
+    WHERE plan_approval = 'a0'
+    GROUP BY survey_no
+) plan_wait
+ON plan_wait.survey_no = s.survey_no
 
-         /* 대기 = 대기중인 진행계획 + 대기중인 결과 */
-         , COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND sp.plan_approval = 'a0'
-             THEN sp.support_plan_no
-           END)
-           + COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND spr.result_approval = 'a0'
-             THEN spr.support_result_no
-           END) AS review_cnt
+/* 진행계획 승인 */
+LEFT JOIN (
+    SELECT survey_no, COUNT(*) AS cnt
+    FROM support_plan
+    WHERE plan_approval = 'a1'
+    GROUP BY survey_no
+) plan_approve
+ON plan_approve.survey_no = s.survey_no
 
-         /* 승인 = 승인중인 진행계획 + 승인중인 결과 */
-         , COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND sp.plan_approval = 'a1'
-             THEN sp.support_plan_no
-           END)
-           + COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND spr.result_approval = 'a1'
-             THEN spr.support_result_no
-           END) AS approve_cnt
+/* 진행계획 반려 */
+LEFT JOIN (
+    SELECT survey_no, COUNT(*) AS cnt
+    FROM support_plan
+    WHERE plan_approval = 'a2'
+    GROUP BY survey_no
+) plan_reject
+ON plan_reject.survey_no = s.survey_no
 
-         /* 반려 = 반려중인 진행계획 + 반려중인 결과 */
-         , COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND sp.plan_approval = 'a2'
-             THEN sp.support_plan_no
-           END)
-           + COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND spr.result_approval = 'a2'
-             THEN spr.support_result_no
-           END) AS reject_cnt
-
-         /* e2, e3용 결과 = 승인된 결과 */
-         , COUNT(DISTINCT CASE
-             WHEN spr.finish = 0 AND spr.result_approval = 'a1'
-             THEN spr.support_result_no
-           END) AS result_cnt
-
-         /* e1용 진행중 계산용: 승인된 계획 */
-         , COUNT(DISTINCT CASE
-             WHEN sp.plan_approval = 'a1'
-             THEN sp.support_plan_no
-           END) AS plan_approve_cnt
-
-         /* e1용 결과 계산용: 승인된 결과 */
-         , COUNT(DISTINCT CASE
-             WHEN spr.result_approval = 'a1'
-             THEN spr.support_result_no
-           END) AS result_approve_cnt
-
-         /* 종결 */
-         , COUNT(DISTINCT CASE
-             WHEN spr.finish = 1
-              AND spr.result_approval = 'a1'
-             THEN spr.support_result_no
-           END) AS finish_cnt
-
-    FROM support_plan sp
-    LEFT JOIN support_plan_result spr
-           ON sp.support_plan_no = spr.support_plan_no
+/* 결과 대기 */
+LEFT JOIN (
+    SELECT sp.survey_no, COUNT(*) AS cnt
+    FROM support_plan_result spr
+    JOIN support_plan sp
+      ON sp.support_plan_no = spr.support_plan_no
+    WHERE spr.result_approval = 'a0'
     GROUP BY sp.survey_no
-) r
-       ON r.survey_no = s.survey_no
+) result_wait
+ON result_wait.survey_no = s.survey_no
+
+/* 결과 승인 */
+LEFT JOIN (
+    SELECT sp.survey_no, COUNT(*) AS cnt
+    FROM support_plan_result spr
+    JOIN support_plan sp
+      ON sp.support_plan_no = spr.support_plan_no
+    WHERE spr.result_approval = 'a1'
+      AND spr.finish = 0
+    GROUP BY sp.survey_no
+) result_approve
+ON result_approve.survey_no = s.survey_no
+
+/* 결과 반려 */
+LEFT JOIN (
+    SELECT sp.survey_no, COUNT(*) AS cnt
+    FROM support_plan_result spr
+    JOIN support_plan sp
+      ON sp.support_plan_no = spr.support_plan_no
+    WHERE spr.result_approval = 'a2'
+    GROUP BY sp.survey_no
+) result_reject
+ON result_reject.survey_no = s.survey_no
+
+/* e2,e3용 결과 */
+LEFT JOIN (
+    SELECT sp.survey_no, COUNT(*) AS cnt
+    FROM support_plan_result spr
+    JOIN support_plan sp
+      ON sp.support_plan_no = spr.support_plan_no
+    WHERE spr.result_approval = 'a1'
+      AND spr.finish = 0
+    GROUP BY sp.survey_no
+) result_only
+ON result_only.survey_no = s.survey_no
+
+/* e1 계산용 승인 결과 전체 */
+LEFT JOIN (
+    SELECT sp.survey_no, COUNT(*) AS cnt
+    FROM support_plan_result spr
+    JOIN support_plan sp
+      ON sp.support_plan_no = spr.support_plan_no
+    WHERE spr.result_approval = 'a1'
+    GROUP BY sp.survey_no
+) result_approve_all
+ON result_approve_all.survey_no = s.survey_no
+
+/* 종결 */
+LEFT JOIN (
+    SELECT sp.survey_no, COUNT(*) AS cnt
+    FROM support_plan_result spr
+    JOIN support_plan sp
+      ON sp.support_plan_no = spr.support_plan_no
+    WHERE spr.result_approval = 'a1'
+      AND spr.finish = 1
+    GROUP BY sp.survey_no
+) result_finish
+ON result_finish.survey_no = s.survey_no
 
 JOIN user me
   ON me.user_no = ?
@@ -131,7 +161,7 @@ WHERE (
 )
 
 GROUP BY s.survey_no
-order by s.created_at DESC;
+ORDER BY s.created_at DESC;
 `;
 
 const beneficiaries = `
