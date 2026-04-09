@@ -86,7 +86,7 @@ onBeforeMount(() => {
                         <Button icon="pi pi-refresh" severity="secondary" outlined @click="resetSearch" />
                     </div>
                 </div>
-                <DataTable :value="users" :paginator="true" :rows="12" dataKey="survey_no" :rowHover="true" showGridlines>
+                <DataTable :value="users" :paginator="true" :rows="10" dataKey="survey_no" :rowHover="true" showGridlines>
                     <!-- 못찾았을떄 -->
                     <template #empty> 검색 결과가 없습니다. </template>
 
