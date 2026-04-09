@@ -160,7 +160,7 @@ onBeforeMount(() => {
                     </Column>
                     <Column v-if="userStore.role === 'e4'" header="기관" class="w-56 text-center whitespace-nowrap">
                         <template #body="slotProps">
-                        <div v-html="highlightText(slotProps.data.institution_name || slotProps.data.institution_nm || '-')"></div>
+                        <div v-html="highlightText(slotProps.data.name || slotProps.data.institution_nm || '-')"></div>
                         </template>
                     </Column>
                     <Column header="작성자" class="w-40 text-center whitespace-nowrap">
