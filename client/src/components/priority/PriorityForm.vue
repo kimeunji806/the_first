@@ -71,10 +71,11 @@ onBeforeMount(async () => {
 });
 </script>
 <template>
-    <div class="p-6 bg-slate-100 min-h-full">
+    <div class="card h-220 flex flex-col gap-4">
+        <div class="max-h-[800px] overflow-y-auto pr-2">
         <span v-if="filteredApprovalForm.length > 0" class="text-m font-bold mb-4 border-b pb-2">우선순위가 이미 선정되었습니다.</span>
 
-        <div v-if="filteredApprovalForm.length === 0" class="max-w-2xl mx-auto bg-white p-6 rounded-xl shadow">
+        <div v-if="filteredApprovalForm.length === 0" class="max-w-2xl mx-auto">
             <h2 class="text-lg font-bold mb-4 border-b pb-2">우선순위 입력</h2>
 
             <div class="flex items-center justify-between mt-2 mb-8 gap-8">
@@ -88,5 +89,6 @@ onBeforeMount(async () => {
                 <button @click="addPriorityInfo" class="bg-green-400 hover:bg-green-500 text-white px-6 py-2 rounded-full">등록</button>
             </div>
         </div>
+    </div>
     </div>
 </template>
