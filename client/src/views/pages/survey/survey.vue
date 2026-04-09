@@ -390,7 +390,6 @@ const saveAll = async () => {
                 </div>
 
                 <div class="mt-auto flex justify-end gap-2">
-                    <Button type="submit" label="수정이력" class="w-24" v-on:click="" />
                     <Button type="submit" label="전체저장" class="w-24" v-on:click="saveAll" />
                     <Button type="submit" label="전체보기" class="w-24" v-on:click="openHistoryModal()" />
                     <SurveyHistoryModal v-model:visible="historyDialog" :surveyNo="selectedSurveyNo" />
