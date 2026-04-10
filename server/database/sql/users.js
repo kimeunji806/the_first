@@ -36,6 +36,7 @@ FROM user u
 JOIN sign_approval sa ON u.user_id = sa.user_id
 JOIN institution i ON u.institution_no = i.institution_no
 WHERE sa.approval = 0 AND u.institution_no = ?
+ORDER BY sa.approval_no DESC
 `;
 
 const approvalByAdmin = `
