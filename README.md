@@ -1,18 +1,31 @@
-# the_first
 
+# FIRST STEP : 함께하는 첫걸음
 
+---
  
-# 장애인 지원관리 시스템
+# 발달장애인 지원관리 시스템
 
-장애인 지원관리 시스템은 **보호자, 기관담당자, 기관관리자, 시스템관리자**의 역할에 따라  
-지원대상자 관리, 조사지 작성, 담당자 지정, 우선순위 설정, 지원계획 및 지원결과 작성과 승인까지  
+발달장애인 지원관리 시스템은 **일반이용자(보호자), 기관담당자, 기관관리자, 시스템관리자**의 역할에 따라  
+지원대상자 관리, 지원신청서 작성, 담당자 지정, 우선순위 설정, 지원계획 및 지원결과 작성과 승인까지  
 하나의 흐름으로 관리할 수 있도록 구현한 **역할 기반 업무관리 웹 시스템**입니다.
 
-본 프로젝트는 장애인 지원 업무를 보다 체계적이고 효율적으로 관리할 수 있도록  
-업무 절차를 전산화하고, 사용자 권한에 맞는 기능을 제공하는 것을 목표로 개발되었습니다.
+본 프로젝트는 발달장애인 지원 업무를 보다 체계적이고 효율적으로 관리할 수 있도록  
+업무 절차를 전산화하고 각 사용자 권한에 맞는 기능을 제공하는 것을 목표로 개발되었습니다.
 
 ---
 
+## 프로젝트 개요
+
+- **프로젝트명**: FIRST STEP
+- **프로젝트 유형**: 팀 프로젝트
+- **개발 목적**
+  - 발달장애인 지원 업무 전산화
+  - 역할별 업무 프로세스 분리 및 권한 기반 처리
+  - 지원계획 및 지원결과 승인 흐름 구현
+  - 첨부파일 및 수정이력 관리 기능 제공
+
+
+---
 
 ## 팀 구성 및 역할
 
@@ -42,142 +55,16 @@
 </table>
 
 ---
-## 프로젝트 미리보기
-
-### 메인 화면
-![메인화면](./docs/main.png)
-
-### 시스템 구성도
-![시스템구성도](./docs/system_flow.png)
-
-### 자료 흐름도
-![자료흐름도](./docs/data_flow.png)
-
-### ERD
-![ERD](./docs/erd.png)
-
-> 위 이미지는 예시 경로입니다.  
-> 실제 이미지 파일명에 맞게 `./docs/...` 경로를 수정해서 사용하세요.
-
----
-
-## 프로젝트 개요
-
-- **프로젝트명**: 장애인 지원관리 시스템
-- **프로젝트 유형**: 팀 프로젝트
-- **개발 목적**
-  - 장애인 지원 업무의 전산화
-  - 역할별 업무 프로세스 분리 및 권한 기반 처리
-  - 지원계획 및 지원결과 승인 흐름 구현
-  - 첨부파일 및 수정이력 관리 기능 제공
-
----
-
-
-
-## 주요 기능
-
-### 일반 사용자(보호자)
-- 지원대상자 등록 / 조회 / 수정
-- 조사지 작성
-- 지원계획 열람
-- 지원결과 열람
-
-### 기관담당자
-- 대기자 목록 확인
-- 조사지 조회
-- 상담 기록
-- 우선순위 작성
-- 지원계획 작성 / 수정 / 삭제 / 임시저장
-- 지원결과 작성 / 수정 / 삭제 / 임시저장
-- 첨부파일 관리
-- 수정이력 관리
-- 본인정보 조회 / 수정
-
-### 기관관리자
-- 담당자 지정
-- 우선순위 승인 / 반려
-- 지원계획 승인 / 반려
-- 지원결과 승인 / 반려
-- 본인정보 조회 / 수정
-
-### 시스템관리자
-- 기관 목록 조회
-- 기관 상세조회
-- 기관 등록 / 수정
-- 기관 운영관리
-
----
-
-## 업무 흐름
-
-1. 일반 사용자가 지원대상자를 등록하고 조사지 정보를 입력합니다.
-2. 기관관리자가 대상자에게 담당자 및 부담당자를 지정합니다.
-3. 기관담당자가 조사지와 상담기록을 바탕으로 우선순위를 작성합니다.
-4. 기관관리자가 우선순위를 승인합니다.
-5. 기관담당자가 지원계획을 작성하고 승인 요청을 보냅니다.
-6. 기관관리자가 지원계획을 승인 또는 반려합니다.
-7. 기관담당자가 지원결과를 작성하고 승인 요청을 보냅니다.
-8. 기관관리자가 지원결과를 승인 또는 반려합니다.
-9. 각 단계에서 첨부파일 및 수정이력이 함께 관리됩니다.
-
----
-
-## 기술 스택
-
-### Frontend
-- Vue 3
-- Vite
-- PrimeVue
-- Tailwind CSS
-
-### Backend
-- Node.js
-- Express
-
-### Database
-- MariaDB
-
-### Dev Tools
-- VS Code
-- MySQL Workbench
-
-### Collaboration
-- Git
-- GitHub
-
-### Deployment
-- NCP (Naver Cloud Platform)
-- Nginx
-- PM2
-- GitHub Actions
-
----
-
 ## 기술 스택 시각화
 
 | 구분 | 사용 기술 |
 |------|----------|
-| Frontend | ![Vue](https://img.shields.io/badge/Vue%203-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white),![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white),![PrimeVue](https://img.shields.io/badge/PrimeVue-3B82F6?style=for-the-badge&logo=vue.js&logoColor=white),![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white) |
-| Backend | ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white),![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) |
+| Frontend | ![Vue](https://img.shields.io/badge/Vue%203-4FC08D?style=for-the-badge&logo=vuedotjs&logoColor=white) ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white) ![PrimeVue](https://img.shields.io/badge/PrimeVue-3B82F6?style=for-the-badge&logo=vue.js&logoColor=white) ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white) |
+| Backend | ![Node.js](https://img.shields.io/badge/Node.js-5FA04E?style=for-the-badge&logo=nodedotjs&logoColor=white) ![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white) |
 | Database | ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white) |
-| Dev Tools | <img src="https://img.shields.io/badge/아이콘내용-바탕색?style=flat&logo=vscode&logoColor=white"/>, MySQL Workbench |
-| Collaboration | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white),![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)|
-| Deployment | ![Naver Cloud](https://img.shields.io/badge/NCP-03C75A?style=for-the-badge&logo=naver&logoColor=white),![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white),![PM2](https://img.shields.io/badge/PM2-2B037A?style=for-the-badge&logo=pm2&logoColor=white),![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+| Dev Tools | ![MySQLWorkbench](https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white) ![VS Code Insiders](https://img.shields.io/badge/VS%20Code%20Insiders-35b393.svg?style=for-the-badge&logo=visual-studio-code&logoColor=white) |
+| Collaboration | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)|
+| Deployment | ![Naver Cloud](https://img.shields.io/badge/NCP-03C75A?style=for-the-badge&logo=naver&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white) ![PM2](https://img.shields.io/badge/PM2-2B037A?style=for-the-badge&logo=pm2&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) |
 
 
 ---
@@ -221,3 +108,94 @@ the_first/
 │   └── erd.png
 │
 └── README.md
+```
+
+---
+
+## 시스템설계
+
+<img width="1148" height="600" alt="image" src="https://github.com/user-attachments/assets/faa1fa81-a9d9-481e-a914-fe68ede71e88" />
+
+<img width="1063" height="584" alt="image" src="https://github.com/user-attachments/assets/69ed7149-b1ec-49c9-8339-7b038376835e" />
+
+
+---
+
+## 메인 화면
+### 지원신청내역
+<img width="1919" height="668" alt="image" src="https://github.com/user-attachments/assets/b0c0c6d4-693c-44e8-85ea-9670c54ebbe6" />
+
+### 지원신청서
+<img width="1919" height="901" alt="지원신청서_지원신청하기클릭시" src="https://github.com/user-attachments/assets/062fa163-7836-4c9e-a491-df28a2d462f9" />
+
+### 담당자 배정
+<img width="1534" height="830" alt="image" src="https://github.com/user-attachments/assets/6c6b83b9-687f-42b4-b546-9593d081cb0d" />
+
+### 상담내역
+<img width="1919" height="946" alt="image" src="https://github.com/user-attachments/assets/f5681797-9e54-4888-ab3e-7b3685c2a8e4" />
+
+### 우선순위
+<img width="1919" height="925" alt="우선순위반려사유적을시" src="https://github.com/user-attachments/assets/a3c6f79d-ac08-4cdd-a3f2-2ea9fc2a7c21" />
+
+### 지원계획
+<img width="1527" height="847" alt="image" src="https://github.com/user-attachments/assets/6981b44e-2985-48ca-9a64-81bd16316e45" />
+
+### 지원결과
+<img width="1516" height="860" alt="image" src="https://github.com/user-attachments/assets/f64bc2d6-1210-403b-bf5a-c5e0d52bc795" />
+
+### 공지사항
+<img width="1920" height="945" alt="image" src="https://github.com/user-attachments/assets/b659a945-cec3-4b6e-b523-78c5a0094882" />
+
+---
+
+
+## 주요 기능
+
+### 일반 사용자(보호자)
+- 지원대상자 등록 / 조회 / 수정
+- 지원신청서 작성
+- 지원계획 열람
+- 지원결과 열람
+- 공지사항 조회
+
+### 기관담당자
+- 대기자 목록 확인
+- 지원신청서 조회
+- 상담 기록 작성 / 수정 / 삭제 / 임시저장
+- 우선순위 설정
+- 지원계획 작성 / 수정 / 삭제 / 임시저장
+- 지원결과 작성 / 수정 / 삭제 / 임시저장
+- 첨부파일 관리
+- 수정이력 관리
+- 본인 정보 조회 / 수정
+- 공지사항 등록 / 조회 / 수정 / 삭제
+
+### 기관관리자
+- 담당자 지정
+- 우선순위 승인 / 반려
+- 지원계획 승인 / 반려
+- 지원결과 승인 / 반려
+- 본인 정보 조회 / 수정
+- 공지사항 등록 / 조회 / 수정 / 삭제
+
+### 시스템관리자
+- 기관 목록 조회
+- 기관 상세조회
+- 기관 등록 / 수정
+- 기관 운영관리
+- 공지사항 등록 / 조회 / 수정 / 삭제
+
+---
+
+## 업무 흐름
+
+1. 일반이용자가 지원대상자를 등록하고 지원신청서를 작성합니다.
+2. 기관관리자가 대상자의 담당자 및 부담당자를 지정합니다.
+3. 기관담당자가 지원신청서와 상담기록을 바탕으로 우선순위를 설정합니다.
+4. 기관관리자가 우선순위를 승인합니다.
+5. 기관담당자가 지원계획을 작성하고 승인 요청 결재를 상신합니다.
+6. 기관관리자가 지원계획을 승인 혹은 반려합니다.
+7. 기관담당자가 지원결과를 작성하고 승인 요청 결재를 상신합니다.
+8. 기관관리자가 지원결과를 승인 혹은 반려합니다.
+9. 각 단계별로 첨부파일과 수정이력을 함께 관리합니다.
+
