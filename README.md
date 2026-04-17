@@ -17,7 +17,7 @@
 ## 프로젝트 개요
 
 - **프로젝트명**: FIRST STEP
-- **프로젝트 유형**: 팀 프로젝트
+- **프로젝트 유형**: 팀 프로젝트(4인)
 - **개발 목적**
   - 발달장애인 지원 업무 전산화
   - 역할별 업무 프로세스 분리 및 권한 기반 처리
@@ -66,6 +66,44 @@
 | Collaboration | ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white) ![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)|
 | Deployment | ![Naver Cloud](https://img.shields.io/badge/NCP-03C75A?style=for-the-badge&logo=naver&logoColor=white) ![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white) ![PM2](https://img.shields.io/badge/PM2-2B037A?style=for-the-badge&logo=pm2&logoColor=white) ![GitHub Actions](https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white) |
 
+
+---
+## 내가 담당한 기능
+Frontend(Vue 3) + Backend(Node.js/Express) 풀스택 구현 및 DB 설계/관리를 담당하였습니다.
+
+공통 헤더
+
+전체 역할(일반사용자 / 기관담당자 / 기관관리자 / 시스템관리자)에 적용되는 공통 헤더 컴포넌트 구현
+역할별 메뉴 구성 및 권한에 따른 네비게이션 분기 처리
+
+공지사항
+
+일반사용자: 공지사항 목록 조회
+기관관리자 / 기관담당자: 공지사항 목록 조회, 상세 조회
+기관관리자 / 기관담당자 / 시스템관리자: 공지사항 상세 조회
+기관관리자 / 기관담당자: 공지사항 등록 / 수정 / 삭제
+시스템관리자: 공지사항 등록 / 수정 / 삭제
+
+기관 정보 관리 (기관관리자)
+
+기관 정보 조회
+기관 정보 수정
+
+계정 관련
+
+아이디 찾기 / 아이디 확인
+비밀번호 찾기 / 새 비밀번호 설정
+회원 탈퇴
+
+시스템관리자
+
+기관관리자 목록 조회
+
+DB 관리 (Naver Cloud Platform)
+
+ERD 설계 및 지속적 수정 관리
+테이블 생성 및 변경 이력 스크립트 관리 (버전별 DDL 스크립트 관리)
+NCP(Naver Cloud Platform)에 MariaDB 서버 직접 구축 및 설정
 
 ---
 
@@ -149,7 +187,7 @@ the_first/
 ---
 
 
-## 주요 기능
+## 전체 주요 기능
 
 ### 일반 사용자(보호자)
 - 지원대상자 등록 / 조회 / 수정
