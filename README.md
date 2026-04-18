@@ -12,7 +12,7 @@
 본 프로젝트는 발달장애인 지원 업무를 보다 체계적이고 효율적으로 관리할 수 있도록  
 업무 절차를 전산화하고 각 사용자 권한에 맞는 기능을 제공하는 것을 목표로 개발되었습니다.
 
----
+<br/>
 
 ## 프로젝트 개요
 
@@ -23,43 +23,65 @@
   - 역할별 업무 프로세스 분리 및 권한 기반 처리
   - 지원계획 및 지원결과 승인 흐름 구현
   - 첨부파일 및 수정이력 관리 기능 제공
+    
+<br/>
 
----
+## 🙋‍♀️ 기여 요약
 
-## 개발기간
-- 전체 개발 기간 : 2026.03.10 ~ 2026.04.13
-- 설계 기간 : 2026.03.12 ~ 2026.03.19
-- 구현 기간 : 2026.03.20 ~ 2026.04.03
-- 배포 및 테스트 : 2026.04.07 ~ 2026.04.08
-- 발표 준비 : 2026.04.10 ~ 2026.04.12
-- 프로젝트 발표 : 2026.04.13
+- 공지사항, 계정관리, 기관정보 기능 **풀스택 구현**
+- **권한 기반 UI 및 API 로직 설계**
+- **DB 설계 및 MariaDB 직접 구축 (NCP)**
+- 파일 업로드 및 수정이력 관리 기능 구현
+  
+<br/>
+
+## 개발 기간
+2026.03.10 ~ 2026.04.13 (약 5주)
+
+- 설계 → 구현 → 배포까지 전 과정 참여
 
 ---
 
 ## 팀 구성 및 역할
 
-<table align="center">
+<table align="left">
   <tr> 
-    <td align="center"><a href=https://github.com/time1014><img src="https://avatars.githubusercontent.com/u/64236748?v=4" width="100px;" alt=""/><br /><sub><b>방진영</b></sub></a><br />
+    <td align="left">
+      <a href="https://github.com/time1014">
+        <img src="https://avatars.githubusercontent.com/u/64236748?v=4" width="100px;" /><br />
+        <sub><b>방진영</b></sub>
+      </a>
     </td>
-    <td align="center"><a href=https://github.com/crescentia0011><img src="https://avatars.githubusercontent.com/u/254889839?v=4" width="100px;" alt=""/><br /><sub><b>김병완</b></sub></a><br />
+    <td align="left">
+      <a href="https://github.com/crescentia0011">
+        <img src="https://avatars.githubusercontent.com/u/254889839?v=4" width="100px;" /><br />
+        <sub><b>김병완</b></sub>
+      </a>
     </td>
-    <td align="center"><a href=https://github.com/kimeunji806><img src="https://avatars.githubusercontent.com/u/258710580?v=4" width="100px;" alt=""/><br /><sub><b>김은지</b></sub></a><br />
+    <td align="left">
+      <a href="https://github.com/kimeunji806">
+        <img src="https://avatars.githubusercontent.com/u/258710580?v=4" width="110px;" style="border:3px solid #4CAF50; border-radius:10px;" /><br />
+        <sub><b>⭐ 김은지 (본인)</b></sub>
+      </a>
     </td>
-   <td align="center"><a href=https://github.com/ryusongji><img src="https://avatars.githubusercontent.com/u/53076307?v=4" width="100px;" alt=""/><br /><sub><b>류송지</b></sub></a><br />
+    <td align="left">
+      <a href="https://github.com/ryusongji">
+        <img src="https://avatars.githubusercontent.com/u/53076307?v=4" width="100px;" /><br />
+        <sub><b>류송지</b></sub>
+      </a>
     </td>
   </tr>
   <tr>
-    <th align="center">팀장</th>
-    <th align="center">부팀장</th>
-    <th align="center">팀원</th>
-    <th align="center">팀원</th>
+    <th align="left">팀장</th>
+    <th align="left">부팀장</th>
+    <th align="left">팀원</th>
+    <th align="left">팀원</th>
   </tr>
  <tr>
-   <td align="center">배포</td>
-   <td align="center">GIT</td>
-   <td align="center">DB</td>
-  <td align="center">개발환경</td>
+   <td align="left">배포</td>
+   <td align="left">GIT</td>
+   <td align="left">DB</td>
+   <td align="left">개발환경</td>
  </tr>
 </table>
 
